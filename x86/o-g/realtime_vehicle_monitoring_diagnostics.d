@@ -14,4 +14,5 @@ realtime_vehicle_monitoring_diagnostics.o:  \
   C:/QNX641/target/qnx6/usr/include/sys/wait.h \
   C:/QNX641/target/qnx6/usr/include/signal.h \
   C:/QNX641/target/qnx6/usr/include/sys/siginfo.h \
-  C:/QNX641/target/qnx6/usr/include/stdio.h
+  C:/QNX641/target/qnx6/usr/include/stdio.h \
+  C:/Projects/Concordia/COEN320/QNX/realtime_vehicle_monitoring_diagnostics/csv_data.hpp
