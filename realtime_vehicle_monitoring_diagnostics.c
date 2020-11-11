@@ -114,6 +114,15 @@ long_thread(void *notused)
 	//	return;
 }
 
+void producer()
+{
+	int i = 0;
+	for (i = 0; i < 5; i++)
+	{
+		printf("Fuel consumption value is: %4.2f\n", fuel_consumption[i]);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	//	printf("Welcomsdfsdafsadfe  thexzs354165414623adfsda QNX  IDEEEE\n");
@@ -128,11 +137,7 @@ int main(int argc, char *argv[])
 		printf("Sizes do not match");
 	}
 
-	// int i = 0;
-	// for (i = 0; i < 5; i++)
-	// {
-	// 	printf("Fuel consumption value is: %4.2f\n", fuel_consumption[i]);
-	// }
+	producer();
 
 	// uint64_t timeout;
 	// struct sigevent event;
@@ -173,25 +178,25 @@ int main(int argc, char *argv[])
 	// 	printf("Thread %d finished (expected!)\n", thread_id);
 	// }
 
-	/* Timer */
-	int res;
+	// /* Timer */
+	// int res;
 
-	//set and activate a timer
-	// res = start_periodic_timer(OFFSET, PERIOD);
-	res = start_periodic_timer(PERIOD);
-	if (res < 0)
-	{
-		perror("Start periodic timer");
-		return -1;
-	}
+	// //set and activate a timer
+	// // res = start_periodic_timer(OFFSET, PERIOD);
+	// res = start_periodic_timer(PERIOD);
+	// if (res < 0)
+	// {
+	// 	perror("Start periodic timer");
+	// 	return -1;
+	// }
 
-	while (1)
-	{
-		wait_next_activation(); //wait for timer expiration
-		task_body();			//executes the task
-	}
+	// while (1)
+	// {
+	// 	wait_next_activation(); //wait for timer expiration
+	// 	task_body();			//executes the task
+	// }
 
-	/* Timer */
+	// /* Timer */
 
 	return EXIT_SUCCESS;
 }
