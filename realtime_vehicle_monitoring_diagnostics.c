@@ -42,7 +42,8 @@ static void wait_next_activation(void)
 
 
 
-int start_periodic_timer(uint64_t offset, int period)
+// int start_periodic_timer(uint64_t offset, int period)
+int start_periodic_timer(int period)
 {
 	struct itimerspec timer_spec;
 	struct sigevent sigev;
@@ -178,7 +179,8 @@ int main(int argc, char *argv[])
 	int res;
 
 	//set and activate a timer
-	res = start_periodic_timer(OFFSET, PERIOD);
+	// res = start_periodic_timer(OFFSET, PERIOD);
+	res = start_periodic_timer(PERIOD);
 	if (res < 0)
 	{
 		perror("Start periodic timer");
