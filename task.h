@@ -10,8 +10,7 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-//	#include <bits/stdc++.h>
-	enum  TaskType
+	enum TaskType
 	{
 		PERIODIC,
 		APERIODIC,
