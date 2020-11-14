@@ -22,5 +22,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// TODO Auto-generated destructor stub
 		std::cout << "thread_manager object destroyed" << std::endl;
 	}
+	
+
 
 } // namespace realtime_vehicle_monitoring_diagnostics
