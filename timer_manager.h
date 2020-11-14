@@ -14,13 +14,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class timer_manager
 	{
 	public:
-		timer_manager();
+		timer_manager(); // create a timer
 		virtual ~timer_manager();
 
-		int create_timer();
+		// int create_timer();
 		int start_timer();
 		int stop_timer();
-		void get_value_timer();
+		void get_timer_value();
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

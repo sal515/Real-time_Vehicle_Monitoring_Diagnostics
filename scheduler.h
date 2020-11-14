@@ -13,13 +13,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	class scheduler
 	{
+	private:
 	public:
-		/* TODO: Figure out if we have queues with ascending sorting */
-
-		scheduler();
+		scheduler(); // initializatin of a scheduler
 		virtual ~scheduler();
-
-		void init();
+		/* TODO: Figure out if we have queues with ascending sorting */
+		// void init();
 		void generate_tasks();
 		// void create_a_task();
 		void check_task_deadlines();
