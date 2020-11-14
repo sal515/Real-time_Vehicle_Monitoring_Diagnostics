@@ -6,16 +6,21 @@
  */
 
 #include "scheduler.h"
+#include <iostream>
 
-namespace realtime_vehicle_monitoring_diagnostics {
+namespace realtime_vehicle_monitoring_diagnostics
+{
 
-scheduler::scheduler() {
-	// TODO Auto-generated constructor stub
+	scheduler::scheduler()
+	{
+		// TODO Auto-generated constructor stub
+		std::cout << "scheduler object created" << std::endl;
+	}
 
-}
+	scheduler::~scheduler()
+	{
+		// TODO Auto-generated destructor stub
+		std::cout << "scheduler object destroyed" << std::endl;
+	}
 
-scheduler::~scheduler() {
-	// TODO Auto-generated destructor stub
-}
-
-}
+} // namespace realtime_vehicle_monitoring_diagnostics

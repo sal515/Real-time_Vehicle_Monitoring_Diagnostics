@@ -6,16 +6,21 @@
  */
 
 #include "thread_manager.h"
+#include <iostream>
 
-namespace realtime_vehicle_monitoring_diagnostics {
+namespace realtime_vehicle_monitoring_diagnostics
+{
 
-thread_manager::thread_manager() {
-	// TODO Auto-generated constructor stub
+	thread_manager::thread_manager()
+	{
+		// TODO Auto-generated constructor stub
+		std::cout << "thread_manager object created" << std::endl;
+	}
 
-}
+	thread_manager::~thread_manager()
+	{
+		// TODO Auto-generated destructor stub
+		std::cout << "thread_manager object destroyed" << std::endl;
+	}
 
-thread_manager::~thread_manager() {
-	// TODO Auto-generated destructor stub
-}
-
-}
+} // namespace realtime_vehicle_monitoring_diagnostics
