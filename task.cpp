@@ -1,5 +1,5 @@
 /*
- * task.cpp
+ * Task.cpp
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -9,12 +9,12 @@
 
 namespace realtime_vehicle_monitoring_diagnostics {
 
-task::task() {
+Task::Task() {
 	// TODO Auto-generated constructor stub
 
 }
 
-task::~task() {
+Task::~Task() {
 	// TODO Auto-generated destructor stub
 }
 

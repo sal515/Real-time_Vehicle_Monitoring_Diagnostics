@@ -1,5 +1,5 @@
 /*
- * task.h
+ * Task.h
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -10,23 +10,21 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-
-	enum class task_type
+//	#include <bits/stdc++.h>
+	enum  TaskType
 	{
 		PERIODIC,
 		APERIODIC,
 		SPORADIC
-	}
+	};
 
-	class task
+	class Task
 	{
-
 	public:
-		task();
-		virtual ~task();
+		Task();
+		virtual ~Task();
 
-		task_type task_typ
-
+		int task_type;
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

@@ -354,6 +354,10 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+<storageModule moduleId="com.qnx.tools.ide.qde.core.QNXProjectProperties"/>
+<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 <cconfiguration id="com.qnx.qcc.configuration.exe.debug.1403932890">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.qnx.qcc.configuration.exe.debug.1403932890" moduleId="org.eclipse.cdt.core.settings" name="x86/Debug">
@@ -708,6 +712,11 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+<storageModule moduleId="com.qnx.tools.ide.qde.core.QNXProjectProperties"/>
+<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
