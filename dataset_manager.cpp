@@ -7,15 +7,20 @@
 
 #include "dataset_manager.h"
 
+#include <iostream>
+
+
 namespace realtime_vehicle_monitoring_diagnostics {
 
 dataset_manager::dataset_manager() {
 	// TODO Auto-generated constructor stub
+	std::cout << "dataset manager object created" << std::endl;
 
 }
 
 dataset_manager::~dataset_manager() {
 	// TODO Auto-generated destructor stub
+	std::cout << "dataset manager object destroyed" << std::endl;
 }
 
 }
