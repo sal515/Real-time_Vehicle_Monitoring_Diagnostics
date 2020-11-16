@@ -1,5 +1,5 @@
 /*
- * dataset_manager.h
+ * Dataset_Manager.h
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -11,11 +11,11 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	class dataset_manager
+	class Dataset_Manager
 	{
 	public:
-		dataset_manager();
-		virtual ~dataset_manager();
+		Dataset_Manager();
+		virtual ~Dataset_Manager();
 
 		int extract_dataset();
 		int validate_dataset();

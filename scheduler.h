@@ -1,5 +1,5 @@
 /*
- * scheduler.h
+ * Scheduler.h
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -11,12 +11,12 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	class scheduler
+	class Scheduler
 	{
 	private:
 	public:
-		scheduler(); // initializatin of a scheduler
-		virtual ~scheduler();
+		Scheduler(); // initializatin of a Scheduler
+		virtual ~Scheduler();
 		/* TODO: Figure out if we have queues with ascending sorting */
 		// void init();
 		void generate_tasks();

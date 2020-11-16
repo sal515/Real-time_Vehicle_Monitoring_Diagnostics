@@ -1,5 +1,5 @@
 /*
- * timer_manager.h
+ * Timer_Manager.h
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -11,11 +11,11 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	class timer_manager
+	class Timer_Manager
 	{
 	public:
-		timer_manager(); // create a timer
-		virtual ~timer_manager();
+		Timer_Manager(); // create a timer
+		virtual ~Timer_Manager();
 
 		// int create_timer();
 		int start_timer();

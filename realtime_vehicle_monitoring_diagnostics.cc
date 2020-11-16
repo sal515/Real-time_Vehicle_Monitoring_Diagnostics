@@ -11,10 +11,10 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 
 int main(int argc, char *argv[])
 {
-	dataset_manager ds_manager_obj = dataset_manager();
-	scheduler scheduler_obj = scheduler();
-	//	thread_manager thread_manager_obj = thread_manager();
-	timer_manager timer_manager_obj = timer_manager();
+	Dataset_Manager ds_manager_obj = Dataset_Manager();
+	Scheduler scheduler_obj = Scheduler();
+	//	Thread_Manager thread_manager_obj = Thread_Manager();
+	Timer_Manager timer_manager_obj = Timer_Manager();
 
 	Task task = Task();
 	task.task_type = PERIODIC;

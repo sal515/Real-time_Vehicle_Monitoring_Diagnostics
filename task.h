@@ -23,7 +23,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Task();
 		virtual ~Task();
 
-		int task_type;
+		TaskType task_type;
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
