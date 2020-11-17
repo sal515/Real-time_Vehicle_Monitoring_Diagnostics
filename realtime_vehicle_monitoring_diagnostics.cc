@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
 	//	Thread_Manager thread_manager_obj = Thread_Manager();
 	Timer_Manager timer_manager_obj = Timer_Manager();
 
-	Task task = Task();
-	task.task_type = PERIODIC;
+	// Task task = Task();
+	// task.task_type = PERIODIC;
 
 	return EXIT_SUCCESS;
 }
