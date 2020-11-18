@@ -21,22 +21,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 	public:
 		Task();
-
-		Task(long period, long execution_time, long relative_deadline = -1, long phase = 0);
-
 		virtual ~Task();
 
-		long phase;
-		long period;
-		long execution_time;
-		long relative_deadline;
+		// Task(long period, long execution_time, long relative_deadline = -1, long phase = 0);
 
 		TaskType task_type;
 		long executed_time;
 
-		long last_started_time;
-
-		void increment_executed_time_by(long time);
+		// long last_started_time;
+		// void increment_executed_time_by(long time);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

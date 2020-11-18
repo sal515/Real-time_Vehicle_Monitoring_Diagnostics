@@ -10,14 +10,21 @@
 
 #include "task.h"
 
-namespace realtime_vehicle_monitoring_diagnostics {
+namespace realtime_vehicle_monitoring_diagnostics
+{
 
-class Periodic_Task: public realtime_vehicle_monitoring_diagnostics::Task {
-public:
-	Periodic_Task();
-	virtual ~Periodic_Task();
-};
+	class Periodic_Task : public realtime_vehicle_monitoring_diagnostics::Task
+	{
+	public:
+		Periodic_Task();
+		virtual ~Periodic_Task();
 
-}
+		long phase;
+		long period;
+		long execution_time;
+		long relative_deadline;
+	};
+
+} // namespace realtime_vehicle_monitoring_diagnostics
 
 #endif /* PERIODIC_TASK_H_ */
