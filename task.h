@@ -20,6 +20,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class Task
 	{
 	public:
+		Task();
+
 		Task(long period, long execution_time, long relative_deadline = -1, long phase = 0);
 
 		virtual ~Task();

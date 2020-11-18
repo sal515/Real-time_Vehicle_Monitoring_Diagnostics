@@ -6,14 +6,18 @@
  */
 
 #include "task.h"
+#include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-    // Task::Task() {
-    // 	// TODO Auto-generated constructor stub
+    Task::Task()
+    {
+        std::cout << "Default constructor is not permitted" << std::endl;
 
-    // }
+        // TODO Auto-generated constructor stub
+        // exit(-1);
+    }
 
     Task::Task(long period, long execution_time, long relative_deadline, long phase)
     {
