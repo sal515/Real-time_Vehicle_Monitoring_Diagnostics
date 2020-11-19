@@ -1,26 +1,26 @@
 /*
- * Dataset_Manager.cpp
+ * DatasetManager.cpp
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
  */
 
-#include "dataset_manager.h"
+#include "DatasetManager.h"
 #include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	Dataset_Manager::Dataset_Manager()
+	DatasetManager::DatasetManager()
 	{
 		// TODO Auto-generated constructor stub
-		std::cout << "Dataset_Manager object created" << std::endl;
+		std::cout << "DatasetManager object created" << std::endl;
 	}
 
-	Dataset_Manager::~Dataset_Manager()
+	DatasetManager::~DatasetManager()
 	{
 		// TODO Auto-generated destructor stub
-		std::cout << "Dataset_Manager object destroyed" << std::endl;
+		std::cout << "DatasetManager object destroyed" << std::endl;
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

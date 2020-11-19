@@ -1,22 +1,22 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "dataset_manager.h"
-#include "scheduler.h"
-#include "thread_manager.h"
-#include "timer_manager.h"
-#include "task.h"
-#include "Periodic_Task.h"
+#include "DatasetManager.h"
+#include "Scheduler.h"
+#include "ThreadManager.h"
+#include "TimerManager.h"
+#include "Task.h"
+#include "PeriodicTask.h"
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
 int main(int argc, char *argv[])
 {
-	Dataset_Manager ds_manager_obj = Dataset_Manager();
+	DatasetManager ds_manager_obj = DatasetManager();
 	Scheduler scheduler_obj = Scheduler();
-	//	Thread_Manager thread_manager_obj = Thread_Manager();
-	Timer_Manager timer_manager_obj = Timer_Manager();
-	Periodic_Task periodic_task = Periodic_Task();
+	//	ThreadManager thread_manager_obj = ThreadManager();
+	TimerManager timer_manager_obj = TimerManager();
+	PeriodicTask periodic_task = PeriodicTask();
 	// Task task = Task();
 	// task.task_type = PERIODIC;
 

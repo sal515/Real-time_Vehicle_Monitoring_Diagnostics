@@ -5,7 +5,7 @@
  *      Author: Salman
  */
 
-#include "scheduler.h"
+#include "Scheduler.h"
 #include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics

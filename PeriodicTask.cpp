@@ -1,21 +1,21 @@
 /*
- * Periodic_Task.cpp
+ * PeriodicTask.cpp
  *
  *  Created on: Nov 16, 2020
  *      Author: Salman
  */
 
-#include "Periodic_Task.h"
+#include "PeriodicTask.h"
 #include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	// Periodic_Task::Periodic_Task():Task() {
-	Periodic_Task::Periodic_Task()
+	// PeriodicTask::PeriodicTask():Task() {
+	PeriodicTask::PeriodicTask()
 	{
 		// TODO Auto-generated constructor stub
-		std::cout << "Periodic_Task object created" << std::endl;
+		std::cout << "PeriodicTask object created" << std::endl;
 
 		this->phase = -1;
 		this->period = -1;
@@ -26,7 +26,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = PERIODIC;
 	}
 
-	Periodic_Task::Periodic_Task(long period, long execution_time, long relative_deadline, long phase)
+	PeriodicTask::PeriodicTask(long period, long execution_time, long relative_deadline, long phase)
 	{
 		this->phase = phase;
 		this->period = period;
@@ -43,10 +43,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	}
 
-	Periodic_Task::~Periodic_Task()
+	PeriodicTask::~PeriodicTask()
 	{
 		// TODO Auto-generated destructor stub
-		std::cout << "Periodic_Task object destroyed" << std::endl;
+		std::cout << "PeriodicTask object destroyed" << std::endl;
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics
