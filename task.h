@@ -12,21 +12,12 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-	typedef void *(*start_routine_t)(void *);
 
 	enum TaskType
 	{
 		PERIODIC,
 		APERIODIC,
 		SPORADIC
-	};
-
-	struct thread_info_t
-	{
-		pthread_t thread;
-		pthread_attr_t attr;
-		start_routine_t start_routine;
-		void *args;
 	};
 
 	class Task
