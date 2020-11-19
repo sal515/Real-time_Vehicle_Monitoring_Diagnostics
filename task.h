@@ -35,14 +35,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Task();
 		virtual ~Task();
 
-		// Task(long period, long execution_time, long relative_deadline = -1, long phase = 0);
-
 		TaskType task_type;
 		long executed_time;
 		thread_info_t thread_info;
-		
-		// long last_started_time;
-		// void increment_executed_time_by(long time);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

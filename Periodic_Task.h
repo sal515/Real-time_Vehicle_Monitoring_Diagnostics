@@ -17,6 +17,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 	public:
 		Periodic_Task();
+		Periodic_Task(long period, long execution_time, long relative_deadline = -1, long phase = 0);
+
 		virtual ~Periodic_Task();
 
 		long phase;
