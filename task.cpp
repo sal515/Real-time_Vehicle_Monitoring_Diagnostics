@@ -13,7 +13,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 
     Task::Task()
     {
-        std::cout << "Default constructor is not permitted" << std::endl;
+		std::cout << "Task object created" << std::endl;
+        std::cout << "**Default constructor is not permitted**" << std::endl;
 
         // TODO Auto-generated constructor stub
         // exit(-1);
@@ -22,6 +23,7 @@ namespace realtime_vehicle_monitoring_diagnostics
     Task::~Task()
     {
         // TODO Auto-generated destructor stub
+		std::cout << "Task object destroyed" << std::endl;
     }
 
     // Task::Task(long period, long execution_time, long relative_deadline, long phase)
