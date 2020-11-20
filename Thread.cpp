@@ -5,7 +5,7 @@
  *      Author: Salman
  */
 
-#include "ThreadManager.h"
+#include "Thread.h"
 #include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
