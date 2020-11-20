@@ -17,6 +17,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// TODO Auto-generated constructor stub
 		std::cout << "Timer object created" << std::endl;
 		
+		/* TODO: FIXME  */
 		return;
 
 		/* Create a timer */
