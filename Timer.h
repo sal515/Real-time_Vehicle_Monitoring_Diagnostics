@@ -1,5 +1,5 @@
 /*
- * TimerManager.h
+ * Timer.h
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -8,14 +8,25 @@
 #ifndef TIMER_MANAGER_H_
 #define TIMER_MANAGER_H_
 
+#include <time.h>
+#include <sys/siginfo.h>
+
 namespace realtime_vehicle_monitoring_diagnostics
 {
+	struct timer_info_t
+	{
+		clockid_t clock_id;
+		struct sigevent *event;
+		timer_t *timerid;
+	};
 
-	class TimerManager
+	class Timer
 	{
 	public:
-		TimerManager(); // create a timer
-		virtual ~TimerManager();
+		Timer(); // create a timer
+		virtual ~Timer();
+
+		timer_info_t timer_info;
 
 		// int create_timer();
 		int start_timer();

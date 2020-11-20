@@ -1,29 +1,29 @@
 /*
- * ThreadManager.cpp
+ * Thread.cpp
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
  */
 
-#include "ThreadManager.h"
+#include "Thread.h"
 #include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	ThreadManager::ThreadManager()
+	Thread::Thread()
 	{
 		// TODO Auto-generated constructor stub
-		std::cout << "ThreadManager object created" << std::endl;
+		std::cout << "Thread object created" << std::endl;
 	}
 
-	ThreadManager::~ThreadManager()
+	Thread::~Thread()
 	{
 		// TODO Auto-generated destructor stub
-		std::cout << "ThreadManager object destroyed" << std::endl;
+		std::cout << "Thread object destroyed" << std::endl;
 	}
 
-	int ThreadManager::create_thread(thread_info_t threadInfo)
+	int Thread::create_thread(thread_info_t threadInfo)
 	{
 		return pthread_create(&threadInfo.thread, &threadInfo.attr, threadInfo.start_routine, NULL);
 
@@ -37,7 +37,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EOK
 	}
 
-	int ThreadManager::destroy_thread(pthread_t thread)
+	int Thread::destroy_thread(pthread_t thread)
 	{
 		return pthread_abort(thread);
 

@@ -8,8 +8,9 @@
 #ifndef TASK_H_
 #define TASK_H_
 
+#include "Thread.h"
 #include <pthread.h>
-#include "ThreadManager.h"
+
 namespace realtime_vehicle_monitoring_diagnostics
 {
 

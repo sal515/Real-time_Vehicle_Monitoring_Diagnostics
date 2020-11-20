@@ -1,5 +1,5 @@
 /*
- * ThreadManager.h
+ * Thread.h
  *
  *  Created on: Nov 14, 2020
  *      Author: Salman
@@ -145,11 +145,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 	 
 	  */
 
-	class ThreadManager
+	class Thread
 	{
 	private:
-		ThreadManager();
-		virtual ~ThreadManager();
+		Thread();
+		virtual ~Thread();
 
 	public:
 		static int create_thread(thread_info_t threadInfo);
