@@ -147,15 +147,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	class Thread
 	{
-	private:
+	public:
 		Thread();
 		virtual ~Thread();
 
-	public:
-		static int create_thread(thread_info_t threadInfo);
-		static int destroy_thread(pthread_t thread);
-		static void check_status_thread(thread_info_t threadInfo);
-		static int change_priority_of_thread();
+	private:
+		int create_thread(thread_info_t threadInfo);
+		int destroy_thread(pthread_t thread);
+		void check_status_thread(thread_info_t threadInfo);
+		int change_priority_of_thread();
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

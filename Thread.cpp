@@ -5,7 +5,7 @@
  *      Author: Salman
  */
 
-#include "Thread.h"
+#include "ThreadManager.h"
 #include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
@@ -15,6 +15,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		// TODO Auto-generated constructor stub
 		std::cout << "Thread object created" << std::endl;
+		
+		// create_thread();
 	}
 
 	Thread::~Thread()
