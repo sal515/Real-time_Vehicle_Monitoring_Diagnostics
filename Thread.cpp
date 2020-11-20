@@ -15,7 +15,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		// TODO Auto-generated constructor stub
 		std::cout << "Thread object created" << std::endl;
-		
+
 		// create_thread();
 	}
 
@@ -25,10 +25,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		std::cout << "Thread object destroyed" << std::endl;
 	}
 
-	int Thread::create_thread(thread_info_t threadInfo)
+	Thread::Thread(pthread_t thread, pthread_attr_t attr, start_routine_t start_routine, void *args)
 	{
-		return pthread_create(&threadInfo.thread, &threadInfo.attr, threadInfo.start_routine, NULL);
-
+		// return pthread_create(&threadInfo.thread, &threadInfo.attr, threadInfo.start_routine, NULL);
 		/* 
 		pthread_create (NULL, NULL, new_thread, (void *) 123);
 		 */
@@ -41,7 +40,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	int Thread::destroy_thread(pthread_t thread)
 	{
-		return pthread_abort(thread);
+		// return pthread_abort(thread);
 
 		// ESRCH
 		// EOK

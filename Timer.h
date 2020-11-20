@@ -13,15 +13,11 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-	struct timer_info_t
-	{
-	};
-
 	class Timer
 	{
 	public:
-		Timer();					   // create a timer
-		Timer(timer_info_t timerInfo); // create a timer
+		Timer(); // create a timer
+				 //		Timer(timer_info_t timerInfo); // create a timer
 		virtual ~Timer();
 
 		clockid_t clock_id;

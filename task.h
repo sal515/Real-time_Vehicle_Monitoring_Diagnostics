@@ -29,7 +29,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		TaskType task_type;
 		long executed_time;
-		thread_info_t thread_info;
+		Thread thread;
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

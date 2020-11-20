@@ -12,14 +12,11 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-	typedef void *(*start_routine_t)(void *);
-	struct thread_info_t
-	{
-		pthread_t thread;
-		pthread_attr_t attr;
-		start_routine_t start_routine;
-		void *args;
-	};
+	// typedef void *(*start_routine_t)(void *);
+	// struct thread_info_t
+	// {
+
+	// };
 
 	/* allocate multiple thread ids */
 	// thread_ids = malloc (sizeof (pthread_t) * num_cpus);
@@ -145,16 +142,29 @@ namespace realtime_vehicle_monitoring_diagnostics
 	 
 	  */
 
+	typedef void *(*start_routine_t)(void *);
+
 	class Thread
 	{
 	public:
 		Thread();
+		Thread(pthread_t thread,
+			   pthread_attr_t attr,
+			   start_routine_t start_routine,
+			   void *args);
+
 		virtual ~Thread();
 
+		pthread_t thread;
+
+		pthread_attr_t attr;
+		start_routine_t start_routine;
+		void *args;
+
 	private:
-		int create_thread(thread_info_t threadInfo);
+		// int create_thread(thread_info_t threadInfo);
 		int destroy_thread(pthread_t thread);
-		void check_status_thread(thread_info_t threadInfo);
+		// void check_status_thread(thread_info_t threadInfo);
 		int change_priority_of_thread();
 	};
 
