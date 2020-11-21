@@ -14,23 +14,30 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* 
 	producer_exec: pexec = x ms
 
-	t1: full consumption
+	p1: full consumption
 	task(10,pexec);
-	t2: engine speed rpm
+	p2: engine speed rpm
 	task(500,pexec);
-	t3: engine coolant temp
+	p3: engine coolant temp
 	task(2000,pexec);
-	t4: current gear
+	p4: current gear
 	task(100,pexec);
-	t5: transmission oil temp
+	p5: transmission oil temp
 	task(5000,pexec);
-	t6: vehicle speed
+	p6: vehicle speed
 	task(100,pexec);
-	t7: acceleration speed longitudinal
+	p7: acceleration speed longitudinal
 	task(150,pexec);
-	t8: indication of break switch
+	p8: indication of break switch
 	task(100,pexec);
-	
+
+	 */
+
+	/* 
+	consumer_exec : cexec = y ms
+
+	c1: print func
+	task(10,cexec);
 	 */
 
 	class Scheduler
