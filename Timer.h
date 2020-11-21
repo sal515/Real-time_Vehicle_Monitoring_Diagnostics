@@ -25,9 +25,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		timer_t *timerid;
 
 		// int create_timer();
-		int start_timer();
-		int stop_timer();
-		void get_timer_value();
+		int start();
+		int stop();
+		void get_value();
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
