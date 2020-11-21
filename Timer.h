@@ -5,8 +5,8 @@
  *      Author: Salman
  */
 
-#ifndef TIMER_MANAGER_H_
-#define TIMER_MANAGER_H_
+#ifndef TIMER_H_
+#define TIMER_H_
 
 #include <time.h>
 #include <sys/siginfo.h>
@@ -32,7 +32,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 } // namespace realtime_vehicle_monitoring_diagnostics
 
-#endif /* TIMER_MANAGER_H_ */
+#endif /* TIMER_H_ */
 
 /* Timer example */
 

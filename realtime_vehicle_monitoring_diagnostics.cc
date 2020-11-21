@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	Scheduler scheduler_obj = Scheduler();
 	//	Thread thread_manager_obj = Thread();
 	// Thread.create_thread();
-	Timer timer_manager_obj = Timer();
+	Timer timer = Timer();
 	PeriodicTask periodic_task = PeriodicTask();
 	// Task task = Task();
 	// task.task_type = PERIODIC;

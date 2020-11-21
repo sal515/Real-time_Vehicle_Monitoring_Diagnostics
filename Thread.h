@@ -5,8 +5,8 @@
  *      Author: Salman
  */
 
-#ifndef THREAD_MANAGER_H_
-#define THREAD_MANAGER_H_
+#ifndef THREAD_H_
+#define THREAD_H_
 
 #include <pthread.h>
 
@@ -170,4 +170,4 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 } // namespace realtime_vehicle_monitoring_diagnostics
 
-#endif /* THREAD_MANAGER_H_ */
+#endif /* THREAD_H_ */
