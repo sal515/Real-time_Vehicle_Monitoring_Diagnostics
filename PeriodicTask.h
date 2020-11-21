@@ -21,6 +21,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		virtual ~PeriodicTask();
 
+		void debug_print();
+
 		long phase;
 		long period;
 		long execution_time;

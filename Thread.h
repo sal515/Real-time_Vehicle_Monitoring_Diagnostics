@@ -13,10 +13,6 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 	// typedef void *(*start_routine_t)(void *);
-	// struct thread_info_t
-	// {
-
-	// };
 
 	/* allocate multiple thread ids */
 	// thread_ids = malloc (sizeof (pthread_t) * num_cpus);

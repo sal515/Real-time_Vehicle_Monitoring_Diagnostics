@@ -27,6 +27,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Task();
 		virtual ~Task();
 
+		virtual void debug_print();
+
 		TaskType task_type;
 		long executed_time;
 		Thread thread;

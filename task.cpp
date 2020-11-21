@@ -26,6 +26,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 		std::cout << "Task object destroyed" << std::endl;
     }
 
+    void Task::debug_print()
+    {
+		std::cout << "Task class debug print" << std::endl;
+    }
+
 
 
 } // namespace realtime_vehicle_monitoring_diagnostics

@@ -49,4 +49,18 @@ namespace realtime_vehicle_monitoring_diagnostics
 		std::cout << "PeriodicTask object destroyed" << std::endl;
 	}
 
+	void PeriodicTask::debug_print()
+	{
+		std::cout << "________________________________" << std::endl;
+		std::cout << "Periodic Task class debug print" << std::endl;
+		std::cout << "________________________________" << std::endl;
+
+		std::cout << "Phase is: " << this->phase << std::endl;
+		std::cout << "Period is: " << this->period << std::endl;
+		std::cout << "Execution_time is: " << this->execution_time << std::endl;
+		std::cout << "Executed_time is: " << this->executed_time << std::endl;
+		std::cout << "Task_type is: " << this->task_type << std::endl;
+		std::cout << "Relative_deadline is: " << this->relative_deadline << std::endl;
+	}
+
 } // namespace realtime_vehicle_monitoring_diagnostics
