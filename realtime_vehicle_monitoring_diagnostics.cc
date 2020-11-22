@@ -69,15 +69,17 @@ static void wait_next_activation(void)
 
 int start_periodic_timer(uint64_t offset, int period)
 {
-	const int signal = SIGALRM;
+	signal(SIGUSR1, handler);
+	const int signal = SIGUSR1;
+	// const int signal = SIGALRM;
 	int res;
 
 	/* set timer parameters */
 	// first timeout
-	timer_spec.it_value.tv_sec = 60;
+	timer_spec.it_value.tv_sec = 5;
 	timer_spec.it_value.tv_nsec = 0;
 	// periodic timeout
-	timer_spec.it_interval.tv_sec = 60;
+	timer_spec.it_interval.tv_sec = 5;
 	timer_spec.it_interval.tv_nsec = 0;
 
 	/* 10ms timeout with 1ms interval  */
@@ -92,9 +94,9 @@ int start_periodic_timer(uint64_t offset, int period)
 	// timer_spec.it_interval.tv_sec = period / ONE_MILLION;
 	// timer_spec.it_interval.tv_nsec = (period % ONE_MILLION) * ONE_THOUSAND;
 
-	sigemptyset(&sigst);				  // initialize a signal set
-	sigaddset(&sigst, signal);			  // add SIGALRM to the signal set
-	sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
+	sigemptyset(&sigst);	   // initialize a signal set
+	sigaddset(&sigst, signal); // add SIGALRM to the signal set
+	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
 
 	/* set the signal event a timer expiration */
 	memset(&sigev, 0, sizeof(struct sigevent));
@@ -150,12 +152,12 @@ int main(int argc, char *argv[])
 	// // Task task = Task();
 	// // task.task_type = PERIODIC;
 
-	signal(SIGUSR1, handler);
-	for (int i = 0; i < 5; i++)
-	{
-		raise(SIGUSR1);
-	}
-	return 0;
+	// signal(SIGUSR1, handler);
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	raise(SIGUSR1);
+	// }
+	// return 0;
 
 	/* Testing timer timeout */
 	int res;
@@ -172,18 +174,18 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		timer_gettime(timer, &current_time);
-		std::cout << " ----- Before suspend Current Time ----- "
-				  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
+		// timer_gettime(timer, &current_time);
+		// std::cout << " ----- Before suspend Current Time ----- "
+		// 		  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
 
-		wait_next_activation(); //wait for timer expiration
-		// task_body(); //executes the task
+		// wait_next_activation(); //wait for timer expiration
+		// // task_body(); //executes the task
 
-		timer_gettime(timer, &current_time);
-		std::cout << " ----- After suspend Current Time ----- "
-				  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
+		// timer_gettime(timer, &current_time);
+		// std::cout << " ----- After suspend Current Time ----- "
+		// 		  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
 
-		std::cout << " ----- Main Thread Resumed ----- " << std::endl;
+		// std::cout << " ----- Main Thread Resumed ----- " << std::endl;
 	}
 
 	return EXIT_SUCCESS;
