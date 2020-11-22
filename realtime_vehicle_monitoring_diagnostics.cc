@@ -28,6 +28,9 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 #define PERIOD 5000000
 
 sigset_t sigst;
+struct itimerspec timer_spec;
+struct sigevent sigev;
+timer_t timer;
 
 static void wait_next_activation(void)
 {
@@ -40,17 +43,28 @@ static void wait_next_activation(void)
 
 int start_periodic_timer(uint64_t offset, int period)
 {
-	struct itimerspec timer_spec;
-	struct sigevent sigev;
-	timer_t timer;
 	const int signal = SIGALRM;
 	int res;
 
 	/* set timer parameters */
-	timer_spec.it_value.tv_sec = offset / ONE_MILLION;
-	timer_spec.it_value.tv_nsec = (offset % ONE_MILLION) * ONE_THOUSAND;
-	timer_spec.it_interval.tv_sec = period / ONE_MILLION;
-	timer_spec.it_interval.tv_nsec = (period % ONE_MILLION) * ONE_THOUSAND;
+	// first timeout
+	timer_spec.it_value.tv_sec = 60;
+	timer_spec.it_value.tv_nsec = 0;
+	// periodic timeout
+	timer_spec.it_interval.tv_sec = 60;
+	timer_spec.it_interval.tv_nsec = 0;
+
+	/* 10ms timeout with 1ms interval  */
+	// timer_spec.it_value.tv_sec = 0;
+	// timer_spec.it_value.tv_nsec = 1000000;
+	// timer_spec.it_interval.tv_sec = 0;
+	// timer_spec.it_interval.tv_nsec = 10000000;
+
+	/* Example */
+	// timer_spec.it_value.tv_sec = offset / ONE_MILLION;
+	// timer_spec.it_value.tv_nsec = (offset % ONE_MILLION) * ONE_THOUSAND;
+	// timer_spec.it_interval.tv_sec = period / ONE_MILLION;
+	// timer_spec.it_interval.tv_nsec = (period % ONE_MILLION) * ONE_THOUSAND;
 
 	sigemptyset(&sigst);				  // initialize a signal set
 	sigaddset(&sigst, signal);			  // add SIGALRM to the signal set
@@ -120,11 +134,20 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	struct itimerspec current_time;
+
 	while (1)
 	{
-		wait_next_activation(); //wait for timer expiration
+		timer_gettime(timer, &current_time);
+		std::cout << " ----- Before suspend Current Time ----- "
+				  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
 
+		wait_next_activation(); //wait for timer expiration
 		// task_body(); //executes the task
+
+		timer_gettime(timer, &current_time);
+		std::cout << " ----- After suspend Current Time ----- "
+				  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
 
 		std::cout << " ----- Main Thread Resumed ----- " << std::endl;
 	}
