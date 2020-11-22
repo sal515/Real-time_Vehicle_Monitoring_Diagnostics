@@ -32,6 +32,32 @@ struct itimerspec timer_spec;
 struct sigevent sigev;
 timer_t timer;
 
+// void handler(signo)
+// {
+// 	// static int first = 1;
+
+// 	// if (first)
+// 	// {
+// 	// 	first = 0;
+// 	// 	kill(getpid(), SIGUSR1); /* Prove signal masked */
+// 	// 	kill(getpid(), SIGUSR2); /* Prove signal masked */
+// 	// }
+// }
+
+void handler(int sig_number)
+{
+	// static int first = 1;
+
+	// if (first)
+	// {
+	// 	first = 0;
+	// 	kill(getpid(), SIGUSR1); /* Prove signal masked */
+	// 	kill(getpid(), SIGUSR2); /* Prove signal masked */
+	// }
+
+	std::cout << "Signal was raised" << std::endl;
+}
+
 static void wait_next_activation(void)
 {
 	int dummy;
@@ -124,10 +150,12 @@ int main(int argc, char *argv[])
 	// // Task task = Task();
 	// // task.task_type = PERIODIC;
 
-
-	
-
-
+	signal(SIGUSR1, handler);
+	for (int i = 0; i < 5; i++)
+	{
+		raise(SIGUSR1);
+	}
+	return 0;
 
 	/* Testing timer timeout */
 	int res;
