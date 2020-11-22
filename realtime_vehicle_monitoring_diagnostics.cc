@@ -34,6 +34,8 @@ static void wait_next_activation(void)
 	int dummy;
 	/* suspend calling process until a signal is pending */
 	sigwait(&sigst, &dummy);
+
+	std::cout << " ----- Suspending Main Thread ----- " << std::endl;
 }
 
 int start_periodic_timer(uint64_t offset, int period)
@@ -121,7 +123,10 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		wait_next_activation(); //wait for timer expiration
-		task_body();			//executes the task
+
+		// task_body(); //executes the task
+
+		std::cout << " ----- Main Thread Resumed ----- " << std::endl;
 	}
 
 	return EXIT_SUCCESS;
