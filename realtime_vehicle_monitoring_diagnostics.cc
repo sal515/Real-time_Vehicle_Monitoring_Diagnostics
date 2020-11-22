@@ -124,6 +124,12 @@ int main(int argc, char *argv[])
 	// // Task task = Task();
 	// // task.task_type = PERIODIC;
 
+
+	
+
+
+
+	/* Testing timer timeout */
 	int res;
 
 	//set and activate a timer
