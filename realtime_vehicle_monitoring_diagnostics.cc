@@ -24,89 +24,38 @@
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
-#define ONE_THOUSAND 1000
-#define ONE_MILLION 1000000
-/* offset and period are in microsends. */
-#define OFFSET 1000000
-#define PERIOD 5000000
+#define TIMER_10_MS (10000000)
+#define ONE_MILLION (1000000)
 
 /* Rotates in 4294967295 ~1.6months */
 volatile unsigned timer_storage;
 
-// sig_atomic_t signal_count;
-
-sigset_t sigst;
-struct itimerspec timer_spec;
-struct sigevent sigev;
 timer_t timer;
+sigset_t sigst;
+struct sigevent sigev;
+struct itimerspec timer_spec;
 
-// void handler(signo)
-// {
-// 	// static int first = 1;
-
-// 	// if (first)
-// 	// {
-// 	// 	first = 0;
-// 	// 	kill(getpid(), SIGUSR1); /* Prove signal masked */
-// 	// 	kill(getpid(), SIGUSR2); /* Prove signal masked */
-// 	// }
-// }
-
-void handler(int sig_number)
+void timer_usr1_handler(int sig_number)
 {
-
-	// static int first = 1;
-
-	// if (first)
-	// {
-	// 	first = 0;
-	// 	kill(getpid(), SIGUSR1); /* Prove signal masked */
-	// 	kill(getpid(), SIGUSR2); /* Prove signal masked */
-	// }
-
-	/* TODO: Need to rotate check */
-
-	atomic_add(&timer_storage, 1);
+	atomic_add(&timer_storage, TIMER_10_MS / ONE_MILLION);
 	std::cout << "Signal was raised - "
 			  << "Counter Val: " << timer_storage << " Size of unsigned " << sizeof(timer_storage) << std::endl;
 }
 
-static void wait_next_activation(void)
+int start_periodic_timer()
 {
-	int dummy;
-	/* suspend calling process until a signal is pending */
-	sigwait(&sigst, &dummy);
-
-	std::cout << " ----- Suspending Main Thread ----- " << std::endl;
-}
-
-int start_periodic_timer(uint64_t offset, int period)
-{
-	signal(SIGUSR1, handler);
+	signal(SIGUSR1, timer_usr1_handler);
 	const int signal = SIGUSR1;
 	// const int signal = SIGALRM;
 	int res;
 
-	// /* set timer parameters */
-	// // first timeout
-	// timer_spec.it_value.tv_sec = 5;
-	// timer_spec.it_value.tv_nsec = 0;
-	// // periodic timeout
-	// timer_spec.it_interval.tv_sec = 5;
-	// timer_spec.it_interval.tv_nsec = 0;
-
 	/* 10ms timeout with 1ms interval  */
 	timer_spec.it_value.tv_sec = 0;
-	timer_spec.it_value.tv_nsec = 1000000;
+	timer_spec.it_value.tv_nsec = TIMER_10_MS;
 	timer_spec.it_interval.tv_sec = 0;
-	timer_spec.it_interval.tv_nsec = 10000000;
+	timer_spec.it_interval.tv_nsec = TIMER_10_MS;
 
-	/* Example */
-	// timer_spec.it_value.tv_sec = offset / ONE_MILLION;
-	// timer_spec.it_value.tv_nsec = (offset % ONE_MILLION) * ONE_THOUSAND;
-	// timer_spec.it_interval.tv_sec = period / ONE_MILLION;
-	// timer_spec.it_interval.tv_nsec = (period % ONE_MILLION) * ONE_THOUSAND;
-
+	/* add the sigusr1 to sig set */
 	sigemptyset(&sigst);	   // initialize a signal set
 	sigaddset(&sigst, signal); // add SIGALRM to the signal set
 	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
@@ -129,30 +78,30 @@ int start_periodic_timer(uint64_t offset, int period)
 	return timer_settime(timer, 0, &timer_spec, NULL);
 }
 
-static void task_body(void)
-{
-	static int cycles = 0;
-	static uint64_t start;
-	uint64_t current;
-	struct timespec tv;
+// static void task_body(void)
+// {
+// 	static int cycles = 0;
+// 	static uint64_t start;
+// 	uint64_t current;
+// 	struct timespec tv;
 
-	if (start == 0)
-	{
-		clock_gettime(CLOCK_MONOTONIC, &tv);
-		start = tv.tv_sec * ONE_THOUSAND + tv.tv_nsec / ONE_MILLION;
-	}
+// 	if (start == 0)
+// 	{
+// 		clock_gettime(CLOCK_MONOTONIC, &tv);
+// 		start = tv.tv_sec * ONE_THOUSAND + tv.tv_nsec / ONE_MILLION;
+// 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &tv);
-	current = tv.tv_sec * ONE_THOUSAND + tv.tv_nsec / ONE_MILLION;
+// 	clock_gettime(CLOCK_MONOTONIC, &tv);
+// 	current = tv.tv_sec * ONE_THOUSAND + tv.tv_nsec / ONE_MILLION;
 
-	if (cycles > 0)
-	{
-		fprintf(stderr, "Ave interval between instances: %f millisecons\n",
-				(double)(current - start) / cycles);
-	}
+// 	if (cycles > 0)
+// 	{
+// 		fprintf(stderr, "Ave interval between instances: %f millisecons\n",
+// 				(double)(current - start) / cycles);
+// 	}
 
-	cycles++;
-}
+// 	cycles++;
+// }
 
 int main(int argc, char *argv[])
 {
@@ -165,18 +114,10 @@ int main(int argc, char *argv[])
 	// // Task task = Task();
 	// // task.task_type = PERIODIC;
 
-	// signal(SIGUSR1, handler);
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	raise(SIGUSR1);
-	// }
-	// return 0;
-
-	/* Testing timer timeout */
 	int res;
 
 	//set and activate a timer
-	res = start_periodic_timer(OFFSET, PERIOD);
+	res = start_periodic_timer();
 	if (res < 0)
 	{
 		perror("Start periodic timer");
@@ -187,40 +128,26 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		// timer_gettime(timer, &current_time);
-		// std::cout << " ----- Before suspend Current Time ----- "
-		// 		  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
-
-		// wait_next_activation(); //wait for timer expiration
-		// // task_body(); //executes the task
-
-		// timer_gettime(timer, &current_time);
-		// std::cout << " ----- After suspend Current Time ----- "
-		// 		  << "s: " << current_time.it_value.tv_sec << " ns: " << current_time.it_value.tv_nsec << std::endl;
-
-		// std::cout << " ----- Main Thread Resumed ----- " << std::endl;
 	}
 
-	return EXIT_SUCCESS;
+	// std::vector<Task *> taskQueue;
+	// // std::vector<PeriodicTask> taskQueue;
+	// taskQueue.push_back(new PeriodicTask(10, 5));
+	// taskQueue.push_back(new PeriodicTask(500, 15));
+	// taskQueue.push_back(new PeriodicTask(2000, 25));
 
-	std::vector<Task *> taskQueue;
-	// std::vector<PeriodicTask> taskQueue;
-	taskQueue.push_back(new PeriodicTask(10, 5));
-	taskQueue.push_back(new PeriodicTask(500, 15));
-	taskQueue.push_back(new PeriodicTask(2000, 25));
+	// std::cout << "Size of Task Queue is : " << taskQueue.size() << std::endl;
 
-	std::cout << "Size of Task Queue is : " << taskQueue.size() << std::endl;
+	// int taskQueueSize = taskQueue.size();
 
-	int taskQueueSize = taskQueue.size();
-
-	for (int i = 0; i < taskQueueSize; i++)
-	{
-		/* Test Erase Periodic Tasks - Test Values */
-		Task *tempTask = taskQueue.front();
-		tempTask->debug_print();
-		taskQueue.erase(taskQueue.begin());
-		delete tempTask;
-	}
+	// for (int i = 0; i < taskQueueSize; i++)
+	// {
+	// 	/* Test Erase Periodic Tasks - Test Values */
+	// 	Task *tempTask = taskQueue.front();
+	// 	tempTask->debug_print();
+	// 	taskQueue.erase(taskQueue.begin());
+	// 	delete tempTask;
+	// }
 
 	int pause = 0;
 	return EXIT_SUCCESS;
