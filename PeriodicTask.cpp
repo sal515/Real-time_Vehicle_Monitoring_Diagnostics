@@ -49,6 +49,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 		std::cout << "PeriodicTask object destroyed" << std::endl;
 	}
 
+	PeriodicTask::PeriodicTask(const PeriodicTask &periodicTask)
+	{
+		this->phase = periodicTask.phase;
+		this->period = periodicTask.period;
+		this->executed_time = periodicTask.executed_time;
+		this->relative_deadline = periodicTask.relative_deadline;
+		this->executed_time = periodicTask.executed_time;
+		this->task_type = periodicTask.task_type;
+
+	}
+
 	void PeriodicTask::debug_print()
 	{
 		std::cout << "________________________________" << std::endl;

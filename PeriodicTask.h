@@ -19,6 +19,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		PeriodicTask();
 		PeriodicTask(long period, long execution_time, long relative_deadline = -1, long phase = 0);
 
+		PeriodicTask(const PeriodicTask &periodicTask);
+
 		virtual ~PeriodicTask();
 
 		void debug_print();
