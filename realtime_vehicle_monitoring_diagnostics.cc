@@ -11,6 +11,9 @@
 /* TODO: TEST INCLUDES */
 #include <vector>
 
+#include <stdint.h>
+#include <atomic.h>
+
 #include <sys/time.h>
 #include <signal.h>
 #include <time.h>
@@ -26,6 +29,11 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 /* offset and period are in microsends. */
 #define OFFSET 1000000
 #define PERIOD 5000000
+
+/* Rotates in 4294967295 ~1.6months */
+volatile unsigned timer_storage;
+
+// sig_atomic_t signal_count;
 
 sigset_t sigst;
 struct itimerspec timer_spec;
@@ -46,6 +54,7 @@ timer_t timer;
 
 void handler(int sig_number)
 {
+
 	// static int first = 1;
 
 	// if (first)
@@ -55,7 +64,11 @@ void handler(int sig_number)
 	// 	kill(getpid(), SIGUSR2); /* Prove signal masked */
 	// }
 
-	std::cout << "Signal was raised" << std::endl;
+	/* TODO: Need to rotate check */
+
+	atomic_add(&timer_storage, 1);
+	std::cout << "Signal was raised - "
+			  << "Counter Val: " << timer_storage << " Size of unsigned " << sizeof(timer_storage) << std::endl;
 }
 
 static void wait_next_activation(void)
@@ -74,19 +87,19 @@ int start_periodic_timer(uint64_t offset, int period)
 	// const int signal = SIGALRM;
 	int res;
 
-	/* set timer parameters */
-	// first timeout
-	timer_spec.it_value.tv_sec = 5;
-	timer_spec.it_value.tv_nsec = 0;
-	// periodic timeout
-	timer_spec.it_interval.tv_sec = 5;
-	timer_spec.it_interval.tv_nsec = 0;
+	// /* set timer parameters */
+	// // first timeout
+	// timer_spec.it_value.tv_sec = 5;
+	// timer_spec.it_value.tv_nsec = 0;
+	// // periodic timeout
+	// timer_spec.it_interval.tv_sec = 5;
+	// timer_spec.it_interval.tv_nsec = 0;
 
 	/* 10ms timeout with 1ms interval  */
-	// timer_spec.it_value.tv_sec = 0;
-	// timer_spec.it_value.tv_nsec = 1000000;
-	// timer_spec.it_interval.tv_sec = 0;
-	// timer_spec.it_interval.tv_nsec = 10000000;
+	timer_spec.it_value.tv_sec = 0;
+	timer_spec.it_value.tv_nsec = 1000000;
+	timer_spec.it_interval.tv_sec = 0;
+	timer_spec.it_interval.tv_nsec = 10000000;
 
 	/* Example */
 	// timer_spec.it_value.tv_sec = offset / ONE_MILLION;
