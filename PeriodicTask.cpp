@@ -57,7 +57,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->relative_deadline = periodicTask.relative_deadline;
 		this->executed_time = periodicTask.executed_time;
 		this->task_type = periodicTask.task_type;
-
 	}
 
 	void PeriodicTask::debug_print()
