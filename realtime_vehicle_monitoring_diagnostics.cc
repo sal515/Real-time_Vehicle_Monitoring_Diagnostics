@@ -10,6 +10,7 @@
 
 /* TODO: TEST INCLUDES */
 #include <vector>
+#include <queue>
 
 #include <stdint.h>
 #include <atomic.h>
@@ -23,6 +24,23 @@
 #include <stdio.h>
 
 using namespace realtime_vehicle_monitoring_diagnostics;
+
+// This is the comparison function for the Priority Queue
+struct compareTasksDeadline
+{
+	// bool operator()(Task* const &t1, Task* const &t2)
+	bool operator()(Task *const t1, Task *const t2)
+	{
+		// return "true" if "p1" is ordered before "p2", for example:
+		// return t1.executed_time > t2.executed_time;
+		// return t1->executed_time > t2->executed_time;
+		// return static_cast<PeriodicTask *>(t1)->period < static_cast<PeriodicTask *>(t2)->period;
+
+		switch 
+
+		return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
+	}
+};
 
 #define TIMER_10_MS_IN_NS (10000000)
 #define ONE_MILLION (1000000)
@@ -41,6 +59,10 @@ struct itimerspec timer_spec;
 /* TODO: Should be a priority Queue */
 std::vector<Task *> runningQueue;
 std::vector<PeriodicTask> periodicTasks;
+
+// std::priority_queue<Task *, std::vector<Task *>, compareTasksDeadline> runningQueue_;
+// std::priority_queue<Task, std::vector<Task>, compareTasksDeadline> runningQueue_;
+std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, compareTasksDeadline> runningQueue_;
 
 void timer_usr1_handler(int sig_number)
 {
@@ -81,7 +103,7 @@ int start_periodic_timer(int period_ns)
 
 	if (res < 0)
 	{
-		perror("Timer Create");
+		perror("Timer Create Failed\n");
 		exit(-1);
 	}
 
@@ -146,6 +168,37 @@ int start_periodic_timer(int period_ns)
 int main(int argc, char *argv[])
 {
 
+	// runningQueue_.push(PeriodicTask(2000, 25));
+	// runningQueue_.push(PeriodicTask(500, 15));
+	// runningQueue_.push(PeriodicTask(10, 5));
+	// runningQueue_.push(PeriodicTask(13, 900));
+
+	runningQueue_.push(new PeriodicTask(500, 15));
+	runningQueue_.push(new PeriodicTask(10, 5));
+	runningQueue_.push(new PeriodicTask(2000, 25));
+	runningQueue_.push(new PeriodicTask(13, 900));
+
+	std::cout << "-----------Size:" << std::endl;
+	std::cout << "-----------Size:" << runningQueue_.size() << std::endl;
+
+	int size = runningQueue_.size();
+	for (int i = 0; i < size; i++)
+	{
+		PeriodicTask *t = runningQueue_.top();
+		runningQueue_.pop();
+		// std::cout << "task executed time" << t->executed_time << std::endl;
+		std::cout << "task executed time: " << t->period << std::endl;
+		delete t;
+	}
+	// t = runningQueue_.pop();
+	// std::cout << t.executed_time << std::endl;
+	// t = runningQueue_.pop();
+	// std::cout << t.executed_time << std::endl;
+	// t = runningQueue_.pop();
+	// std::cout << t.executed_time << std::endl;
+
+	return 0;
+
 	// DatasetManager ds_manager_obj = DatasetManager();
 	// Scheduler scheduler_obj = Scheduler();
 	// //	Thread thread_manager_obj = Thread();
@@ -157,12 +210,12 @@ int main(int argc, char *argv[])
 
 	/* Initialize Periodic Tasks */
 	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	// Scheduler.add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME));
-	// Scheduler.add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME));
-	// Scheduler.add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME));
-	// Scheduler.add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME));
-	// Scheduler.add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME));
-	// Scheduler.add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME));
+	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME), &periodicTasks);
+	// Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME), &periodicTasks);
+	// Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);
+	// Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME), &periodicTasks);
+	// Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME), &periodicTasks);
+	// Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);
 
 	int res;
 

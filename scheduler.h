@@ -25,18 +25,22 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// static std::vector<Task *> runningQueue;
 		// static std::vector<PeriodicTask> periodicTasks;
 		// static std::vector<Task> otherTasks;
+
 		/* TODO: Figure out if we have queues with ascending sorting */
+
 		// void init();
-		void generate_tasks();
+		// void generate_tasks();
 		// void create_a_task();
+
 		void check_task_deadlines();
 		void update_task_priority();
 
-		static void add_periodic_task(PeriodicTask perodicTask, std::vector<PeriodicTask> *perodicTasks);
 		static void remove_periodic_task();
-
-		static void release_update(unsigned timer_storage, std::vector<PeriodicTask> *perodicTasks, std::vector<Task *> *runningQueue);
-
+		static void add_periodic_task(PeriodicTask perodicTask,
+									  std::vector<PeriodicTask> *perodicTasks);
+		static void release_update(unsigned timer_storage,
+								   std::vector<PeriodicTask> *perodicTasks,
+								   std::vector<Task *> *runningQueue);
 		static int get_running_queue_size(std::vector<Task *> *runningQueue);
 		static int get_periodic_tasks_size(std::vector<PeriodicTask> *perodicTasks);
 	};

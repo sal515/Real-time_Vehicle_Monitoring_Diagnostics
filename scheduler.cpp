@@ -28,17 +28,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 		perodicTasks->push_back(perodicTask);
 	}
 
-	void Scheduler::release_update(unsigned timer_storage, std::vector<PeriodicTask> *perodicTasks, std::vector<Task *> *runningQueue)
+	void Scheduler::release_update(unsigned timer_storage,
+								   std::vector<PeriodicTask> *perodicTasks,
+								   std::vector<Task *> *runningQueue)
 	{
-
 		int periodicTasksSize = perodicTasks->size();
 		for (int i = 0; i < periodicTasksSize; i++)
 		{
 			if (timer_storage % perodicTasks->at(i).period == 0)
 			{
-				//				/* TODO: Update with priority queue */
-				// PeriodicTask p = new PeriodicTask( perodicTasks->at(i));
-				// runningQueue->push_back(p);
 				runningQueue->push_back(new PeriodicTask(perodicTasks->at(i)));
 			}
 		}
