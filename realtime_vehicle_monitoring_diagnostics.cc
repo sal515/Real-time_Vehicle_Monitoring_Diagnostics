@@ -26,19 +26,17 @@
 using namespace realtime_vehicle_monitoring_diagnostics;
 
 // This is the comparison function for the Priority Queue
-struct compareTasksDeadline
+struct comparePeriodicTasks
 {
-	// bool operator()(Task* const &t1, Task* const &t2)
-	bool operator()(Task *const t1, Task *const t2)
+	// bool operator()(Task *const t1, Task *const t2)
+	// {
+	// return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
+	// }
+
+	bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
 	{
 		// return "true" if "p1" is ordered before "p2", for example:
-		// return t1.executed_time > t2.executed_time;
-		// return t1->executed_time > t2->executed_time;
-		// return static_cast<PeriodicTask *>(t1)->period < static_cast<PeriodicTask *>(t2)->period;
-
-		switch 
-
-		return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
+		return t1->period > t2->period;
 	}
 };
 
@@ -60,15 +58,21 @@ struct itimerspec timer_spec;
 std::vector<Task *> runningQueue;
 std::vector<PeriodicTask> periodicTasks;
 
-// std::priority_queue<Task *, std::vector<Task *>, compareTasksDeadline> runningQueue_;
-// std::priority_queue<Task, std::vector<Task>, compareTasksDeadline> runningQueue_;
-std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, compareTasksDeadline> runningQueue_;
+// std::priority_queue<Task *, std::vector<Task *>, comparePeriodicTasks> periodicRunningQueue;
+// std::priority_queue<Task, std::vector<Task>, comparePeriodicTasks> periodicRunningQueue;
+
+std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
 
 void timer_usr1_handler(int sig_number)
 {
 	atomic_add(&timer_storage, TIMER_10_MS_IN_NS / ONE_MILLION);
+
 	std::cout << "Signal was raised - "
-			  << "Counter Val: " << timer_storage << " Size of unsigned " << sizeof(timer_storage) << std::endl;
+			  << "Counter Val: "
+			  << timer_storage
+			  << " Size of unsigned "
+			  << sizeof(timer_storage)
+			  << std::endl;
 
 	Scheduler::release_update(timer_storage, &periodicTasks, &runningQueue);
 
@@ -168,35 +172,23 @@ int start_periodic_timer(int period_ns)
 int main(int argc, char *argv[])
 {
 
-	// runningQueue_.push(PeriodicTask(2000, 25));
-	// runningQueue_.push(PeriodicTask(500, 15));
-	// runningQueue_.push(PeriodicTask(10, 5));
-	// runningQueue_.push(PeriodicTask(13, 900));
-
-	runningQueue_.push(new PeriodicTask(500, 15));
-	runningQueue_.push(new PeriodicTask(10, 5));
-	runningQueue_.push(new PeriodicTask(2000, 25));
-	runningQueue_.push(new PeriodicTask(13, 900));
+	periodicRunningQueue.push(new PeriodicTask(500, 15));
+	periodicRunningQueue.push(new PeriodicTask(10, 5));
+	periodicRunningQueue.push(new PeriodicTask(2000, 25));
+	periodicRunningQueue.push(new PeriodicTask(13, 900));
 
 	std::cout << "-----------Size:" << std::endl;
-	std::cout << "-----------Size:" << runningQueue_.size() << std::endl;
+	std::cout << "-----------Size:" << periodicRunningQueue.size() << std::endl;
 
-	int size = runningQueue_.size();
+	int size = periodicRunningQueue.size();
 	for (int i = 0; i < size; i++)
 	{
-		PeriodicTask *t = runningQueue_.top();
-		runningQueue_.pop();
+		PeriodicTask *t = periodicRunningQueue.top();
+		periodicRunningQueue.pop();
 		// std::cout << "task executed time" << t->executed_time << std::endl;
 		std::cout << "task executed time: " << t->period << std::endl;
 		delete t;
 	}
-	// t = runningQueue_.pop();
-	// std::cout << t.executed_time << std::endl;
-	// t = runningQueue_.pop();
-	// std::cout << t.executed_time << std::endl;
-	// t = runningQueue_.pop();
-	// std::cout << t.executed_time << std::endl;
-
 	return 0;
 
 	// DatasetManager ds_manager_obj = DatasetManager();
