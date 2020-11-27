@@ -11,6 +11,8 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
+
+
 	Scheduler::Scheduler()
 	{
 		// TODO Auto-generated constructor stub
@@ -30,26 +32,26 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Scheduler::release_update(unsigned timer_storage,
 								   std::vector<PeriodicTask> *perodicTasks,
-								   std::vector<Task *> *runningQueue)
+								   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue)
 	{
 		int periodicTasksSize = perodicTasks->size();
 		for (int i = 0; i < periodicTasksSize; i++)
 		{
 			if (timer_storage % perodicTasks->at(i).period == 0)
 			{
-				runningQueue->push_back(new PeriodicTask(perodicTasks->at(i)));
+				runningQueue->push(new PeriodicTask(perodicTasks->at(i)));
 			}
 		}
 	}
 
-	int Scheduler::get_running_queue_size(std::vector<Task *> *runningQueue)
+	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue)
 	{
 		return runningQueue->size();
 	}
 
-	int Scheduler::get_periodic_tasks_size(std::vector<PeriodicTask> *perodicTasks)
-	{
-		return perodicTasks->size();
-	}
+	// int Scheduler::get_periodic_tasks_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue)
+	// {
+	// 	return runningQueue->size();
+	// }
 
 } // namespace realtime_vehicle_monitoring_diagnostics

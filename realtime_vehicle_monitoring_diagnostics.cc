@@ -10,7 +10,6 @@
 
 /* TODO: TEST INCLUDES */
 #include <vector>
-#include <queue>
 
 #include <stdint.h>
 #include <atomic.h>
@@ -26,19 +25,19 @@
 using namespace realtime_vehicle_monitoring_diagnostics;
 
 // This is the comparison function for the Priority Queue
-struct comparePeriodicTasks
-{
-	// bool operator()(Task *const t1, Task *const t2)
-	// {
-	// return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
-	// }
+// struct comparePeriodicTasks
+// {
+// 	// bool operator()(Task *const t1, Task *const t2)
+// 	// {
+// 	// return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
+// 	// }
 
-	bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
-	{
-		// return "true" if "p1" is ordered before "p2", for example:
-		return t1->period > t2->period;
-	}
-};
+// 	bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
+// 	{
+// 		// return "true" if "p1" is ordered before "p2", for example:
+// 		return t1->period > t2->period;
+// 	}
+// };
 
 #define TIMER_10_MS_IN_NS (10000000)
 #define ONE_MILLION (1000000)
@@ -55,7 +54,7 @@ struct sigevent sigev;
 struct itimerspec timer_spec;
 
 /* TODO: Should be a priority Queue */
-std::vector<Task *> runningQueue;
+// std::vector<Task *> runningQueue;
 std::vector<PeriodicTask> periodicTasks;
 
 // std::priority_queue<Task *, std::vector<Task *>, comparePeriodicTasks> periodicRunningQueue;
@@ -63,7 +62,7 @@ std::vector<PeriodicTask> periodicTasks;
 
 std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
 
-void timer_usr1_handler(int sig_number)
+void task_release_handler(int sig_number)
 {
 	atomic_add(&timer_storage, TIMER_10_MS_IN_NS / ONE_MILLION);
 
@@ -74,16 +73,17 @@ void timer_usr1_handler(int sig_number)
 			  << sizeof(timer_storage)
 			  << std::endl;
 
-	Scheduler::release_update(timer_storage, &periodicTasks, &runningQueue);
+	Scheduler::release_update(timer_storage, &periodicTasks, &periodicRunningQueue);
 
-	std::cout << "Number of Tasks: " << Scheduler::get_running_queue_size(&runningQueue) << std::endl;
+	std::cout << "Number of Tasks: " << Scheduler::get_running_queue_size(&periodicRunningQueue) << std::endl;
 }
 
+// int start_periodic_timer(int period_ns)
 int start_periodic_timer(int period_ns)
 {
-	signal(SIGUSR1, timer_usr1_handler);
-	const int signal = SIGUSR1;
 	// const int signal = SIGALRM;
+	const int signal_val = SIGUSR1;
+	signal(signal_val, task_release_handler);
 	int res;
 
 	/* 10ms timeout with 1ms interval  */
@@ -93,14 +93,14 @@ int start_periodic_timer(int period_ns)
 	timer_spec.it_interval.tv_nsec = period_ns;
 
 	/* add the sigusr1 to sig set */
-	sigemptyset(&sigst);	   // initialize a signal set
-	sigaddset(&sigst, signal); // add SIGALRM to the signal set
+	sigemptyset(&sigst);		   // initialize a signal set
+	sigaddset(&sigst, signal_val); // add SIGALRM to the signal set
 	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
 
 	/* set the signal event a timer expiration */
 	memset(&sigev, 0, sizeof(struct sigevent));
 	sigev.sigev_notify = SIGEV_SIGNAL;
-	sigev.sigev_signo = signal;
+	sigev.sigev_signo = signal_val;
 
 	/* create timer */
 	res = timer_create(CLOCK_MONOTONIC, &sigev, &timer);
@@ -171,26 +171,28 @@ int start_periodic_timer(int period_ns)
 
 int main(int argc, char *argv[])
 {
+	/* Priority Queue Test */
+	// periodicRunningQueue.push(new PeriodicTask(500, 15));
+	// periodicRunningQueue.push(new PeriodicTask(10, 5));
+	// periodicRunningQueue.push(new PeriodicTask(2000, 25));
+	// periodicRunningQueue.push(new PeriodicTask(13, 900));
 
-	periodicRunningQueue.push(new PeriodicTask(500, 15));
-	periodicRunningQueue.push(new PeriodicTask(10, 5));
-	periodicRunningQueue.push(new PeriodicTask(2000, 25));
-	periodicRunningQueue.push(new PeriodicTask(13, 900));
+	// std::cout << "-----------Size:" << std::endl;
+	// std::cout << "-----------Size:" << periodicRunningQueue.size() << std::endl;
 
-	std::cout << "-----------Size:" << std::endl;
-	std::cout << "-----------Size:" << periodicRunningQueue.size() << std::endl;
+	// int size = periodicRunningQueue.size();
+	// for (int i = 0; i < size; i++)
+	// {
+	// 	PeriodicTask *t = periodicRunningQueue.top();
+	// 	periodicRunningQueue.pop();
+	// 	// std::cout << "task executed time" << t->executed_time << std::endl;
+	// 	std::cout << "task executed time: " << t->period << std::endl;
+	// 	delete t;
+	// }
+	// return 0;
+	/* Priority Queue Test */
 
-	int size = periodicRunningQueue.size();
-	for (int i = 0; i < size; i++)
-	{
-		PeriodicTask *t = periodicRunningQueue.top();
-		periodicRunningQueue.pop();
-		// std::cout << "task executed time" << t->executed_time << std::endl;
-		std::cout << "task executed time: " << t->period << std::endl;
-		delete t;
-	}
-	return 0;
-
+	/* Classes test */
 	// DatasetManager ds_manager_obj = DatasetManager();
 	// Scheduler scheduler_obj = Scheduler();
 	// //	Thread thread_manager_obj = Thread();
@@ -199,15 +201,16 @@ int main(int argc, char *argv[])
 	// PeriodicTask periodic_task = PeriodicTask();
 	// // Task task = Task();
 	// // task.task_type = PERIODIC;
+	/* Classes test */
 
-	/* Initialize Periodic Tasks */
-	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	// Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	// Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	// Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	// Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME), &periodicTasks);
-	// Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);
+	/* Initialize Periodic Tasks for 30000s */
+	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME), &periodicTasks);   // 3000
+	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 60
+	Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME), &periodicTasks); // 15
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 300
+	Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME), &periodicTasks); // 6
+	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 200
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 300
 
 	int res;
 
