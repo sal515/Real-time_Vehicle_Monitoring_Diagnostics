@@ -40,6 +40,7 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // };
 
 #define TIMER_10_MS_IN_NS (10000000)
+#define TIMER_1_MS_IN_NS (1000000)
 #define ONE_MILLION (1000000)
 
 #define CONSUMER_EXECUTION_TIME (1)
@@ -79,31 +80,36 @@ void task_release_handler(int sig_number)
 }
 
 // int start_periodic_timer(int period_ns)
-int start_periodic_timer(int period_ns)
+int start_periodic_timer(int period_ns,
+						 const int signal_type,
+						 itimerspec *timer_spec,
+						 sigevent *sigev,
+						 timer_t *timer,
+						 sigset_t *sigst)
 {
-	// const int signal = SIGALRM;
-	const int signal_val = SIGUSR1;
-	signal(signal_val, task_release_handler);
+	// // const int signal = SIGALRM;
+	// // const int signal_type = SIGUSR1;
+	// signal(signal_type, timer_handler);
 	int res;
 
 	/* 10ms timeout with 1ms interval  */
-	timer_spec.it_value.tv_sec = 0;
-	timer_spec.it_value.tv_nsec = period_ns;
-	timer_spec.it_interval.tv_sec = 0;
-	timer_spec.it_interval.tv_nsec = period_ns;
+	timer_spec->it_value.tv_sec = 0;
+	timer_spec->it_value.tv_nsec = period_ns;
+	timer_spec->it_interval.tv_sec = 0;
+	timer_spec->it_interval.tv_nsec = period_ns;
 
 	/* add the sigusr1 to sig set */
-	sigemptyset(&sigst);		   // initialize a signal set
-	sigaddset(&sigst, signal_val); // add SIGALRM to the signal set
+	sigemptyset(sigst);			  // initialize a signal set
+	sigaddset(sigst, signal_type); // add SIGALRM to the signal set
 	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
 
 	/* set the signal event a timer expiration */
-	memset(&sigev, 0, sizeof(struct sigevent));
-	sigev.sigev_notify = SIGEV_SIGNAL;
-	sigev.sigev_signo = signal_val;
+	memset(sigev, 0, sizeof(struct sigevent));
+	sigev->sigev_notify = SIGEV_SIGNAL;
+	sigev->sigev_signo = signal_type;
 
 	/* create timer */
-	res = timer_create(CLOCK_MONOTONIC, &sigev, &timer);
+	res = timer_create(CLOCK_MONOTONIC, sigev, timer);
 
 	if (res < 0)
 	{
@@ -112,7 +118,7 @@ int start_periodic_timer(int period_ns)
 	}
 
 	/* activate the timer */
-	return timer_settime(timer, 0, &timer_spec, NULL);
+	return timer_settime(*timer, 0, timer_spec, NULL);
 }
 
 // static void task_body(void)
@@ -214,8 +220,17 @@ int main(int argc, char *argv[])
 
 	int res;
 
+	// const int signal = SIGALRM;
+	const int signal_type = SIGUSR1;
+	signal(signal_type, task_release_handler);
+
 	//set and activate a timer
-	res = start_periodic_timer(TIMER_10_MS_IN_NS);
+	res = start_periodic_timer(TIMER_10_MS_IN_NS,
+							   signal_type,
+							   &timer_spec,
+							   &sigev,
+							   &timer,
+							   &sigst);
 	if (res < 0)
 	{
 		perror("Start periodic timer");
