@@ -24,21 +24,6 @@
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
-// This is the comparison function for the Priority Queue
-// struct comparePeriodicTasks
-// {
-// 	// bool operator()(Task *const t1, Task *const t2)
-// 	// {
-// 	// return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
-// 	// }
-
-// 	bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
-// 	{
-// 		// return "true" if "p1" is ordered before "p2", for example:
-// 		return t1->period > t2->period;
-// 	}
-// };
-
 #define TIMER_10_MS_IN_NS (10000000)
 #define TIMER_1_MS_IN_NS (1000000)
 #define ONE_MILLION (1000000)
@@ -67,16 +52,9 @@ void task_release_handler(int sig_number)
 {
 	atomic_add(&timer_storage, TIMER_10_MS_IN_NS / ONE_MILLION);
 
-	std::cout << "Signal was raised - "
-			  << "Counter Val: "
-			  << timer_storage
-			  << " Size of unsigned "
-			  << sizeof(timer_storage)
-			  << std::endl;
-
 	Scheduler::release_update(timer_storage, &periodicTasks, &periodicRunningQueue);
 
-	std::cout << "Number of Tasks: " << Scheduler::get_running_queue_size(&periodicRunningQueue) << std::endl;
+	printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicRunningQueue));
 }
 
 // int start_periodic_timer(int period_ns)
@@ -85,12 +63,9 @@ int start_periodic_timer(int period_ns,
 						 itimerspec *timer_spec,
 						 sigevent *sigev,
 						 timer_t *timer,
-						 sigset_t *sigst)
+						 sigset_t *sigst,
+						 char timer_name[])
 {
-	// // const int signal = SIGALRM;
-	// // const int signal_type = SIGUSR1;
-	// signal(signal_type, timer_handler);
-	int res;
 
 	/* 10ms timeout with 1ms interval  */
 	timer_spec->it_value.tv_sec = 0;
@@ -99,7 +74,7 @@ int start_periodic_timer(int period_ns,
 	timer_spec->it_interval.tv_nsec = period_ns;
 
 	/* add the sigusr1 to sig set */
-	sigemptyset(sigst);			  // initialize a signal set
+	sigemptyset(sigst);			   // initialize a signal set
 	sigaddset(sigst, signal_type); // add SIGALRM to the signal set
 	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
 
@@ -109,11 +84,9 @@ int start_periodic_timer(int period_ns,
 	sigev->sigev_signo = signal_type;
 
 	/* create timer */
-	res = timer_create(CLOCK_MONOTONIC, sigev, timer);
-
-	if (res < 0)
+	if (timer_create(CLOCK_MONOTONIC, sigev, timer) < 0)
 	{
-		perror("Timer Create Failed\n");
+		printf("%s - Creation Failed \n", timer_name);
 		exit(-1);
 	}
 
@@ -230,7 +203,8 @@ int main(int argc, char *argv[])
 							   &timer_spec,
 							   &sigev,
 							   &timer,
-							   &sigst);
+							   &sigst,
+							   "Task Release Timer");
 	if (res < 0)
 	{
 		perror("Start periodic timer");
@@ -241,7 +215,8 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		if (timer_storage > 30000)
+		// if (timer_storage > 30000)
+		if (timer_storage > 10)
 		{
 			return 0;
 		}

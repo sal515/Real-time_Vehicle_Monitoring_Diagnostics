@@ -16,6 +16,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 {
 	struct comparePeriodicTasks
 	{
+		// This is the comparison function for the Priority Queue
 		// bool operator()(Task *const t1, Task *const t2)
 		// {
 		// return static_cast<PeriodicTask *>(t1)->period > static_cast<PeriodicTask *>(t2)->period;
