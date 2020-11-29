@@ -43,6 +43,8 @@ std::vector<PeriodicTask> periodicTasks;
 
 std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
 
+std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicReleasedQueue;
+
 /* Function prototypes */
 void build_periodic_tasks_list();
 
@@ -51,14 +53,13 @@ void timer_timeout_handler(int sig_number)
 	/* Increment Timer Value */
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
 
-
-	Scheduler::release(timer_storage, &periodicTasks, &periodicRunningQueue);
+	Scheduler::release(timer_storage, &periodicTasks, &periodicReleasedQueue);
 
 	if (DEBUG_PRINT)
 	{
 
 		printf("At time t = : %u\n", timer_storage);
-		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicRunningQueue));
+		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicReleasedQueue));
 	}
 }
 

@@ -34,6 +34,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 								   std::vector<PeriodicTask> *periodicTasks,
 								   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue)
 	{
+		/* Release Periodic Tasks */
 		int periodicTasksSize = periodicTasks->size();
 		for (int i = 0; i < periodicTasksSize; i++)
 		{
@@ -47,6 +48,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 				}
 			}
 		}
+		/* Release Aperiodic Tasks */
+		
+		/* Release Sporatic Tasks */
 	}
 
 	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue)
