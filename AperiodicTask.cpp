@@ -7,15 +7,17 @@
 
 #include "AperiodicTask.h"
 
-namespace realtime_vehicle_monitoring_diagnostics {
+namespace realtime_vehicle_monitoring_diagnostics
+{
 
-AperiodicTask::AperiodicTask() {
-	// TODO Auto-generated constructor stub
+	AperiodicTask::AperiodicTask()
+	{
+		// TODO Auto-generated constructor stub
+	}
 
-}
+	AperiodicTask::~AperiodicTask()
+	{
+		// TODO Auto-generated destructor stub
+	}
 
-AperiodicTask::~AperiodicTask() {
-	// TODO Auto-generated destructor stub
-}
-
-}
+} // namespace realtime_vehicle_monitoring_diagnostics

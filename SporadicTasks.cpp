@@ -7,15 +7,17 @@
 
 #include "SporadicTasks.h"
 
-namespace realtime_vehicle_monitoring_diagnostics {
+namespace realtime_vehicle_monitoring_diagnostics
+{
 
-SporadicTasks::SporadicTasks() {
-	// TODO Auto-generated constructor stub
+	SporadicTasks::SporadicTasks()
+	{
+		// TODO Auto-generated constructor stub
+	}
 
-}
+	SporadicTasks::~SporadicTasks()
+	{
+		// TODO Auto-generated destructor stub
+	}
 
-SporadicTasks::~SporadicTasks() {
-	// TODO Auto-generated destructor stub
-}
-
-}
+} // namespace realtime_vehicle_monitoring_diagnostics
