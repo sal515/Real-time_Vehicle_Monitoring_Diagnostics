@@ -34,17 +34,9 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 /* Rotates in 4294967295 ~1.6months */
 volatile unsigned timer_storage;
 
-timer_t timer;
-sigset_t sigst;
-struct sigevent sigev;
-struct itimerspec timer_spec;
-
-/* TODO: Should be a priority Queue */
-// std::vector<Task *> runningQueue;
 std::vector<PeriodicTask> periodicTasks;
 
 // std::priority_queue<Task *, std::vector<Task *>, comparePeriodicTasks> periodicRunningQueue;
-// std::priority_queue<Task, std::vector<Task>, comparePeriodicTasks> periodicRunningQueue;
 
 std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
 
@@ -57,7 +49,6 @@ void task_release_handler(int sig_number)
 	printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicRunningQueue));
 }
 
-// int start_periodic_timer(int period_ns)
 int start_periodic_timer(int period_ns,
 						 const int signal_type,
 						 itimerspec *timer_spec,
@@ -67,13 +58,13 @@ int start_periodic_timer(int period_ns,
 						 char timer_name[])
 {
 
-	/* 10ms timeout with 1ms interval  */
+	/* Timer timeout settings */
 	timer_spec->it_value.tv_sec = 0;
 	timer_spec->it_value.tv_nsec = period_ns;
 	timer_spec->it_interval.tv_sec = 0;
 	timer_spec->it_interval.tv_nsec = period_ns;
 
-	/* add the sigusr1 to sig set */
+	/* add the signal to sig set */
 	sigemptyset(sigst);			   // initialize a signal set
 	sigaddset(sigst, signal_type); // add SIGALRM to the signal set
 	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
@@ -197,6 +188,11 @@ int main(int argc, char *argv[])
 	const int signal_type = SIGUSR1;
 	signal(signal_type, task_release_handler);
 
+	timer_t timer;
+	sigset_t sigst;
+	struct sigevent sigev;
+	struct itimerspec timer_spec;
+
 	//set and activate a timer
 	res = start_periodic_timer(TIMER_10_MS_IN_NS,
 							   signal_type,
@@ -215,8 +211,8 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		// if (timer_storage > 30000)
-		if (timer_storage > 10)
+		if (timer_storage > 30000)
+		// if (timer_storage > 10)
 		{
 			return 0;
 		}
