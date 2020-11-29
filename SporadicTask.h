@@ -12,11 +12,11 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	class SporadicTasks : public realtime_vehicle_monitoring_diagnostics::Task
+	class SporadicTask : public realtime_vehicle_monitoring_diagnostics::Task
 	{
 	public:
-		SporadicTasks();
-		virtual ~SporadicTasks();
+		SporadicTask();
+		virtual ~SporadicTask();
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
