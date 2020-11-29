@@ -18,7 +18,6 @@
 // #include <stdint.h>
 // #include <time.h>
 #include <stdio.h>
-#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,8 +26,9 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define DEBUG_PRINT 0
 #define DEBUG_PRINT 1
 
-// #define RUN_TIME 30000
-#define RUN_TIME 5000
+#define RUN_TIME 30000
+// #define RUN_TIME 5000
+// #define RUN_TIME 10
 
 #define TIMER_1_MS_IN_NS (1000000)
 #define TIMER_10_MS_IN_NS (10000000)
@@ -42,10 +42,10 @@ volatile unsigned timer_storage;
 std::vector<PeriodicTask> periodicTasks;
 std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
 
-void task_release_handler(int sig_number)
+void timer_timeout_handler(int sig_number)
 {
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
-	// atomic_add(&timer_storage, TIMER_10_MS_IN_NS / ONE_MILLION);
+
 	Scheduler::release(timer_storage, &periodicTasks, &periodicRunningQueue);
 
 	if (DEBUG_PRINT)
@@ -54,42 +54,6 @@ void task_release_handler(int sig_number)
 		printf("At time t = : %u\n", timer_storage);
 		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicRunningQueue));
 	}
-}
-
-int start_periodic_timer(int period_ns,
-						 const int signal_type,
-						 itimerspec *timer_spec,
-						 sigevent *sigev,
-						 timer_t *timer,
-						 sigset_t *sigst,
-						 char timer_name[])
-{
-
-	/* Timer timeout settings */
-	timer_spec->it_value.tv_sec = 0;
-	timer_spec->it_value.tv_nsec = period_ns;
-	timer_spec->it_interval.tv_sec = 0;
-	timer_spec->it_interval.tv_nsec = period_ns;
-
-	/* add the signal to sig set */
-	sigemptyset(sigst);			   // initialize a signal set
-	sigaddset(sigst, signal_type); // add SIGALRM to the signal set
-	// sigprocmask(SIG_BLOCK, &sigst, NULL); //block the signal
-
-	/* set the signal event a timer expiration */
-	memset(sigev, 0, sizeof(struct sigevent));
-	sigev->sigev_notify = SIGEV_SIGNAL;
-	sigev->sigev_signo = signal_type;
-
-	/* create timer */
-	if (timer_create(CLOCK_MONOTONIC, sigev, timer) < 0)
-	{
-		printf("%s - Creation Failed \n", timer_name);
-		exit(-1);
-	}
-
-	/* activate the timer */
-	return timer_settime(*timer, 0, timer_spec, NULL);
 }
 
 int main(int argc, char *argv[])
@@ -107,27 +71,15 @@ int main(int argc, char *argv[])
 
 	int res;
 
-	// const int signal = SIGALRM;
 	const int signal_type = SIGUSR1;
-	signal(signal_type, task_release_handler);
+	signal(signal_type, timer_timeout_handler);
 
-	timer_t timer;
-	sigset_t sigst;
-	struct sigevent sigev;
-	struct itimerspec timer_spec;
-
-	//set and activate a timer
-	// res = start_periodic_timer(TIMER_10_MS_IN_NS,
-	res = start_periodic_timer(TIMER_1_MS_IN_NS,
-							   signal_type,
-							   &timer_spec,
-							   &sigev,
-							   &timer,
-							   &sigst,
-							   "Task Release Timer");
-	if (res < 0)
+	Timer one_ms_timer = Timer(TIMER_1_MS_IN_NS,
+							   "Task Release Timer",
+							   signal_type);
+	if (one_ms_timer.start() < 0)
 	{
-		perror("Start periodic timer");
+		printf("Failed to start perioidc timer - %s", one_ms_timer.timer_name);
 		return -1;
 	}
 
