@@ -8,9 +8,10 @@
 #ifndef SCHEDULER_H_
 #define SCHEDULER_H_
 
-#include <vector>
 #include "PeriodicTask.h"
+
 #include <queue>
+#include <vector>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -31,10 +32,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	public:
 		static void add_periodic_task(PeriodicTask perodicTask,
-									  std::vector<PeriodicTask> *perodicTasks);
-		static void release_update(unsigned timer_storage,
-								   std::vector<PeriodicTask> *perodicTasks,
-								   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue);
+									  std::vector<PeriodicTask> *periodicTasks);
+		static void release(unsigned timer_storage,
+							std::vector<PeriodicTask> *periodicTasks,
+							std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue);
 		static int get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue);
 	};
 

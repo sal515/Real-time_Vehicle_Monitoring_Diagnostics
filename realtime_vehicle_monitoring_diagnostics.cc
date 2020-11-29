@@ -11,6 +11,7 @@
 // /* TODO: TEST INCLUDES */
 // #include <vector>
 // #include <stdint.h>
+#include <queue>
 #include <atomic.h>
 
 // #include <sys/time.h>
@@ -23,7 +24,12 @@
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
-#define RUN_TIME 30000
+// #define DEBUG_PRINT 0
+#define DEBUG_PRINT 1
+
+// #define RUN_TIME 30000
+#define RUN_TIME 5000
+
 #define TIMER_1_MS_IN_NS (1000000)
 #define TIMER_10_MS_IN_NS (10000000)
 #define ONE_MILLION (1000000)
@@ -38,9 +44,16 @@ std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodic
 
 void task_release_handler(int sig_number)
 {
-	atomic_add(&timer_storage, TIMER_10_MS_IN_NS / ONE_MILLION);
-	Scheduler::release_update(timer_storage, &periodicTasks, &periodicRunningQueue);
-	printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicRunningQueue));
+	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
+	// atomic_add(&timer_storage, TIMER_10_MS_IN_NS / ONE_MILLION);
+	Scheduler::release(timer_storage, &periodicTasks, &periodicRunningQueue);
+
+	if (DEBUG_PRINT)
+	{
+
+		printf("At time t = : %u\n", timer_storage);
+		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicRunningQueue));
+	}
 }
 
 int start_periodic_timer(int period_ns,
@@ -83,13 +96,14 @@ int main(int argc, char *argv[])
 {
 
 	/* Initialize Given Periodic Tasks */
-	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME), &periodicTasks);   // 3000
-	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 60
-	Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME), &periodicTasks); // 15
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 300
-	Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME), &periodicTasks); // 6
-	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 200
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME), &periodicTasks);  // 300
+	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME, "fuel_consumption"), &periodicTasks);				 // total - 3000
+	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME, "engine_speed_rpm"), &periodicTasks);				 // total - 60
+	Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME, "engine_coolant_temp"), &periodicTasks);			 // total - 15
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "current_gear"), &periodicTasks);					 // total - 300
+	Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME, "transmission_oil_temp"), &periodicTasks);			 // total - 6
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "vehicle_speed"), &periodicTasks);					 // total - 300
+	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME, "acceleration_speed_longitudinal"), &periodicTasks); // total - 200
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "indication_break_switch"), &periodicTasks);		 // total - 300
 
 	int res;
 
@@ -103,7 +117,8 @@ int main(int argc, char *argv[])
 	struct itimerspec timer_spec;
 
 	//set and activate a timer
-	res = start_periodic_timer(TIMER_10_MS_IN_NS,
+	// res = start_periodic_timer(TIMER_10_MS_IN_NS,
+	res = start_periodic_timer(TIMER_1_MS_IN_NS,
 							   signal_type,
 							   &timer_spec,
 							   &sigev,

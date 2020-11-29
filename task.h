@@ -29,6 +29,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		virtual void debug_print();
 
+		char *task_name;	 // max length of task name
+		// char task_name[100]; // max length of task name
 		TaskType task_type;
 		long executed_time;
 		Thread thread;
