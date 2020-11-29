@@ -13,15 +13,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Thread::Thread()
 	{
-		// TODO Auto-generated constructor stub
 		std::cout << "Thread object created" << std::endl;
-
 		// create_thread();
 	}
 
 	Thread::~Thread()
 	{
-		// TODO Auto-generated destructor stub
 		std::cout << "Thread object destroyed" << std::endl;
 	}
 

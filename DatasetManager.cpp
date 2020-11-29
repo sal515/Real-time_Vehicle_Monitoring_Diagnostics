@@ -13,13 +13,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	DatasetManager::DatasetManager()
 	{
-		// TODO Auto-generated constructor stub
 		std::cout << "DatasetManager object created" << std::endl;
 	}
 
 	DatasetManager::~DatasetManager()
 	{
-		// TODO Auto-generated destructor stub
 		std::cout << "DatasetManager object destroyed" << std::endl;
 	}
 

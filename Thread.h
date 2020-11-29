@@ -158,9 +158,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		void *args;
 
 	private:
-		// int create_thread(thread_info_t threadInfo);
 		int destroy_thread(pthread_t thread);
-		// void check_status_thread(thread_info_t threadInfo);
 		int change_priority_of_thread();
 	};
 

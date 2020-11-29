@@ -11,10 +11,8 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	// PeriodicTask::PeriodicTask():Task() {
 	PeriodicTask::PeriodicTask()
 	{
-		// TODO Auto-generated constructor stub
 		std::cout << "PeriodicTask object created" << std::endl;
 
 		this->phase = -1;
@@ -36,7 +34,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->executed_time = 0;
 		this->task_type = PERIODIC;
 
-		// this->last_started_time = 0;
 		if (relative_deadline == -1)
 		{
 			this->relative_deadline = period;
@@ -45,7 +42,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	PeriodicTask::~PeriodicTask()
 	{
-		// TODO Auto-generated destructor stub
 		std::cout << "PeriodicTask object destroyed" << std::endl;
 	}
 

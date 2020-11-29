@@ -11,17 +11,13 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-
-
 	Scheduler::Scheduler()
 	{
-		// TODO Auto-generated constructor stub
 		std::cout << "Scheduler object created" << std::endl;
 	}
 
 	Scheduler::~Scheduler()
 	{
-		// TODO Auto-generated destructor stub
 		std::cout << "Scheduler object destroyed" << std::endl;
 	}
 
@@ -48,10 +44,5 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		return runningQueue->size();
 	}
-
-	// int Scheduler::get_periodic_tasks_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *runningQueue)
-	// {
-	// 	return runningQueue->size();
-	// }
 
 } // namespace realtime_vehicle_monitoring_diagnostics

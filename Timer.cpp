@@ -12,10 +12,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 {
 	Timer::Timer()
 	{
-		// TODO Auto-generated constructor stub
 		std::cout << "Timer object created" << std::endl;
-
-		/* TODO: FIXME  */
 		return;
 
 		/* Create a timer */
@@ -26,7 +23,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Timer::~Timer()
 	{
-		// TODO Auto-generated destructor stub
 		std::cout << "Timer object destroyed" << std::endl;
 	}
 
