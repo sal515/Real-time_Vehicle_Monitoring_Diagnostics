@@ -40,11 +40,17 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 /* Rotates in 4294967295 ~1.6months */
 volatile unsigned timer_storage;
 std::vector<PeriodicTask> periodicTasks;
+
 std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
+
+/* Function prototypes */
+void build_periodic_tasks_list();
 
 void timer_timeout_handler(int sig_number)
 {
+	/* Increment Timer Value */
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
+
 
 	Scheduler::release(timer_storage, &periodicTasks, &periodicRunningQueue);
 
@@ -58,18 +64,9 @@ void timer_timeout_handler(int sig_number)
 
 int main(int argc, char *argv[])
 {
-
-	/* Initialize Given Periodic Tasks */
-	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME, "fuel_consumption"), &periodicTasks);				 // total - 3000
-	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME, "engine_speed_rpm"), &periodicTasks);				 // total - 60
-	Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME, "engine_coolant_temp"), &periodicTasks);			 // total - 15
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "current_gear"), &periodicTasks);					 // total - 300
-	Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME, "transmission_oil_temp"), &periodicTasks);			 // total - 6
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "vehicle_speed"), &periodicTasks);					 // total - 300
-	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME, "acceleration_speed_longitudinal"), &periodicTasks); // total - 200
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "indication_break_switch"), &periodicTasks);		 // total - 300
-
 	int res;
+
+	build_periodic_tasks_list();
 
 	const int signal_type = SIGUSR1;
 	signal(signal_type, timer_timeout_handler);
@@ -125,4 +122,17 @@ int main(int argc, char *argv[])
 
 	int pause = 0;
 	return EXIT_SUCCESS;
+}
+
+void build_periodic_tasks_list()
+{
+	/* Initialize Given Periodic Tasks */
+	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME, "fuel_consumption"), &periodicTasks);				 // total - 3000
+	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME, "engine_speed_rpm"), &periodicTasks);				 // total - 60
+	Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME, "engine_coolant_temp"), &periodicTasks);			 // total - 15
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "current_gear"), &periodicTasks);					 // total - 300
+	Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME, "transmission_oil_temp"), &periodicTasks);			 // total - 6
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "vehicle_speed"), &periodicTasks);					 // total - 300
+	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME, "acceleration_speed_longitudinal"), &periodicTasks); // total - 200
+	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "indication_break_switch"), &periodicTasks);		 // total - 300
 }
