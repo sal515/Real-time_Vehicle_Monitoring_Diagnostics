@@ -10,9 +10,14 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	AperiodicTask::AperiodicTask()
+	AperiodicTask::AperiodicTask(long execution_time, char task_name[])
 	{
-		// TODO Auto-generated constructor stub
+		this->execution_time = execution_time;
+
+		this->task_name = task_name;
+		this->task_type = APERIODIC;
+		this->executed_time = 0;
+		// this->thread = Null;
 	}
 
 	AperiodicTask::~AperiodicTask()

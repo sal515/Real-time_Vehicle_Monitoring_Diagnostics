@@ -15,8 +15,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class SporadicTask : public realtime_vehicle_monitoring_diagnostics::Task
 	{
 	public:
-		SporadicTask();
+		SporadicTask(long execution_time, char task_name[], long relative_deadline = -1);
 		virtual ~SporadicTask();
+
+		long execution_time;
+		long relative_deadline;
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

@@ -15,8 +15,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class AperiodicTask : public realtime_vehicle_monitoring_diagnostics::Task
 	{
 	public:
-		AperiodicTask();
+		AperiodicTask(long execution_time, char task_name[]);
 		virtual ~AperiodicTask();
+
+		long execution_time;
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

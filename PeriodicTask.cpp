@@ -12,36 +12,21 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-//	PeriodicTask::PeriodicTask()
-//	{
-//		std::cout << "PeriodicTask object created" << std::endl;
-//
-//		this->phase = -1;
-//		this->period = -1;
-//		this->execution_time = -1;
-//		this->relative_deadline = -1;
-//
-//		memset(task_name, '\0', sizeof(this->task_name));
-////		this->task_name = "";
-//		this->task_type = PERIODIC;
-//		this->executed_time = 0;
-//	}
-
 	PeriodicTask::PeriodicTask(long period, long execution_time, char task_name[], long relative_deadline, long phase)
 	{
 		this->phase = phase;
 		this->period = period;
 		this->execution_time = execution_time;
 		this->relative_deadline = relative_deadline;
-
-		this->task_name = task_name;
-		this->task_type = PERIODIC;
-		this->executed_time = 0;
-
 		if (relative_deadline == -1)
 		{
 			this->relative_deadline = period;
 		}
+
+		this->task_name = task_name;
+		this->task_type = PERIODIC;
+		this->executed_time = 0;
+		// this->thread = null;
 	}
 
 	PeriodicTask::~PeriodicTask()
@@ -59,6 +44,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_name = periodicTask.task_name;
 		this->task_type = periodicTask.task_type;
 		this->executed_time = periodicTask.executed_time;
+//		this->thread = PeriodicTask.thread;
 	}
 
 	void PeriodicTask::debug_print()

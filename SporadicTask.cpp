@@ -10,9 +10,15 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	SporadicTask::SporadicTask()
+	SporadicTask::SporadicTask(long execution_time, char task_name[], long relative_deadline)
 	{
-		// TODO Auto-generated constructor stub
+		this->execution_time = execution_time;
+		this->relative_deadline = relative_deadline;
+
+		this->task_name = task_name;
+		this->task_type = SPORADIC;
+		this->executed_time = 0;
+		// this->thread = null;
 	}
 
 	SporadicTask::~SporadicTask()

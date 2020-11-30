@@ -1,12 +1,14 @@
 #include <cstdlib>
 #include <iostream>
 
-// #include "Task.h"
 // #include "Thread.h"
 // #include "DatasetManager.h"
+#include "Task.h"
 #include "Timer.h"
 #include "Scheduler.h"
 #include "PeriodicTask.h"
+#include "AperiodicTask.h"
+#include "SporadicTask.h"
 
 // /* TODO: TEST INCLUDES */
 // #include <vector>
@@ -26,8 +28,8 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define DEBUG_PRINT 0
 #define DEBUG_PRINT 1
 
-#define RUN_TIME 30000
-// #define RUN_TIME 5000
+// #define RUN_TIME 30000
+#define RUN_TIME 5000
 // #define RUN_TIME 10
 
 #define TIMER_1_MS_IN_NS (1000000)
@@ -37,23 +39,32 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 #define CONSUMER_EXECUTION_TIME (1)
 #define PRODUCER_EXECUTION_TIME (1)
 
+/* Timer */
 /* Rotates in 4294967295 ~1.6months */
 volatile unsigned timer_storage;
+
+/* QUEUES */
 std::vector<PeriodicTask> periodicTasks;
 
-std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicRunningQueue;
+std::queue<Task *> runningQueue;
 
 std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> periodicReleasedQueue;
+std::queue<AperiodicTask> aperiodicReleasedQueue;
+std::priority_queue<SporadicTask *, std::vector<SporadicTask *>, compareSporadicTasks> sporadicReleasedQueue;
 
 /* Function prototypes */
 void build_periodic_tasks_list();
 
+/* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
 	/* Increment Timer Value */
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
 
-	Scheduler::release(timer_storage, &periodicTasks, &periodicReleasedQueue);
+	/* Release Periodic Tasks */
+	Scheduler::release_periodic_tasks(timer_storage,
+									  &periodicTasks,
+									  &periodicReleasedQueue);
 
 	if (DEBUG_PRINT)
 	{
@@ -90,19 +101,19 @@ int main(int argc, char *argv[])
 	}
 
 	/* Priority Queue Test */
-	// periodicRunningQueue.push(new PeriodicTask(500, 15));
-	// periodicRunningQueue.push(new PeriodicTask(10, 5));
-	// periodicRunningQueue.push(new PeriodicTask(2000, 25));
-	// periodicRunningQueue.push(new PeriodicTask(13, 900));
+	// periodicReleasedQueue.push(new PeriodicTask(500, 15));
+	// periodicReleasedQueue.push(new PeriodicTask(10, 5));
+	// periodicReleasedQueue.push(new PeriodicTask(2000, 25));
+	// periodicReleasedQueue.push(new PeriodicTask(13, 900));
 
 	// std::cout << "-----------Size:" << std::endl;
-	// std::cout << "-----------Size:" << periodicRunningQueue.size() << std::endl;
+	// std::cout << "-----------Size:" << periodicReleasedQueue.size() << std::endl;
 
-	// int size = periodicRunningQueue.size();
+	// int size = periodicReleasedQueue.size();
 	// for (int i = 0; i < size; i++)
 	// {
-	// 	PeriodicTask *t = periodicRunningQueue.top();
-	// 	periodicRunningQueue.pop();
+	// 	PeriodicTask *t = periodicReleasedQueue.top();
+	// 	periodicReleasedQueue.pop();
 	// 	// std::cout << "task executed time" << t->executed_time << std::endl;
 	// 	std::cout << "task executed time: " << t->period << std::endl;
 	// 	delete t;
