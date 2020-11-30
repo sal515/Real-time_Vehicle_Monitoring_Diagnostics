@@ -20,8 +20,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->relative_deadline = relative_deadline;
 		if (relative_deadline == -1)
 		{
-			this->relative_deadline = period;
+			this->relative_deadline = this->period;
 		}
+		this->deadline = -1;
 
 		this->task_name = task_name;
 		this->task_type = PERIODIC;
@@ -40,11 +41,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->period = periodicTask.period;
 		this->executed_time = periodicTask.executed_time;
 		this->relative_deadline = periodicTask.relative_deadline;
+		this->deadline = periodicTask.deadline;
 
 		this->task_name = periodicTask.task_name;
 		this->task_type = periodicTask.task_type;
 		this->executed_time = periodicTask.executed_time;
-//		this->thread = PeriodicTask.thread;
+		//		this->thread = PeriodicTask.thread;
 	}
 
 	void PeriodicTask::debug_print()

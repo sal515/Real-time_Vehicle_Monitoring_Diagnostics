@@ -40,7 +40,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			if (timer_storage % periodicTasks->at(i).period == 0)
 			{
-				periodicReleasedQueue->push(new PeriodicTask(periodicTasks->at(i)));
+				PeriodicTask *temp = new PeriodicTask(periodicTasks->at(i));
+				temp->deadline = timer_storage + temp->relative_deadline;
+				periodicReleasedQueue->push(temp);
 
 				if (DEBUG_PRINT)
 				{
@@ -48,9 +50,38 @@ namespace realtime_vehicle_monitoring_diagnostics
 				}
 			}
 		}
-		/* Release Aperiodic Tasks */
+	}
 
-		/* Release Sporatic Tasks */
+	/* TODO: Release Aperiodic Tasks */
+	/* TODO: Release Sporatic Tasks */
+
+	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage,
+												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue, std::queue<Task *> *runningQueue)
+	{
+		while (!runningQueue->empty())
+		{
+			Task *temp = runningQueue->front();
+
+			switch (temp->task_type)
+			{
+			case PERIODIC:
+				/* update executed time */
+				/* update deadline */
+				/* update any other times */
+				/* add the task back to the periodicReleaseQueue */
+				periodicReleasedQueue->push(static_cast<PeriodicTask *>(temp));
+				runningQueue->pop();
+				break;
+			case APERIODIC:
+				printf("WARNING: APERIODIC - NOT IMPLEMENTED");
+				break;
+			case SPORADIC:
+				printf("WARNING: SPORADIC - NOT IMPLEMENTED");
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue)

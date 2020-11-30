@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		if (timer_storage > RUN_TIME)
+		if (timer_storage == RUN_TIME)
 		{
 			return 0;
 		}

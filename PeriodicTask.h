@@ -29,6 +29,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		long period;
 		long execution_time;
 		long relative_deadline;
+		long deadline;
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
