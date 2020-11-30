@@ -13,6 +13,13 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
+	enum Priority
+	{
+		HIGH,
+		MED,
+		LOW
+
+	};
 
 	enum TaskType
 	{
@@ -29,10 +36,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		virtual void debug_print();
 
-		char *task_name;	 // max length of task name
+		char *task_name; // max length of task name
 		// char task_name[100]; // max length of task name
 		TaskType task_type;
+		long last_start_time;
 		long executed_time;
+		long priority;
 		Thread thread;
 	};
 

@@ -18,6 +18,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_name = task_name;
 		this->task_type = SPORADIC;
 		this->executed_time = 0;
+		this->priority = LOW;
 		// this->thread = null;
 	}
 

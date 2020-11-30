@@ -58,6 +58,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage,
 												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue, std::queue<Task *> *runningQueue)
 	{
+		/* Update executed time */
 		while (!runningQueue->empty())
 		{
 			Task *temp = runningQueue->front();
@@ -66,8 +67,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 			case PERIODIC:
 				/* update executed time */
-				/* update deadline */
-				/* update any other times */
+				temp->executed_time += timer_storage - temp->last_start_time;
+				/* TODO: Update priority */
 				/* add the task back to the periodicReleaseQueue */
 				periodicReleasedQueue->push(static_cast<PeriodicTask *>(temp));
 				runningQueue->pop();
@@ -82,6 +83,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 				break;
 			}
 		}
+
+		/* Pop tasks from priority queue and set highest priority */
+		
+	
 	}
 
 	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue)

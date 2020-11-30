@@ -27,12 +27,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_name = task_name;
 		this->task_type = PERIODIC;
 		this->executed_time = 0;
+		this->priority = LOW;
 		// this->thread = null;
 	}
 
 	PeriodicTask::~PeriodicTask()
 	{
-		std::cout << "PeriodicTask object destroyed" << std::endl;
+		// std::cout << "PeriodicTask object destroyed" << std::endl;
 	}
 
 	PeriodicTask::PeriodicTask(const PeriodicTask &periodicTask)
@@ -46,6 +47,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_name = periodicTask.task_name;
 		this->task_type = periodicTask.task_type;
 		this->executed_time = periodicTask.executed_time;
+		this->priority = LOW;
 		//		this->thread = PeriodicTask.thread;
 	}
 
@@ -61,6 +63,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		std::cout << "Executed_time is: " << this->executed_time << std::endl;
 		std::cout << "Task_type is: " << this->task_type << std::endl;
 		std::cout << "Relative_deadline is: " << this->relative_deadline << std::endl;
+		std::cout << "Deadline is: " << this->deadline << std::endl;
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics
