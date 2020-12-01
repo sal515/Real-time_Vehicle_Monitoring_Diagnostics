@@ -147,7 +147,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 	public:
 		Thread();
-		Thread(start_routine_t start_routine);
+		Thread(start_routine_t start_routine, int sched_priority, char *thread_name);
 		// Thread(pthread_t thread,
 		// 	   pthread_attr_t attr,
 		// 	   start_routine_t start_routine,

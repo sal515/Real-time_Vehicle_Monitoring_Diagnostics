@@ -23,7 +23,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// std::cout << "Thread object destroyed" << std::endl;
 	}
 
-	Thread::Thread(start_routine_t start_routine)
+	Thread::Thread(start_routine_t start_routine, int sched_priority, char *thread_name)
 	{
 		/* 
 		pthread_create (NULL, NULL, new_thread, (void *) 123);
@@ -50,7 +50,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 
 		/* set priority */
-		this->params.sched_priority = THREAD_IDLE_PRIORITY;
+		// this->params.sched_priority = THREAD_IDLE_PRIORITY;
+		this->params.sched_priority = sched_priority;
 
 		// this->params.sched_ss_low_priority = MY_LOW_PRIORITY;
 		// memcpy(&this->params.sched_ss_init_budget, &MY_INIT_BUDGET,
@@ -77,9 +78,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		if (pthread_create(&this->thread,
 						   &this->attr,
 						   this->start_routine,
-						   NULL) != EOK)
+						   thread_name) != EOK)
 		{
-			printf("ERROR: Thread Creation failed");
+			printf("ERROR: Thread Creation failed\n");
 			return;
 		}
 

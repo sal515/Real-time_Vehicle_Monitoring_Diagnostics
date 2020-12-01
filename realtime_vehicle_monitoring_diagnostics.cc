@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-// #include "Thread.h"
+#include "Thread.h"
 // #include "DatasetManager.h"
 #include "Task.h"
 #include "Timer.h"
@@ -74,8 +74,22 @@ void timer_timeout_handler(int sig_number)
 	}
 }
 
+void *test_func1(void *arg)
+{
+	printf("test func %s\n", (char *)(arg));
+}
+
 int main(int argc, char *argv[])
 {
+
+	/* TODO: TESTING THREADS PRORITY */
+	Thread t2 = Thread(test_func1, 5, "T2-P5");
+	Thread t3 = Thread(test_func1, 50, "T3-P50");
+	Thread t1 = Thread(test_func1, 1, "T1-P1");
+	Thread t4 = Thread(test_func1, 254, "T4-P254");
+	return 0;
+	/* TODO: TESTING THREADS PRORITY */
+
 	int res;
 
 	build_periodic_tasks_list();
