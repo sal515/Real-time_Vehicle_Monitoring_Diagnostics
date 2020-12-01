@@ -138,28 +138,35 @@ namespace realtime_vehicle_monitoring_diagnostics
 	 
 	  */
 
+#define THREAD_IDLE_PRIORITY (0)
+#define THREAD_IDLE_PRIORITY (255)
+
 	typedef void *(*start_routine_t)(void *);
 
 	class Thread
 	{
 	public:
 		Thread();
-		Thread(pthread_t thread,
-			   pthread_attr_t attr,
-			   start_routine_t start_routine,
-			   void *args);
+		Thread(start_routine_t start_routine);
+		// Thread(pthread_t thread,
+		// 	   pthread_attr_t attr,
+		// 	   start_routine_t start_routine,
+		// 	   void *args);
 
 		virtual ~Thread();
 
 		pthread_t thread;
 
+		// int pthread_setschedprio( pthread_t thread, int prio );
+
 		pthread_attr_t attr;
+		struct sched_param params;
 		start_routine_t start_routine;
 		void *args;
 
-	private:
 		int destroy_thread(pthread_t thread);
 		int change_priority_of_thread();
+		// private:
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
