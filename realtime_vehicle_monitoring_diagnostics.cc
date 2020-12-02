@@ -75,27 +75,82 @@ void timer_timeout_handler(int sig_number)
 	}
 }
 
-void *test_func1(void *arg)
+volatile int data_ready = 0;
+
+void *consumer(void *arg)
 {
-	int i = 0;
-	// printf("test func %s\n", (char *)(arg));
+
+	printf("In consumer thread...\n");
 	while (1)
 	{
-		printf("test func %s -> %d\n", (char *)(arg), i++);
+		pthread_sleepon_lock();
+		while (!data_ready)
+		{
+			// WAIT
+			pthread_sleepon_wait(&data_ready);
+		}
+		// process data
+		// printf("test func %s -> %d\n", (char *)(arg), i++);
+		printf("consumer:  %s \n", (char *)(arg));
 
-//		 sleep(5);
+		data_ready = 0;
+		pthread_sleepon_unlock();
 	}
-//	pthread_exit();
+
+	// int i = 0;
+	// printf("test func %s\n", (char *)(arg));
+	// while (1)
+	// {
+	// 	while (!data_ready)
+	// 	{
+	// 		// WAIT
+	// 		pthread_sleepon_lock();
+	// 	}
+	// 	// process data
+	// 	printf("test func %s -> %d\n", (char *)(arg), i++);
+
+	// 	//		 sleep(5);
+	// }
+	//	pthread_exit();
+}
+
+void *producer(void *arg)
+{
+	printf("In producer thread  %s \n", (char *)(arg));
+	while (1)
+	{
+		sleep(1);
+		// printf("producer:  got data from h/w\n");
+		printf("producer:  %s \n", (char *)(arg));
+		// wait for interrupt from hardware here...
+		pthread_sleepon_lock();
+		data_ready = 1;
+		pthread_sleepon_signal(&data_ready);
+		pthread_sleepon_unlock();
+	}
 }
 
 int main(int argc, char *argv[])
 {
+	printf("Starting consumer/producer example...\n");
+	Thread consumer_thread = Thread(consumer, 10, "C-P10");
+	Thread producer_thread1 = Thread(producer, 60, "P-P60");
+	// Thread producer_thread2 = Thread(producer, 20, "P-P20");
+	// Thread producer_thread3 = Thread(producer, 30, "P-P30");
+	// Thread producer_thread4 = Thread(producer, 40, "P-P40");
+	// Thread producer_thread5 = Thread(producer, 50, "P-P50");
+
+	while (1)
+	{
+		// infinite wait
+	}
+	return 0;
 
 	/* TODO: TESTING THREADS PRORITY */
-	Thread t2 = Thread(test_func1, 5, "T2-P5");
-	Thread t3 = Thread(test_func1, 50, "T3-P50");
-	// Thread t1 = Thread(test_func1, 1, "T1-P1");
-	// Thread t4 = Thread(test_func1, 254, "T4-P254");
+	Thread t2 = Thread(consumer, 5, "T2-P5");
+	Thread t3 = Thread(consumer, 50, "T3-P50");
+	// Thread t1 = Thread(consumer, 1, "T1-P1");
+	// Thread t4 = Thread(consumer, 254, "T4-P254");
 	// pthread_join(t3.thread, NULL);
 	return 0;
 	/* TODO: TESTING THREADS PRORITY */
