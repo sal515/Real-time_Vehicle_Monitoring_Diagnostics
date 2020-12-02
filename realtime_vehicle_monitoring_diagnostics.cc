@@ -13,11 +13,11 @@ void *consumer(void *args)
 	printf("In consumer thread...\n");
 	while (1)
 	{
+		// while (!data_ready)
+		// {
 		pthread_mutex_lock(&mutex);
-		while (!data_ready)
-		{
-			pthread_cond_wait(&condvar, &mutex);
-		}
+		pthread_cond_wait(&condvar, &mutex);
+		// }
 		// process data
 		printf("consumer:  got data from producer\n");
 		data_ready = 0;
@@ -36,10 +36,11 @@ void *producer(void *args)
 		sleep(1);
 		printf("producer:  got data from h/w\n");
 		pthread_mutex_lock(&mutex);
-		while (data_ready)
-		{
-			pthread_cond_wait(&condvar, &mutex);
-		}
+		pthread_cond_wait(&condvar, &mutex);
+		// while (data_ready)
+		// {
+		// }
+		sleep(5);
 		data_ready = 1;
 		pthread_cond_signal(&condvar);
 		pthread_mutex_unlock(&mutex);
@@ -52,11 +53,11 @@ main()
 
 	// create the producer and consumer threads
 	pthread_create(NULL, NULL, producer, NULL);
-	pthread_create(NULL, NULL, producer, NULL);
-	pthread_create(NULL, NULL, producer, NULL);
 	pthread_create(NULL, NULL, consumer, NULL);
 
 	// let the threads run for a bit
+	sleep(10);
+	pthread_cond_signal(&condvar);
 	sleep(20);
 }
 
