@@ -138,8 +138,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 	 
 	  */
 
-#define THREAD_IDLE_PRIORITY (0)
-#define THREAD_IDLE_PRIORITY (255)
+#define THREAD_IDLE_PRIORITY (1)
+#define THREAD_IDLE_PRIORITY (60)
+
+	struct thread_synch
+	{
+		// int data_ready = 0;
+		pthread_mutex_t *mutex = PTHREAD_MUTEX_INITIALIZER;
+		pthread_cond_t condvar = PTHREAD_COND_INITIALIZER;
+	};
 
 	typedef void *(*start_routine_t)(void *);
 
