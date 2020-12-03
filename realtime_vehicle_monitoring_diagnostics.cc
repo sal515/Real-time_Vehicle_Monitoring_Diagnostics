@@ -120,41 +120,48 @@ pthread_cond_t condvar = PTHREAD_COND_INITIALIZER;
 
 void *consumer(void *args)
 {
-	printf("In consumer thread...\n");
+	printf("***Consumer Thread***\n");
 	while (1)
 	{
 		// while (!data_ready)
 		// {
 		sleep(1);
-
+		printf("Consumer: Locking\n");
 		pthread_mutex_lock(&mutex);
+		printf("Consumer: Condvar Wait Call\n");
 		pthread_cond_wait(&condvar, &mutex);
 		// }
 		// process data
-		printf("consumer:  got data from producer\n");
+		printf("Consumer: Data Processed\n");
 		data_ready = 0;
 		pthread_cond_signal(&condvar);
+		printf("Consumer: Signaled Condvar\n");
 		pthread_mutex_unlock(&mutex);
+		printf("Consumer: Unlocked\n");
 	}
 }
 
 void *producer(void *args)
 {
-	printf("In producer thread...\n");
+	printf("***Producer Thread***\n");
 	while (1)
 	{
 		// get data from hardware
 		// we'll simulate this with a sleep (1)
 		// sleep(1);
-		printf("producer:  got data from h/w\n");
+		printf("Producer: Locking\n");
 		pthread_mutex_lock(&mutex);
+		printf("Producer: Condvar Wait Call\n");
 		pthread_cond_wait(&condvar, &mutex);
 		// while (data_ready)
 		// {
 		// }
 		sleep(5);
+		printf("Producer: Data Processed\n");
 		data_ready = 1;
+		printf("Producer: Signaled Condvar\n");
 		pthread_cond_signal(&condvar);
+		printf("Producer: Unlocked\n");
 		pthread_mutex_unlock(&mutex);
 	}
 }
@@ -200,10 +207,6 @@ int main(int argc, char *argv[])
 	printf("Starting consumer/producer example...\n");
 	Thread producer_thread1 = Thread(producer, 11, "P-P60");
 	Thread consumer_thread = Thread(consumer, 10, "C-P10");
-	// Thread producer_thread2 = Thread(producer, 20, "P-P20");
-	// Thread producer_thread3 = Thread(producer, 30, "P-P30");
-	// Thread producer_thread4 = Thread(producer, 40, "P-P40");
-	// Thread producer_thread5 = Thread(producer, 50, "P-P50");
 
 	while (1)
 	{
@@ -211,17 +214,7 @@ int main(int argc, char *argv[])
 	}
 	return 0;
 
-	/* TODO: TESTING THREADS PRORITY */
-	Thread t2 = Thread(consumer, 5, "T2-P5");
-	Thread t3 = Thread(consumer, 50, "T3-P50");
-	// Thread t1 = Thread(consumer, 1, "T1-P1");
-	// Thread t4 = Thread(consumer, 254, "T4-P254");
-	// pthread_join(t3.thread, NULL);
-	return 0;
-	/* TODO: TESTING THREADS PRORITY */
-
 	int res;
-
 	build_periodic_tasks_list();
 
 	const int signal_type = SIGUSR1;
