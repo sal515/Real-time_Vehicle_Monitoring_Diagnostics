@@ -118,19 +118,27 @@ int data_ready = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condvar = PTHREAD_COND_INITIALIZER;
 
+int counter = 0;
+
 void *consumer(void *args)
 {
 	printf("***Consumer Thread***\n");
 	while (1)
 	{
-		// while (!data_ready)
+		// if (counter > 3)
 		// {
-		sleep(1);
+		// 	break;
+		// }
+		// printf("=== Counter is: %d===\n", counter);
+
 		printf("Consumer: Locking\n");
 		pthread_mutex_lock(&mutex);
-		printf("Consumer: Condvar Wait Call\n");
-		pthread_cond_wait(&condvar, &mutex);
-		// }
+		while (!data_ready)
+		{
+			// sleep(5);
+			printf("Consumer: Condvar Wait Call\n");
+			pthread_cond_wait(&condvar, &mutex);
+		}
 		// process data
 		printf("Consumer: Data Processed\n");
 		data_ready = 0;
@@ -143,26 +151,32 @@ void *consumer(void *args)
 
 void *producer(void *args)
 {
+
 	printf("***Producer Thread***\n");
 	while (1)
 	{
+		if (counter++ > 3)
+		{
+			break;
+		}
 		// get data from hardware
 		// we'll simulate this with a sleep (1)
 		// sleep(1);
 		printf("Producer: Locking\n");
 		pthread_mutex_lock(&mutex);
 		printf("Producer: Condvar Wait Call\n");
-		pthread_cond_wait(&condvar, &mutex);
-		// while (data_ready)
-		// {
-		// }
-		sleep(5);
+		while (data_ready)
+		{
+			pthread_cond_wait(&condvar, &mutex);
+		}
+		// sleep(1);
 		printf("Producer: Data Processed\n");
 		data_ready = 1;
-		printf("Producer: Signaled Condvar\n");
+		printf("=== Counter is: %d===\n", counter);
 		pthread_cond_signal(&condvar);
-		printf("Producer: Unlocked\n");
+		printf("Producer: Signaled Condvar\n");
 		pthread_mutex_unlock(&mutex);
+		printf("Producer: Unlocked\n");
 	}
 }
 
