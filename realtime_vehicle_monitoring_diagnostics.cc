@@ -51,6 +51,9 @@ int read_next_value(int task_name, unsigned int time_now_ms)
 int main()
 {
 
+//	int output = read_next_value(FUEL_CONSUMPTION, 2005);
+//	printf("%d", output);
+
 	int counter = 0;
 	std::ifstream file("data.csv");
 	if (file.is_open())
