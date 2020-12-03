@@ -183,31 +183,34 @@ int counter = 0;
 
 void *consumer(void *args)
 {
+	struct Thread_Control *thread_control = (struct Thread_Control *)(args);
+
 	printf("***Consumer Thread***\n");
 	while (1)
 	{
 		printf("Consumer: Locking\n");
-		pthread_mutex_lock(&mutex);
+		pthread_mutex_lock(&thread_control->mutex);
 		printf("Consumer: Condvar Wait Call\n");
-		pthread_cond_wait(&consumer_condvar, &mutex);
+		pthread_cond_wait(&thread_control->condvar, &thread_control->mutex);
 		printf("Consumer: Data Processed\n");
-		pthread_mutex_unlock(&mutex);
+		pthread_mutex_unlock(&thread_control->mutex);
 		printf("Consumer: Unlocked\n");
 	}
 }
 
 void *producer(void *args)
 {
+	struct Thread_Control *thread_control = (struct Thread_Control *)(args);
 
 	printf("***Producer Thread***\n");
 	while (1)
 	{
 		printf("Producer: Locking\n");
-		pthread_mutex_lock(&mutex);
+		pthread_mutex_lock(&thread_control->mutex);
 		printf("Producer: Condvar Wait Call\n");
-		pthread_cond_wait(&producer_condvar, &mutex);
+		pthread_cond_wait(&thread_control->condvar, &thread_control->mutex);
 		printf("Producer: Data Processed\n");
-		pthread_mutex_unlock(&mutex);
+		pthread_mutex_unlock(&thread_control->mutex);
 		printf("Producer: Unlocked\n");
 	}
 }
@@ -254,18 +257,30 @@ int main(int argc, char *argv[])
 	Thread producer_thread1 = Thread(producer, 11, "P-P60");
 	Thread consumer_thread = Thread(consumer, 10, "C-P10");
 
-	pthread_cond_signal(&producer_condvar);
+	printf("======First======\n");
+	// pthread_cond_signal(&producer_condvar);
+	producer_thread1.signal();
 	sleep(5);
-	pthread_cond_signal(&consumer_condvar);
+	printf("======5s======\n");
+	consumer_thread.signal();
+	// pthread_cond_signal(&consumer_condvar);
 	sleep(5);
+	printf("======5s======\n");
 
 	sleep(5);
+	printf("======5s======\n");
 	sleep(5);
+	printf("======5s======\n");
 
-	pthread_cond_signal(&producer_condvar);
+	printf("======Second======\n");
+	producer_thread1.signal();
+	// pthread_cond_signal(&producer_condvar);
 	sleep(5);
-	pthread_cond_signal(&consumer_condvar);
+	printf("======5s======\n");
+	consumer_thread.signal();
+	// pthread_cond_signal(&consumer_condvar);
 	sleep(5);
+	printf("======5s======\n");
 
 	// while (1)
 	// {

@@ -85,7 +85,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		if (pthread_create(&this->thread,
 						   &this->attr,
 						   this->start_routine,
-						   thread_name) != EOK)
+						   &this->thread_control) != EOK)
 		{
 			printf("ERROR: Thread Creation failed\n");
 			return;
