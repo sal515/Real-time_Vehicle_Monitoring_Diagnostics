@@ -143,7 +143,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	// struct thread_synch
 	// {
-	// 	// int data_ready = 0;
+	// 	int data_ready = 0;
 	// 	pthread_mutex_t *mutex = PTHREAD_MUTEX_INITIALIZER;
 	// 	pthread_cond_t condvar = PTHREAD_COND_INITIALIZER;
 	// };
@@ -154,7 +154,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 	public:
 		Thread();
-		Thread(start_routine_t start_routine, int sched_priority, char *thread_name);
+		Thread(start_routine_t start_routine,
+			   int sched_priority,
+			   char *thread_name);
 		// Thread(pthread_t thread,
 		// 	   pthread_attr_t attr,
 		// 	   start_routine_t start_routine,
