@@ -99,6 +99,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EOK
 	}
 
+	void Thread::unblock()
+	{
+		pthread_mutex_unlock(&this->thread_control.mutex);
+		printf("%s : Unlocked\n", this->thread_name);
+	}
 	void Thread::block()
 	{
 		pthread_mutex_lock(&this->thread_control.mutex);

@@ -176,6 +176,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		struct Thread_Control thread_control;
 
+		void unblock();
 		void block();
 		void signal();
 
