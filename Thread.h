@@ -141,12 +141,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 #define THREAD_IDLE_PRIORITY (1)
 #define THREAD_IDLE_PRIORITY (60)
 
-	// struct thread_synch
-	// {
-	// 	int data_ready = 0;
-	// 	pthread_mutex_t *mutex = PTHREAD_MUTEX_INITIALIZER;
-	// 	pthread_cond_t condvar = PTHREAD_COND_INITIALIZER;
-	// };
+	struct Thread_Control
+	{
+		// int data_ready = 0;
+		pthread_mutex_t mutex;
+		pthread_cond_t condvar;
+	};
 
 	typedef void *(*start_routine_t)(void *);
 
@@ -164,6 +164,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		virtual ~Thread();
 
+		char *thread_name;
 		pthread_t thread;
 
 		// int pthread_setschedprio( pthread_t thread, int prio );
@@ -172,6 +173,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 		struct sched_param params;
 		start_routine_t start_routine;
 		void *args;
+
+		// struct Thread_Control thread_control;
+		pthread_mutex_t mutex;
+		pthread_cond_t condvar;
+
+		void block();
+		void signal();
 
 		int destroy_thread(pthread_t thread);
 		int change_priority_of_thread();

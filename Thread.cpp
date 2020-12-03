@@ -23,9 +23,18 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// std::cout << "Thread object destroyed" << std::endl;
 	}
 
-	Thread::Thread(start_routine_t start_routine, int sched_priority, char *thread_name)
+	Thread::Thread(start_routine_t start_routine,
+				   int sched_priority,
+				   char *thread_name)
 	{
-		/* 
+		this->thread_name = thread_name;
+
+		// this->thread_control.mutex = PTHREAD_MUTEX_INITIALIZER;
+		// this->thread_control.condvar = PTHREAD_COND_INITIALIZER;
+		// this->mutex = PTHREAD_MUTEX_INITIALIZER;
+		// this->condvar = PTHREAD_COND_INITIALIZER;
+
+		/*
 		pthread_create (NULL, NULL, new_thread, (void *) 123);
 		 */
 
@@ -90,6 +99,23 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EFAULT
 		// EINVAL
 		// EOK
+	}
+
+	void Thread::block()
+	{
+		// pthread_mutex_lock(&this->thread_control.mutex);
+		// pthread_cond_wait(&this->thread_control.condvar, &this->thread_control.mutex);
+
+		pthread_mutex_lock(&this->mutex);
+		pthread_cond_wait(&this->condvar, &this->mutex);
+		printf("%s : Condvar Wait Call\n", this->thread_name);
+	}
+
+	void Thread::signal()
+	{
+		// pthread_cond_signal(&this->thread_control.condvar);
+		pthread_cond_signal(&this->condvar);
+		printf("%s : Signalled\n", this->thread_name);
 	}
 
 	int Thread::destroy_thread(pthread_t thread)
