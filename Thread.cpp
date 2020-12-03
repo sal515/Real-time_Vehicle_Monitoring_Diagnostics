@@ -29,10 +29,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		this->thread_name = thread_name;
 
-		// this->thread_control.mutex = PTHREAD_MUTEX_INITIALIZER;
-		// this->thread_control.condvar = PTHREAD_COND_INITIALIZER;
-		// this->mutex = PTHREAD_MUTEX_INITIALIZER;
-		// this->condvar = PTHREAD_COND_INITIALIZER;
+		pthread_mutex_init(&this->thread_control.mutex, NULL);
+		pthread_cond_init(&this->thread_control.condvar, NULL);
 
 		/*
 		pthread_create (NULL, NULL, new_thread, (void *) 123);
@@ -103,18 +101,14 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Thread::block()
 	{
-		// pthread_mutex_lock(&this->thread_control.mutex);
-		// pthread_cond_wait(&this->thread_control.condvar, &this->thread_control.mutex);
-
-		pthread_mutex_lock(&this->mutex);
-		pthread_cond_wait(&this->condvar, &this->mutex);
+		pthread_mutex_lock(&this->thread_control.mutex);
+		pthread_cond_wait(&this->thread_control.condvar, &this->thread_control.mutex);
 		printf("%s : Condvar Wait Call\n", this->thread_name);
 	}
 
 	void Thread::signal()
 	{
-		// pthread_cond_signal(&this->thread_control.condvar);
-		pthread_cond_signal(&this->condvar);
+		pthread_cond_signal(&this->thread_control.condvar);
 		printf("%s : Signalled\n", this->thread_name);
 	}
 

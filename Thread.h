@@ -174,9 +174,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		start_routine_t start_routine;
 		void *args;
 
-		// struct Thread_Control thread_control;
-		pthread_mutex_t mutex;
-		pthread_cond_t condvar;
+		struct Thread_Control thread_control;
 
 		void block();
 		void signal();
