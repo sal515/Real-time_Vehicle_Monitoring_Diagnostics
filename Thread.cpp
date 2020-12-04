@@ -9,8 +9,9 @@
 #include <iostream>
 #include <cerrno>
 #include <stdio.h>
+#include <stdlib.h>
 
-#define DEBUG_PRINT 0
+#define DEBUG_PRINT 1
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -113,6 +114,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 			printf("%s : Signalled\n", this->thread_name);
 		}
 		pthread_cond_signal(&this->thread_control.condvar);
+	}
+
+	void Thread::update_priority(int prio)
+	{
+		// int pthread_setschedprio( pthread_t thread, int prio );
+		if (pthread_setschedprio(this->thread, prio) != EOK)
+		{
+			printf("Error: Couldn't change the priority of the Thread\n");
+			/* TODO: Remove */
+			exit(-1);
+		}
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

@@ -45,8 +45,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		void block();
 		void unblock();
 
-		int update_priority(int prio);
-		// int pthread_setschedprio( pthread_t thread, int prio );
+		void update_priority(int prio);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
