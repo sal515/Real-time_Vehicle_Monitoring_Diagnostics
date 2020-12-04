@@ -40,10 +40,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 		struct sched_param params;
 		start_routine_t start_routine;
 		struct Thread_Control thread_control;
+		bool is_complete;
 
 		void signal();
 		void block();
 		void unblock();
+		void release_lock();
+		int acquire_lock();
 
 		void update_priority(int prio);
 	};

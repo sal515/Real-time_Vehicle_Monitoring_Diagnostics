@@ -37,6 +37,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				   int sched_priority,
 				   char *thread_name)
 	{
+		this->is_complete = 0;
 		this->thread_name = thread_name;
 
 		pthread_mutex_init(&this->thread_control.mutex, NULL);
@@ -89,22 +90,37 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EOK
 	}
 
-	void Thread::unblock()
+	void Thread::release_lock()
 	{
 		pthread_mutex_unlock(&this->thread_control.mutex);
 		if (DEBUG_PRINT)
 		{
-			printf("%s : Unlocked\n", this->thread_name);
+			printf("%s : Release Lock\n", this->thread_name);
 		}
 	}
+
+	int Thread::acquire_lock()
+	{
+		return pthread_mutex_lock(&this->thread_control.mutex);
+		if (DEBUG_PRINT)
+		{
+			printf("%s : Acquire Lock\n", this->thread_name);
+		}
+	}
+
 	void Thread::block()
 	{
 		if (DEBUG_PRINT)
 		{
 			printf("%s : Condvar Wait Call\n", this->thread_name);
 		}
-		pthread_mutex_lock(&this->thread_control.mutex);
+		this->acquire_lock();
 		pthread_cond_wait(&this->thread_control.condvar, &this->thread_control.mutex);
+	}
+
+	void Thread::unblock()
+	{
+		this->release_lock();
 	}
 
 	void Thread::signal()

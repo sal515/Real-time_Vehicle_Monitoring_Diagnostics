@@ -44,10 +44,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			if (timer_storage % this->periodicTasks.at(i).period == 0)
 			{
-				PeriodicTask *temp = new PeriodicTask(this->periodicTasks.at(i));
+				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));
 				/* TODO: SORT PRIORITY QUEUE BY DEADLINE */
-				temp->deadline = timer_storage + temp->relative_deadline;
-				this->periodicReleasedQueue.push(temp);
+				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
+				this->periodicReleasedQueue.push(periodic_task);
 
 				if (DEBUG_PRINT)
 				{
