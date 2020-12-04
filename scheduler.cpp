@@ -32,7 +32,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Scheduler::release_periodic_tasks(unsigned timer_storage,
 										   std::vector<PeriodicTask> *periodicTasks,
-										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue)
+										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue)
 	{
 		/* Release Periodic Tasks */
 		int periodicTasksSize = periodicTasks->size();
@@ -56,7 +56,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* TODO: Release Sporatic Tasks */
 
 	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage,
-												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue, std::queue<Task *> *runningQueue)
+												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue, std::queue<Task *> *runningQueue)
 	{
 		/* Update executed time */
 		while (!runningQueue->empty())
@@ -89,7 +89,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	
 	}
 
-	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue)
+	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue)
 	{
 		return periodicReleasedQueue->size();
 	}

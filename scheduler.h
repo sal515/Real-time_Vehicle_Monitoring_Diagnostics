@@ -17,7 +17,7 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	struct comparePeriodicTasks
+	struct Compare_Periodic_Task
 	{
 		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
 		{
@@ -26,7 +26,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	};
 
-	struct compareSporadicTasks
+	struct Compare_Sporadic_Task
 	{
 		bool operator()(SporadicTask *const t1, SporadicTask *const t2)
 		{
@@ -44,13 +44,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 	public:
 		static void release_periodic_tasks(unsigned timer_storage,
 										   std::vector<PeriodicTask> *periodicTasks,
-										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue);
+										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue);
 		static void priority_update_periodic_tasks(unsigned timer_storage,
-												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue, std::queue<Task *> *runningQueue);
+												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue, std::queue<Task *> *runningQueue);
 
 		static void add_periodic_task(PeriodicTask perodicTask,
 									  std::vector<PeriodicTask> *periodicTasks);
-		static int get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue);
+		static int get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
