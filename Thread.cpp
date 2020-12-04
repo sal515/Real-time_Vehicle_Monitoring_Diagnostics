@@ -85,7 +85,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		if (pthread_create(&this->thread,
 						   &this->attr,
 						   this->start_routine,
-						   &this->thread_control) != EOK)
+						   this) != EOK)
 		{
 			printf("ERROR: Thread Creation failed\n");
 			return;
@@ -106,15 +106,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 	}
 	void Thread::block()
 	{
+		printf("%s : Condvar Wait Call\n", this->thread_name);
 		pthread_mutex_lock(&this->thread_control.mutex);
 		pthread_cond_wait(&this->thread_control.condvar, &this->thread_control.mutex);
-		printf("%s : Condvar Wait Call\n", this->thread_name);
 	}
 
 	void Thread::signal()
 	{
-		pthread_cond_signal(&this->thread_control.condvar);
 		printf("%s : Signalled\n", this->thread_name);
+		pthread_cond_signal(&this->thread_control.condvar);
 	}
 
 	int Thread::destroy_thread(pthread_t thread)
