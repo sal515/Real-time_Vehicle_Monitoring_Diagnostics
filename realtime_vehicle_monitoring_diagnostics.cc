@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "Test.h"
 #include "Thread.h"
 #include "Task.h"
 #include "Timer.h"
@@ -73,44 +74,10 @@ void timer_timeout_handler(int sig_number);
 
 int main(int argc, char *argv[])
 {
-	// printf("Starting consumer/producer example...\n");
-	// Thread producer_thread1 = Thread(producer, 11, "P-P60");
-	// Thread consumer_thread = Thread(consumer, 10, "C-P10");
-
-	// sleep(5);
-	// printf("======5s======\n");
-	// printf("======First======\n");
-	// // pthread_cond_signal(&producer_condvar);
-	// producer_thread1.signal();
-	// sleep(5);
-	// printf("======5s======\n");
-	// consumer_thread.signal();
-	// // pthread_cond_signal(&consumer_condvar);
-	// sleep(5);
-	// printf("======5s======\n");
-
-	// sleep(5);
-	// printf("======5s======\n");
-	// sleep(5);
-	// printf("======5s======\n");
-
-	// printf("======Second======\n");
-	// producer_thread1.signal();
-	// // pthread_cond_signal(&producer_condvar);
-	// sleep(5);
-	// printf("======5s======\n");
-	// consumer_thread.signal();
-	// // pthread_cond_signal(&consumer_condvar);
-	// sleep(5);
-	// printf("======5s======\n");
-
-	// // while (1)
-	// // {
-	// // 	// infinite wait
-	// // }
+	/* TODO: Test */
+	// Test::test_thread(producer, consumer);
 	// return 0;
-
-	// Scheduler scheduler = Scheduler();
+	/* TODO: Test */
 
 	int res;
 	build_periodic_tasks_list(&scheduler);
@@ -134,38 +101,6 @@ int main(int argc, char *argv[])
 			return 0;
 		}
 	}
-
-	/* Priority Queue Test */
-	// periodicReleasedQueue.push(new PeriodicTask(500, 15));
-	// periodicReleasedQueue.push(new PeriodicTask(10, 5));
-	// periodicReleasedQueue.push(new PeriodicTask(2000, 25));
-	// periodicReleasedQueue.push(new PeriodicTask(13, 900));
-
-	// std::cout << "-----------Size:" << std::endl;
-	// std::cout << "-----------Size:" << periodicReleasedQueue.size() << std::endl;
-
-	// int size = periodicReleasedQueue.size();
-	// for (int i = 0; i < size; i++)
-	// {
-	// 	PeriodicTask *t = periodicReleasedQueue.top();
-	// 	periodicReleasedQueue.pop();
-	// 	// std::cout << "task executed time" << t->executed_time << std::endl;
-	// 	std::cout << "task executed time: " << t->period << std::endl;
-	// 	delete t;
-	// }
-	// return 0;
-	/* Priority Queue Test */
-
-	/* Classes test */
-	// DatasetManager ds_manager_obj = DatasetManager();
-	// Scheduler scheduler_obj = Scheduler();
-	// //	Thread thread_manager_obj = Thread();
-	// // Thread.create_thread();
-	// Timer timer = Timer();
-	// PeriodicTask periodic_task = PeriodicTask();
-	// // Task task = Task();
-	// // task.task_type = PERIODIC;
-	/* Classes test */
 
 	int pause = 0;
 	return EXIT_SUCCESS;
