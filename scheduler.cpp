@@ -9,7 +9,8 @@
 #include <iostream>
 #include <stdio.h>
 
-#define DEBUG_PRINT 0
+// #define DEBUG_PRINT 0
+#define DEBUG_PRINT 1
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -44,6 +45,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			if (timer_storage % this->periodicTasks.at(i).period == 0)
 			{
 				PeriodicTask *temp = new PeriodicTask(this->periodicTasks.at(i));
+				/* TODO: SORT PRIORITY QUEUE WITH DEADLINE */
 				temp->deadline = timer_storage + temp->relative_deadline;
 				this->periodicReleasedQueue.push(temp);
 
@@ -58,7 +60,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* TODO: Release Aperiodic Tasks */
 	/* TODO: Release Sporatic Tasks */
 
-	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage)
+	void Scheduler::update_priority(unsigned timer_storage)
 	{
 		/* Update executed time */
 		while (!this->runningQueue.empty())
