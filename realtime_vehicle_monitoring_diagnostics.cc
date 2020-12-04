@@ -1,58 +1,3 @@
-// volatile int data_ready = 0;
-
-// void *consumer(void *arg)
-// {
-
-// 	printf("In consumer thread...\n");
-// 	while (1)
-// 	{
-// 		pthread_sleepon_lock();
-// 		while (!data_ready)
-// 		{
-// 			// WAIT
-// 			pthread_sleepon_wait(&data_ready);
-// 		}
-// 		// process data
-// 		// printf("test func %s -> %d\n", (char *)(arg), i++);
-// 		printf("consumer:  %s \n", (char *)(arg));
-
-// 		data_ready = 0;
-// 		pthread_sleepon_unlock();
-// 	}
-
-// 	// int i = 0;
-// 	// printf("test func %s\n", (char *)(arg));
-// 	// while (1)
-// 	// {
-// 	// 	while (!data_ready)
-// 	// 	{
-// 	// 		// WAIT
-// 	// 		pthread_sleepon_lock();
-// 	// 	}
-// 	// 	// process data
-// 	// 	printf("test func %s -> %d\n", (char *)(arg), i++);
-
-// 	// 	//		 sleep(5);
-// 	// }
-// 	//	pthread_exit();
-// }
-
-// void *producer(void *arg)
-// {
-// 	printf("In producer thread  %s \n", (char *)(arg));
-// 	while (1)
-// 	{
-// 		sleep(1);
-// 		// printf("producer:  got data from h/w\n");
-// 		printf("producer:  %s \n", (char *)(arg));
-// 		// wait for interrupt from hardware here...
-// 		pthread_sleepon_lock();
-// 		data_ready = 1;
-// 		pthread_sleepon_signal(&data_ready);
-// 		pthread_sleepon_unlock();
-// 	}
-// }
-
 #include <cstdlib>
 #include <iostream>
 
@@ -108,148 +53,11 @@ std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodic
 std::queue<AperiodicTask> aperiodicReleasedQueue;
 std::priority_queue<SporadicTask *, std::vector<SporadicTask *>, compareSporadicTasks> sporadicReleasedQueue;
 
-/* consumer and producer tasks */
-
-// #include <stdio.h>
-// #include <pthread.h>
-// #include <unistd.h>
-
-int data_ready = 0;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t producer_condvar = PTHREAD_COND_INITIALIZER;
-pthread_cond_t consumer_condvar = PTHREAD_COND_INITIALIZER;
-
-int counter = 0;
-
-// void *consumer(void *args)
-// {
-// 	printf("***Consumer Thread***\n");
-// 	while (1)
-// 	{
-// 		// if (counter > 3)
-// 		// {
-// 		// 	break;
-// 		// }
-// 		// printf("=== Counter is: %d===\n", counter);
-
-// 		printf("Consumer: Locking\n");
-// 		pthread_mutex_lock(&mutex);
-// 		while (!data_ready)
-// 		{
-// 			// sleep(5);
-// 			printf("Consumer: Condvar Wait Call\n");
-// 			pthread_cond_wait(&producer_condvar, &mutex);
-// 		}
-// 		// process data
-// 		printf("Consumer: Data Processed\n");
-// 		data_ready = 0;
-// 		pthread_cond_signal(&producer_condvar);
-// 		printf("Consumer: Signaled Condvar\n");
-// 		pthread_mutex_unlock(&mutex);
-// 		printf("Consumer: Unlocked\n");
-// 	}
-// }
-
-// void *producer(void *args)
-// {
-
-// 	printf("***Producer Thread***\n");
-// 	while (1)
-// 	{
-// 		if (counter++ > 3)
-// 		{
-// 			break;
-// 		}
-// 		// get data from hardware
-// 		// we'll simulate this with a sleep (1)
-// 		// sleep(1);
-// 		printf("Producer: Locking\n");
-// 		pthread_mutex_lock(&mutex);
-// 		printf("Producer: Condvar Wait Call\n");
-// 		while (data_ready)
-// 		{
-// 			pthread_cond_wait(&producer_condvar, &mutex);
-// 		}
-// 		// sleep(1);
-// 		printf("Producer: Data Processed\n");
-// 		data_ready = 1;
-// 		printf("=== Counter is: %d===\n", counter);
-// 		pthread_cond_signal(&producer_condvar);
-// 		printf("Producer: Signaled Condvar\n");
-// 		pthread_mutex_unlock(&mutex);
-// 		printf("Producer: Unlocked\n");
-// 	}
-// }
-
-void *consumer(void *args)
-{
-	struct Thread_Control *thread_control = (struct Thread_Control *)(args);
-
-	printf("***Consumer Thread***\n");
-	while (1)
-	{
-		printf("Consumer: Locking\n");
-		pthread_mutex_lock(&thread_control->mutex);
-		printf("Consumer: Condvar Wait Call\n");
-		pthread_cond_wait(&thread_control->condvar, &thread_control->mutex);
-		printf("Consumer: Data Processed\n");
-		pthread_mutex_unlock(&thread_control->mutex);
-		printf("Consumer: Unlocked\n");
-	}
-}
-
-void *producer(void *args)
-{
-	struct Thread_Control *thread_control = (struct Thread_Control *)(args);
-
-	printf("***Producer Thread***\n");
-	while (1)
-	{
-		printf("Producer: Locking\n");
-		pthread_mutex_lock(&thread_control->mutex);
-		printf("Producer: Condvar Wait Call\n");
-		pthread_cond_wait(&thread_control->condvar, &thread_control->mutex);
-		printf("Producer: Data Processed\n");
-		pthread_mutex_unlock(&thread_control->mutex);
-		printf("Producer: Unlocked\n");
-	}
-}
-
-// main()
-// {
-// 	printf("Starting consumer/producer example...\n");
-
-// 	// create the producer and consumer threads
-// 	pthread_create(NULL, NULL, producer, NULL);
-// 	pthread_create(NULL, NULL, consumer, NULL);
-
-// 	// let the threads run for a bit
-// 	sleep(10);
-// 	pthread_cond_signal(&producer_condvar);
-// 	sleep(20);
-// }
-
 /* Function prototypes */
+void *consumer(void *args);
+void *producer(void *args);
 void build_periodic_tasks_list();
-
-/* Signal handler */
-void timer_timeout_handler(int sig_number)
-{
-	/* Increment Timer Value */
-	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
-
-	/* Release Periodic Tasks */
-	Scheduler::release_periodic_tasks(timer_storage,
-									  &periodicTasks,
-									  &periodicReleasedQueue);
-
-	if (DEBUG_PRINT)
-	{
-
-		printf("At time t = : %u\n", timer_storage);
-		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicReleasedQueue));
-	}
-}
+void timer_timeout_handler(int sig_number);
 
 int main(int argc, char *argv[])
 {
@@ -257,6 +65,8 @@ int main(int argc, char *argv[])
 	Thread producer_thread1 = Thread(producer, 11, "P-P60");
 	Thread consumer_thread = Thread(consumer, 10, "C-P10");
 
+	sleep(5);
+	printf("======5s======\n");
 	printf("======First======\n");
 	// pthread_cond_signal(&producer_condvar);
 	producer_thread1.signal();
@@ -347,6 +157,30 @@ int main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
+void *consumer(void *args)
+{
+	printf("***Consumer Thread***\n");
+	Thread *thread = (Thread *)(args);
+	while (1)
+	{
+		thread->block();
+		printf("Consumer: Data Processed\n");
+		thread->unblock();
+	}
+}
+
+void *producer(void *args)
+{
+	printf("***Producer Thread***\n");
+	Thread *thread = (Thread *)(args);
+	while (1)
+	{
+		thread->block();
+		printf("Producer: Data Processed\n");
+		thread->unblock();
+	}
+}
+
 void build_periodic_tasks_list()
 {
 	/* Initialize Given Periodic Tasks */
@@ -358,4 +192,23 @@ void build_periodic_tasks_list()
 	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "vehicle_speed"), &periodicTasks);					 // total - 300
 	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME, "acceleration_speed_longitudinal"), &periodicTasks); // total - 200
 	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "indication_break_switch"), &periodicTasks);		 // total - 300
+}
+
+/* Signal handler */
+void timer_timeout_handler(int sig_number)
+{
+	/* Increment Timer Value */
+	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
+
+	/* Release Periodic Tasks */
+	Scheduler::release_periodic_tasks(timer_storage,
+									  &periodicTasks,
+									  &periodicReleasedQueue);
+
+	if (DEBUG_PRINT)
+	{
+
+		printf("At time t = : %u\n", timer_storage);
+		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicReleasedQueue));
+	}
 }
