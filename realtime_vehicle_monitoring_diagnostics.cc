@@ -143,7 +143,7 @@ void timer_timeout_handler(int sig_number)
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
 	/* Update Priority */
-	// scheduler.update_priority()
+	// scheduler.update_executed_priority(timer_storage);
 	/* Run Tasks */
 
 	if (DEBUG_PRINT)

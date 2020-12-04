@@ -16,7 +16,6 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-
 	struct Compare_Periodic_Task
 	{
 		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
@@ -51,7 +50,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		virtual ~Scheduler();
 
 		void release_periodic_tasks(unsigned timer_storage);
-		void update_priority(unsigned timer_storage);
+		void update_executed_priority(unsigned timer_storage);
 
 		void add_periodic_task(PeriodicTask perodicTask);
 		int get_running_queue_size();
