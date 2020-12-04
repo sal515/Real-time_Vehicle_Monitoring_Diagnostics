@@ -15,12 +15,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Test::Test()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	Test::~Test()
 	{
-		// TODO Auto-generated destructor stub
 	}
 
 	void Test::test_thread(start_routine_t producer, start_routine_t consumer)

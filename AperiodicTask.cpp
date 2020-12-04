@@ -23,7 +23,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	AperiodicTask::~AperiodicTask()
 	{
-		// TODO Auto-generated destructor stub
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics
