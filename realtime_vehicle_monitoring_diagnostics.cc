@@ -86,24 +86,32 @@ void *consumer(void *args)
 {
 	printf("***Consumer Thread***\n");
 	Thread *thread = (Thread *)(args);
-	while (1)
-	{
-		thread->block();
-		printf("Consumer: Data Processed\n");
-		thread->unblock();
-	}
+	// while (1)
+	// {
+	// 	thread->is_complete = 0;
+	// 	thread->block();
+	// 	thread->is_complete = 1;
+	// 	printf("Consumer: Data Processed\n");
+	// 	thread->unblock();
+	// }
+	thread->block();
+	printf("Consumer: Data Processed\n");
+	thread->unblock();
 }
 
 void *producer(void *args)
 {
 	printf("***Producer Thread***\n");
 	Thread *thread = (Thread *)(args);
-	while (1)
-	{
-		thread->block();
-		printf("Producer: Data Processed\n");
-		thread->unblock();
-	}
+	// while (1)
+	// {
+	// 	thread->block();
+	// 	printf("Producer: Data Processed\n");
+	// 	thread->unblock();
+	// }
+	thread->block();
+	printf("Producer: Data Processed\n");
+	thread->unblock();
 }
 
 void build_periodic_tasks_list(Scheduler *scheduler)

@@ -41,6 +41,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->thread_name = thread_name;
 
 		pthread_mutex_init(&this->thread_control.mutex, NULL);
+		pthread_mutex_init(&this->thread_control.completion_mutex, NULL);
 		pthread_cond_init(&this->thread_control.condvar, NULL);
 
 		pthread_attr_init(&this->attr);
@@ -88,6 +89,25 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EFAULT
 		// EINVAL
 		// EOK
+	}
+
+	void Thread::release_completion_mutex(bool val)
+	{
+
+		pthread_mutex_unlock(&this->thread_control.completion_mutex);
+		if (DEBUG_PRINT)
+		{
+			printf("%s : release_completion_mutex\n", this->thread_name);
+		}
+	}
+
+	int Thread::acquire_completion_mutex()
+	{
+		return pthread_mutex_lock(&this->thread_control.completion_mutex);
+		if (DEBUG_PRINT)
+		{
+			printf("%s : acquire_completion_mutex \n", this->thread_name);
+		}
 	}
 
 	void Thread::release_lock()
