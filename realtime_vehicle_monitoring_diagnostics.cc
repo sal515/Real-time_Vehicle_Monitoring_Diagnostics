@@ -2,23 +2,19 @@
 #include <iostream>
 
 #include "Thread.h"
-// #include "DatasetManager.h"
 #include "Task.h"
 #include "Timer.h"
 #include "Scheduler.h"
 #include "PeriodicTask.h"
 #include "AperiodicTask.h"
 #include "SporadicTask.h"
+// #include "DatasetManager.h"
 
 // /* TODO: TEST INCLUDES */
-// #include <vector>
 // #include <stdint.h>
 #include <queue>
 #include <atomic.h>
 
-// #include <sys/time.h>
-// #include <stdint.h>
-// #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -207,7 +203,6 @@ void timer_timeout_handler(int sig_number)
 
 	if (DEBUG_PRINT)
 	{
-
 		printf("At time t = : %u\n", timer_storage);
 		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicReleasedQueue));
 	}

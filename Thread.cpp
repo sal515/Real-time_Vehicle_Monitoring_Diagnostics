@@ -15,11 +15,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 	Thread::Thread()
 	{
 		// std::cout << "Thread object created" << std::endl;
-		// create_thread();
 	}
 
 	Thread::~Thread()
 	{
+		// pthread_kill(this->thread, SIGKILL);
 		// std::cout << "Thread object destroyed" << std::endl;
 	}
 
@@ -115,15 +115,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		printf("%s : Signalled\n", this->thread_name);
 		pthread_cond_signal(&this->thread_control.condvar);
-	}
-
-	int Thread::destroy_thread(pthread_t thread)
-	{
-		// return pthread_abort(thread);
-
-		// ESRCH
-		// EOK
-		// pthread_self()
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

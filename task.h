@@ -9,7 +9,6 @@
 #define TASK_H_
 
 #include "Thread.h"
-#include <pthread.h>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -31,10 +30,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class Task
 	{
 	public:
-		Task();
-		virtual ~Task();
-
-		virtual void debug_print();
+		virtual void debug_print() = 0;
 
 		char *task_name; // max length of task name
 		// char task_name[100]; // max length of task name

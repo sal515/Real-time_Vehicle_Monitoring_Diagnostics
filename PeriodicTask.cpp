@@ -28,6 +28,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = PERIODIC;
 		this->executed_time = 0;
 		this->priority = LOW;
+		/* TODO: Setup Thread Creation */
 		// this->thread = null;
 	}
 
@@ -48,6 +49,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = periodicTask.task_type;
 		this->executed_time = periodicTask.executed_time;
 		this->priority = LOW;
+		/* TODO: Setup Thread Creation */
 		//		this->thread = PeriodicTask.thread;
 	}
 

@@ -16,7 +16,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class PeriodicTask : public realtime_vehicle_monitoring_diagnostics::Task
 	{
 	public:
-		// PeriodicTask();
 		PeriodicTask(long period, long execution_time, char task_name[], long relative_deadline = -1, long phase = 0);
 
 		PeriodicTask(const PeriodicTask &periodicTask);
