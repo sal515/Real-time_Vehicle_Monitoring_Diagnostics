@@ -23,30 +23,6 @@
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
-enum Task_Name
-{
-	FUEL_CONSUMPTION,
-	ENGINE_SPEED_RPM,
-	ENGINE_COOLANT_TEMP,
-	CURRENT_GEAR,
-	TRANSMISSION_OIL_TEMP,
-	VEHICLE_SPEED,
-	ACCELERATION_SPEED_LONGITUDINAL,
-	INDICATION_BREAK_SWITCH
-};
-
-struct Task_Info
-{
-	int fuel_consumption;
-	int engine_speed_rpm;
-	int engine_coolant_temp;
-	int current_gear;
-	int transmission_oil_temp;
-	int vehicle_speed;
-	int acceleration_speed_longitudinal;
-	int indication_break_switch;
-};
-
 // #define DEBUG_PRINT 0
 #define DEBUG_PRINT 1
 
