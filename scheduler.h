@@ -16,6 +16,7 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
+	/* TODO: FIXME - NUCLEAR -> THE SORTING SHOULD BE BASED ON DEADLINE (EDF) NOT PERIOID  */
 	struct Compare_Periodic_Task
 	{
 		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
@@ -43,6 +44,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> periodicReleasedQueue;
 
+		/* TODO: NUCLEAR NEED TO SWITCH TO PRIORITY QUEUE WITH HIGHEST D AS TOP */
 		std::queue<Task *> runningQueue;
 
 	public:

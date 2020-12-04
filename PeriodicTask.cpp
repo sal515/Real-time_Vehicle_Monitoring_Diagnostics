@@ -37,6 +37,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	PeriodicTask::~PeriodicTask()
 	{
+		/* TODO: Kill the thread if not killed */
 		if (DEBUG_PRINT)
 		{
 			printf("PeriodicTask object destroyed\n");
