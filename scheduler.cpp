@@ -7,22 +7,27 @@
 
 #include "Scheduler.h"
 #include <iostream>
-
 #include <stdio.h>
 
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
 	Scheduler::Scheduler()
 	{
-		std::cout << "Scheduler object created" << std::endl;
+		if (DEBUG_PRINT)
+		{
+			printf("Scheduler object created\n");
+		}
 	}
 
 	Scheduler::~Scheduler()
 	{
-		std::cout << "Scheduler object destroyed" << std::endl;
+		if (DEBUG_PRINT)
+		{
+			printf("Scheduler object destroyed\n");
+		}
 	}
 
 	void Scheduler::add_periodic_task(PeriodicTask perodicTask)

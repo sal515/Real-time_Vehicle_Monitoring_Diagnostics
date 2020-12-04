@@ -18,7 +18,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		if (DEBUG_PRINT)
 		{
-			std::cout << "Thread object created" << std::endl;
+			printf("Thread object created\n");
 		}
 	}
 
@@ -28,7 +28,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// pthread_kill(this->thread, SIGKILL);
 		if (DEBUG_PRINT)
 		{
-			std::cout << "Thread object destroyed" << std::endl;
+			printf("Thread object destroyed\n");
 		}
 	}
 

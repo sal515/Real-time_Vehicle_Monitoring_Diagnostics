@@ -22,7 +22,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		if (DEBUG_PRINT)
 		{
-			std::cout << "Timer object created" << std::endl;
+			printf("Timer object created\n");
 		}
 
 		this->period_ns = period_ns;
@@ -59,8 +59,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Timer::~Timer()
 	{
-		std::cout << "Timer object destroyed" << std::endl;
-
+		printf("Timer object destroyed\n");
 		/* TODO: NEEDS IMPLEMENTATION */
 	}
 
