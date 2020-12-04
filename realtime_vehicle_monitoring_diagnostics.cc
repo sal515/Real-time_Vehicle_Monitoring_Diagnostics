@@ -81,42 +81,42 @@ void timer_timeout_handler(int sig_number);
 
 int main(int argc, char *argv[])
 {
-	printf("Starting consumer/producer example...\n");
-	Thread producer_thread1 = Thread(producer, 11, "P-P60");
-	Thread consumer_thread = Thread(consumer, 10, "C-P10");
+	// printf("Starting consumer/producer example...\n");
+	// Thread producer_thread1 = Thread(producer, 11, "P-P60");
+	// Thread consumer_thread = Thread(consumer, 10, "C-P10");
 
-	sleep(5);
-	printf("======5s======\n");
-	printf("======First======\n");
-	// pthread_cond_signal(&producer_condvar);
-	producer_thread1.signal();
-	sleep(5);
-	printf("======5s======\n");
-	consumer_thread.signal();
-	// pthread_cond_signal(&consumer_condvar);
-	sleep(5);
-	printf("======5s======\n");
+	// sleep(5);
+	// printf("======5s======\n");
+	// printf("======First======\n");
+	// // pthread_cond_signal(&producer_condvar);
+	// producer_thread1.signal();
+	// sleep(5);
+	// printf("======5s======\n");
+	// consumer_thread.signal();
+	// // pthread_cond_signal(&consumer_condvar);
+	// sleep(5);
+	// printf("======5s======\n");
 
-	sleep(5);
-	printf("======5s======\n");
-	sleep(5);
-	printf("======5s======\n");
+	// sleep(5);
+	// printf("======5s======\n");
+	// sleep(5);
+	// printf("======5s======\n");
 
-	printf("======Second======\n");
-	producer_thread1.signal();
-	// pthread_cond_signal(&producer_condvar);
-	sleep(5);
-	printf("======5s======\n");
-	consumer_thread.signal();
-	// pthread_cond_signal(&consumer_condvar);
-	sleep(5);
-	printf("======5s======\n");
+	// printf("======Second======\n");
+	// producer_thread1.signal();
+	// // pthread_cond_signal(&producer_condvar);
+	// sleep(5);
+	// printf("======5s======\n");
+	// consumer_thread.signal();
+	// // pthread_cond_signal(&consumer_condvar);
+	// sleep(5);
+	// printf("======5s======\n");
 
-	// while (1)
-	// {
-	// 	// infinite wait
-	// }
-	return 0;
+	// // while (1)
+	// // {
+	// // 	// infinite wait
+	// // }
+	// return 0;
 
 	int res;
 	build_periodic_tasks_list();
@@ -230,4 +230,9 @@ void timer_timeout_handler(int sig_number)
 		printf("At time t = : %u\n", timer_storage);
 		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicReleasedQueue));
 	}
+
+	/* Update Priority */
+	/* Update Running Queue */
+	/* Update Update Execution Time */
+	/* Update Run Tasks */
 }
