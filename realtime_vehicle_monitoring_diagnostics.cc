@@ -71,8 +71,10 @@ Scheduler scheduler = Scheduler();
 
 std::queue<Task *> runningQueue;
 
-std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> periodicReleasedQueue;
+// std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> periodicReleasedQueue;
+
 std::queue<AperiodicTask> aperiodicReleasedQueue;
+
 std::priority_queue<SporadicTask *, std::vector<SporadicTask *>, Compare_Sporadic_Task> sporadicReleasedQueue;
 
 /* Function prototypes */
@@ -240,13 +242,12 @@ void timer_timeout_handler(int sig_number)
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
 
 	/* Release Periodic Tasks */
-	scheduler.release_periodic_tasks(timer_storage,
-									 &periodicReleasedQueue);
+	scheduler.release_periodic_tasks(timer_storage);
 
 	if (DEBUG_PRINT)
 	{
 		printf("At time t = : %u\n", timer_storage);
-		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size(&periodicReleasedQueue));
+		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size());
 	}
 
 	/* Update Priority */

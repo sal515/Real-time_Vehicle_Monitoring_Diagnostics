@@ -30,8 +30,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->periodicTasks.push_back(perodicTask);
 	}
 
-	void Scheduler::release_periodic_tasks(unsigned timer_storage,
-										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue)
+	void Scheduler::release_periodic_tasks(unsigned timer_storage)
 	{
 		/* Release Periodic Tasks */
 		int periodicTasksSize = this->periodicTasks.size();
@@ -41,7 +40,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 				PeriodicTask *temp = new PeriodicTask(this->periodicTasks.at(i));
 				temp->deadline = timer_storage + temp->relative_deadline;
-				periodicReleasedQueue->push(temp);
+				this->periodicReleasedQueue.push(temp);
 
 				if (DEBUG_PRINT)
 				{
@@ -69,7 +68,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				temp->executed_time += timer_storage - temp->last_start_time;
 				/* TODO: Update priority */
 				/* add the task back to the periodicReleaseQueue */
-				periodicReleasedQueue->push(static_cast<PeriodicTask *>(temp));
+				this->periodicReleasedQueue.push(static_cast<PeriodicTask *>(temp));
 				runningQueue->pop();
 				break;
 			case APERIODIC:
@@ -84,11 +83,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 
 		/* Pop tasks from priority queue and set highest priority */
-		}
+	}
 
-	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue)
+	int Scheduler::get_running_queue_size()
 	{
-		return periodicReleasedQueue->size();
+		return this->periodicReleasedQueue.size();
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics
