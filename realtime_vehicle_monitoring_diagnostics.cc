@@ -64,8 +64,10 @@ struct Task_Info
 /* Rotates in 4294967295 ~1.6months */
 volatile unsigned timer_storage;
 
+Scheduler scheduler = Scheduler();
+
 /* QUEUES */
-std::vector<PeriodicTask> periodicTasks;
+// std::vector<PeriodicTask> periodicTasks;
 
 std::queue<Task *> runningQueue;
 
@@ -76,7 +78,7 @@ std::priority_queue<SporadicTask *, std::vector<SporadicTask *>, Compare_Sporadi
 /* Function prototypes */
 void *consumer(void *args);
 void *producer(void *args);
-void build_periodic_tasks_list();
+void build_periodic_tasks_list(Scheduler *scheduler);
 void timer_timeout_handler(int sig_number);
 
 int main(int argc, char *argv[])
@@ -118,8 +120,10 @@ int main(int argc, char *argv[])
 	// // }
 	// return 0;
 
+	// Scheduler scheduler = Scheduler();
+
 	int res;
-	build_periodic_tasks_list();
+	build_periodic_tasks_list(&scheduler);
 
 	const int signal_type = SIGUSR1;
 	signal(signal_type, timer_timeout_handler);
@@ -201,17 +205,32 @@ void *producer(void *args)
 	}
 }
 
-void build_periodic_tasks_list()
+void build_periodic_tasks_list(Scheduler *scheduler)
 {
 	/* Initialize Given Periodic Tasks */
-	Scheduler::add_periodic_task(PeriodicTask(10, PRODUCER_EXECUTION_TIME, "fuel_consumption"), &periodicTasks);				 // total - 3000
-	Scheduler::add_periodic_task(PeriodicTask(500, PRODUCER_EXECUTION_TIME, "engine_speed_rpm"), &periodicTasks);				 // total - 60
-	Scheduler::add_periodic_task(PeriodicTask(2000, PRODUCER_EXECUTION_TIME, "engine_coolant_temp"), &periodicTasks);			 // total - 15
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "current_gear"), &periodicTasks);					 // total - 300
-	Scheduler::add_periodic_task(PeriodicTask(5000, PRODUCER_EXECUTION_TIME, "transmission_oil_temp"), &periodicTasks);			 // total - 6
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "vehicle_speed"), &periodicTasks);					 // total - 300
-	Scheduler::add_periodic_task(PeriodicTask(150, PRODUCER_EXECUTION_TIME, "acceleration_speed_longitudinal"), &periodicTasks); // total - 200
-	Scheduler::add_periodic_task(PeriodicTask(100, PRODUCER_EXECUTION_TIME, "indication_break_switch"), &periodicTasks);		 // total - 300
+	scheduler->add_periodic_task(PeriodicTask(10,
+											  PRODUCER_EXECUTION_TIME,
+											  "fuel_consumption")); // total - 3000
+	scheduler->add_periodic_task(PeriodicTask(500,
+											  PRODUCER_EXECUTION_TIME,
+											  "engine_speed_rpm")); // total - 60
+	scheduler->add_periodic_task(PeriodicTask(2000,
+											  PRODUCER_EXECUTION_TIME,
+											  "engine_coolant_temp")); // total - 15
+	scheduler->add_periodic_task(PeriodicTask(100,
+											  PRODUCER_EXECUTION_TIME, "current_gear")); // total - 300
+	scheduler->add_periodic_task(PeriodicTask(5000,
+											  PRODUCER_EXECUTION_TIME,
+											  "transmission_oil_temp")); // total - 6
+	scheduler->add_periodic_task(PeriodicTask(100,
+											  PRODUCER_EXECUTION_TIME,
+											  "vehicle_speed")); // total - 300
+	scheduler->add_periodic_task(PeriodicTask(150,
+											  PRODUCER_EXECUTION_TIME,
+											  "acceleration_speed_longitudinal")); // total - 200
+	scheduler->add_periodic_task(PeriodicTask(100,
+											  PRODUCER_EXECUTION_TIME,
+											  "indication_break_switch")); // total - 300
 }
 
 /* Signal handler */
@@ -221,14 +240,13 @@ void timer_timeout_handler(int sig_number)
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
 
 	/* Release Periodic Tasks */
-	Scheduler::release_periodic_tasks(timer_storage,
-									  &periodicTasks,
-									  &periodicReleasedQueue);
+	scheduler.release_periodic_tasks(timer_storage,
+									 &periodicReleasedQueue);
 
 	if (DEBUG_PRINT)
 	{
 		printf("At time t = : %u\n", timer_storage);
-		printf("Number of Tasks: %u\n", Scheduler::get_running_queue_size(&periodicReleasedQueue));
+		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size(&periodicReleasedQueue));
 	}
 
 	/* Update Priority */

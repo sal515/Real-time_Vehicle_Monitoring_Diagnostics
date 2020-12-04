@@ -38,18 +38,18 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class Scheduler
 	{
 	private:
+		std::vector<PeriodicTask> periodicTasks;
+
+	public:
 		Scheduler(); // initializatin of a Scheduler
 		virtual ~Scheduler();
 
-	public:
-		static void release_periodic_tasks(unsigned timer_storage,
-										   std::vector<PeriodicTask> *periodicTasks,
-										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue);
+		void release_periodic_tasks(unsigned timer_storage,
+									std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue);
 		static void priority_update_periodic_tasks(unsigned timer_storage,
 												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue, std::queue<Task *> *runningQueue);
 
-		static void add_periodic_task(PeriodicTask perodicTask,
-									  std::vector<PeriodicTask> *periodicTasks);
+		void add_periodic_task(PeriodicTask perodicTask);
 		static int get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue);
 	};
 
