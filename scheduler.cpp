@@ -53,13 +53,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* TODO: Release Aperiodic Tasks */
 	/* TODO: Release Sporatic Tasks */
 
-	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage,
-												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> *periodicReleasedQueue, std::queue<Task *> *runningQueue)
+	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage)
 	{
 		/* Update executed time */
-		while (!runningQueue->empty())
+		while (!this->runningQueue.empty())
 		{
-			Task *temp = runningQueue->front();
+			Task *temp = this->runningQueue.front();
 
 			switch (temp->task_type)
 			{
@@ -69,7 +68,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				/* TODO: Update priority */
 				/* add the task back to the periodicReleaseQueue */
 				this->periodicReleasedQueue.push(static_cast<PeriodicTask *>(temp));
-				runningQueue->pop();
+				this->runningQueue.pop();
 				break;
 			case APERIODIC:
 				printf("WARNING: APERIODIC - NOT IMPLEMENTED");

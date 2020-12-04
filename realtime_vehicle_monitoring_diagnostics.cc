@@ -63,19 +63,7 @@ struct Task_Info
 /* Timer */
 /* Rotates in 4294967295 ~1.6months */
 volatile unsigned timer_storage;
-
 Scheduler scheduler = Scheduler();
-
-/* QUEUES */
-// std::vector<PeriodicTask> periodicTasks;
-
-std::queue<Task *> runningQueue;
-
-// std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> periodicReleasedQueue;
-
-std::queue<AperiodicTask> aperiodicReleasedQueue;
-
-std::priority_queue<SporadicTask *, std::vector<SporadicTask *>, Compare_Sporadic_Task> sporadicReleasedQueue;
 
 /* Function prototypes */
 void *consumer(void *args);
