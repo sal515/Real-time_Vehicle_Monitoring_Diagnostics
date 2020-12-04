@@ -13,7 +13,7 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 #define THREAD_IDLE_PRIORITY (1)
-#define THREAD_IDLE_PRIORITY (60)
+#define THREAD_RUN_PRIORITY (60)
 
 	typedef void *(*start_routine_t)(void *);
 	struct Thread_Control
@@ -43,9 +43,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		struct Thread_Control thread_control;
 		bool is_complete;
 
-		void release_completion_mutex(bool val);
+		void release_completion_mutex();
 		int acquire_completion_mutex();
-		
+
 		void signal();
 		void block();
 		void unblock();

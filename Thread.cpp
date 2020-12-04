@@ -91,7 +91,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EOK
 	}
 
-	void Thread::release_completion_mutex(bool val)
+	void Thread::release_completion_mutex()
 	{
 
 		pthread_mutex_unlock(&this->thread_control.completion_mutex);
@@ -135,11 +135,20 @@ namespace realtime_vehicle_monitoring_diagnostics
 			printf("%s : Condvar Wait Call\n", this->thread_name);
 		}
 		this->acquire_lock();
+
+		this->acquire_completion_mutex();
+		this->is_complete = 0;
+		this->release_completion_mutex();
+
 		pthread_cond_wait(&this->thread_control.condvar, &this->thread_control.mutex);
 	}
 
 	void Thread::unblock()
 	{
+		this->acquire_completion_mutex();
+		this->is_complete = 1;
+		this->release_completion_mutex();
+
 		this->release_lock();
 	}
 
@@ -157,7 +166,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// int pthread_setschedprio( pthread_t thread, int prio );
 		if (pthread_setschedprio(this->thread, prio) != EOK)
 		{
-			printf("Error: Couldn't change the priority of the Thread\n");
+			printf("Fatal Error: Couldn't change the priority of the Thread\n");
 			/* TODO: Remove */
 			exit(-1);
 		}
