@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include "Logger.h"
 
 #define DEBUG_PRINT 0
 // #define DEBUG_PRINT 1
@@ -88,6 +89,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				/* release memory */
 				delete current_running_task;
 				/* TODO: LOG: completion of task  */
+				
 				continue;
 			}
 			current_running_task->thread.release_completion_mutex();

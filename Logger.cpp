@@ -21,14 +21,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// TODO Auto-generated destructor stub
 	}
 
-	void Logger::log_task_details(Task *task)
+	void Logger::log_task_details(Task *task, char *event_string)
 	{
 		switch (task->task_type)
 		{
 		case PERIODIC:
 		{
 			PeriodicTask *task_periodic = static_cast<PeriodicTask *>(task);
-			printf("Task -> Name: %s, Period: %u, Deadline: %u, Executed Time: %u\n",
+			printf(" %s -> Name: %s, Period: %u, Deadline: %u, Executed Time: %u\n",
+				   event_string,
 				   task_periodic->task_name,
 				   task_periodic->period,
 				   task_periodic->deadline,

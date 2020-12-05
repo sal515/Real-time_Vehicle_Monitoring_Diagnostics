@@ -18,7 +18,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	public:
 		Logger();
 		virtual ~Logger();
-		static void log_task_details(Task *task);
+		static void log_task_details(Task *task, char *event_string);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
