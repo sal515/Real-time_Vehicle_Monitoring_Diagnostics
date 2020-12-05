@@ -63,49 +63,25 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Test::test_priority_queues_EDF(Scheduler *scheduler)
 	{
-		// Scheduler scheduler = Scheduler();
-
-		/* Priority Queue Test */
-		// scheduler->periodicWaitingQueue.push(new PeriodicTask(500, 15, "p500,e15"));
-		// scheduler->periodicWaitingQueue.push(new PeriodicTask(10, 5, "p10,e5"));
-		// scheduler->periodicWaitingQueue.push(new PeriodicTask(2000, 25, "p2000,e25"));
-		// scheduler->periodicWaitingQueue.push(new PeriodicTask(13, 900, "p13,e900"));
-
-		std::cout << "periodicWaitingQueue Size: "
-				  << scheduler->periodicWaitingQueue.size()
-				  << std::endl;
+		printf("periodicWaitingQueue Size: %u\n", scheduler->periodicWaitingQueue.size());
 
 		int periodicWaitingQueue_size = scheduler->periodicWaitingQueue.size();
 		for (int i = 0; i < periodicWaitingQueue_size; i++)
 		{
 			PeriodicTask *t = scheduler->periodicWaitingQueue.top();
 			scheduler->periodicWaitingQueue.pop();
-			std::cout << "Task name: "
-					  << t->task_name
-					  << " Task period:"
-					  << t->period
-					  << " Task deadline:"
-					  << t->deadline << std::endl;
-
+			Logger::log_task_details(t);
 			scheduler->periodicRunningQueue.push(t);
-			// delete t;
 		}
 
-		std::cout << "periodicRunningQueue Size: "
-				  << scheduler->periodicRunningQueue.size()
-				  << std::endl;
+		printf("periodicRunningQueue Size: %u\n", scheduler->periodicRunningQueue.size());
 
 		int periodicRunningQueue_size = scheduler->periodicRunningQueue.size();
 		for (int i = 0; i < periodicRunningQueue_size; i++)
 		{
 			PeriodicTask *t = scheduler->periodicRunningQueue.top();
 			scheduler->periodicRunningQueue.pop();
-			std::cout << "Task name: "
-					  << t->task_name
-					  << " Task period:"
-					  << t->period
-					  << " Task deadline:"
-					  << t->deadline << std::endl;
+			Logger::log_task_details(t);
 			delete t;
 		}
 	}
