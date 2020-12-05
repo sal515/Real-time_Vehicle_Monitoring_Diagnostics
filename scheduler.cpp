@@ -237,6 +237,27 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	}
 
+	void Scheduler::run_tasks()
+	{
+		int periodic_task_queue_size = this->periodicRunningQueue.size();
+
+		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
+
+		for (int i = 0; i < periodic_task_queue_size; i++)
+		{
+			PeriodicTask *running_task = this->periodicRunningQueue.top();
+			running_task->thread.signal();
+			tempRunningQueue.push(running_task);
+			this->periodicRunningQueue.pop();
+		}
+
+		for (int i = 0; i < periodic_task_queue_size; i++)
+		{
+			periodicRunningQueue.push(tempRunningQueue.top());
+			tempRunningQueue.pop();
+		}
+	}
+
 	int Scheduler::get_running_queue_size()
 	{
 		return this->periodicWaitingQueue.size();

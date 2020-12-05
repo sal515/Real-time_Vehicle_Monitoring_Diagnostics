@@ -55,11 +55,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Scheduler(); // initializatin of a Scheduler
 		virtual ~Scheduler();
 
+		void add_periodic_task(PeriodicTask perodicTask);
 		void release_periodic_tasks(unsigned timer_storage);
 		void update_executed_time(unsigned timer_storage);
 		void update_priority(unsigned timer_storage);
 		void run_tasks();
-		void add_periodic_task(PeriodicTask perodicTask);
 		int get_running_queue_size();
 	};
 
