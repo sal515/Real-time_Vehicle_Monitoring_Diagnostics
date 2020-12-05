@@ -91,6 +91,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EOK
 	}
 
+	Thread::Thread(const Thread &thread)
+	{
+		this->thread = thread.thread;
+		this->thread_name = thread.thread_name;
+		this->attr = thread.attr;
+		this->params = thread.params;
+		this->start_routine = thread.start_routine;
+		this->thread_control = thread.thread_control;
+		this->is_complete = thread.is_complete;
+	}
+
 	void Thread::release_completion_mutex()
 	{
 
