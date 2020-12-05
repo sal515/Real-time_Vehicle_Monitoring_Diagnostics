@@ -95,7 +95,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/*
 				Not Complete, Update Executed time
 			*/
-			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
 			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
 			tempRunningQueue.push(current_running_task);
 			this->periodicRunningQueue.pop();
