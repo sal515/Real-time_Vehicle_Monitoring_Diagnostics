@@ -85,19 +85,19 @@ namespace realtime_vehicle_monitoring_diagnostics
 	// };
 
 	/* Priority Queue Test */
-	// periodicReleasedQueue.push(new PeriodicTask(500, 15));
-	// periodicReleasedQueue.push(new PeriodicTask(10, 5));
-	// periodicReleasedQueue.push(new PeriodicTask(2000, 25));
-	// periodicReleasedQueue.push(new PeriodicTask(13, 900));
+	// periodicWaitingQueue.push(new PeriodicTask(500, 15));
+	// periodicWaitingQueue.push(new PeriodicTask(10, 5));
+	// periodicWaitingQueue.push(new PeriodicTask(2000, 25));
+	// periodicWaitingQueue.push(new PeriodicTask(13, 900));
 
 	// std::cout << "-----------Size:" << std::endl;
-	// std::cout << "-----------Size:" << periodicReleasedQueue.size() << std::endl;
+	// std::cout << "-----------Size:" << periodicWaitingQueue.size() << std::endl;
 
-	// int size = periodicReleasedQueue.size();
+	// int size = periodicWaitingQueue.size();
 	// for (int i = 0; i < size; i++)
 	// {
-	// 	PeriodicTask *t = periodicReleasedQueue.top();
-	// 	periodicReleasedQueue.pop();
+	// 	PeriodicTask *t = periodicWaitingQueue.top();
+	// 	periodicWaitingQueue.pop();
 	// 	// std::cout << "task executed time" << t->executed_time << std::endl;
 	// 	std::cout << "task executed time: " << t->period << std::endl;
 	// 	delete t;

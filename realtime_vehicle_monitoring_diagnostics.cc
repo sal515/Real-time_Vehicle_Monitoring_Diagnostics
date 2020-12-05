@@ -11,11 +11,9 @@
 #include "SporadicTask.h"
 // #include "DatasetManager.h"
 
-// /* TODO: TEST INCLUDES */
-// #include <stdint.h>
-#include <queue>
 #include <atomic.h>
 
+// #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,10 +48,10 @@ void timer_timeout_handler(int sig_number);
 
 int main(int argc, char *argv[])
 {
-	/* TODO: Test */
+	/* CLEAN: Test */
 	// Test::test_thread(producer, consumer);
 	// return 0;
-	/* TODO: Test */
+	/* CLEAN: Test */
 
 	int res;
 	build_periodic_tasks_list(&scheduler);
