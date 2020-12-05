@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 		if (timer_storage >= RUN_TIME)
 		{
 			/* CLEAN: Test */
-			Test::test_priority_queues_EDF(&scheduler);
+			// Test::test_priority_queues_EDF(&scheduler);
 			/* CLEAN: Test */
 
 			return 0;
@@ -207,7 +207,7 @@ void timer_timeout_handler(int sig_number)
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
 	/* Update Executed Time */
-	//  scheduler.update_executed_time(timer_storage);
+	 scheduler.update_executed_time(timer_storage);
 	/* Update Priority */
 	// scheduler.update_priority(timer_storage);
 	/* Run Tasks */

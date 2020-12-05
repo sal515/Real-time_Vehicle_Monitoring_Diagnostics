@@ -70,6 +70,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Scheduler::update_executed_time(unsigned timer_storage)
 	{
+		printf("Updating executed time at time %u\n", timer_storage);
+
 		int periodic_task_queue_size = this->periodicRunningQueue.size();
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
 
@@ -87,11 +89,19 @@ namespace realtime_vehicle_monitoring_diagnostics
 				this->periodicRunningQueue.pop();
 				current_running_task->thread.release_completion_mutex();
 
-				/* release memory */
-				delete current_running_task;
 				/* TODO: LOG: completion of task  */
 				Logger::log_task_details(current_running_task, "Completed Task");
 
+				/* If the deadline was misseed */
+				if (current_running_task->executed_time + current_running_task->released_time > current_running_task->deadline)
+				{
+
+					Logger::log_task_details(current_running_task, "?Log Deadline Missed?");
+					// exit(-1);
+				}
+
+				/* release memory */
+				delete current_running_task;
 				continue;
 			}
 			current_running_task->thread.release_completion_mutex();
@@ -99,20 +109,23 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/*
 				Not Complete, Update Executed time
 			*/
+			/* Update executed time */
 			current_running_task->executed_time = timer_storage - current_running_task->released_time;
-			tempRunningQueue.push(current_running_task);
-			this->periodicRunningQueue.pop();
 
+			/* If the executed time is greater than the execution time */
 			if (current_running_task->executed_time > current_running_task->execution_time)
 			{
+				tempRunningQueue.push(current_running_task);
+				this->periodicRunningQueue.pop();
+
 				Logger::log_task_details(current_running_task, "?Executed > Execution Time?");
-
-				printf("Executed time passed the execution time, Error in estimation of execution time?");
-
 				// exit(-1);
 			}
+			/* If the deadline was misseed */
 			if (current_running_task->executed_time + current_running_task->released_time > current_running_task->deadline)
 			{
+				this->periodicRunningQueue.pop();
+
 				Logger::log_task_details(current_running_task, "?Deadline Missed?");
 				// exit(-1);
 			}
@@ -130,6 +143,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
 
+		/* 
+			Running queue - empty 
+		*/
 		if (this->periodicRunningQueue.empty())
 		{
 			if (this->periodicWaitingQueue.empty())
@@ -140,6 +156,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			this->periodicRunningQueue.push(next_to_run_periodic_task);
 			this->periodicWaitingQueue.pop();
 
+			/* Find task with same deadline as the first one pushed to the empty running queue  */
 			bool done_flag = 0;
 			while (!done_flag)
 			{
@@ -206,6 +223,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 				/* TODO: can it be Block or kill -> current_running_task? */
 				/* Put Current_running_task to Wait */
+				/* TODO: NUCLEAR !!Can I call this?  */
 				current_running_task->thread.block();
 				/* Lower the Priority of Current_running_task*/
 				current_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
@@ -264,7 +282,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			PeriodicTask *running_task = this->periodicRunningQueue.top();
 			running_task->thread.signal();
-			// running_task->released_time = timer_storage;
 			tempRunningQueue.push(running_task);
 			this->periodicRunningQueue.pop();
 		}
