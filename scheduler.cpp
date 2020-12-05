@@ -73,18 +73,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// int running_tasks_to_pop = 0;
 		// bool found_equal_deadline_flag = 0;
 
-		std::queue<PeriodicTask *> temp_periodic_running_queue;
-
-		int waiting_tasks_to_pop = 0;
-		PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
-
 		if (this->periodicRunningQueue.empty())
 		{
+			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
 			this->periodicRunningQueue.push(next_to_release_periodic_task);
 			this->periodicWaitingQueue.pop();
 
 			bool done = 0;
-
 			while (!done)
 			{
 				PeriodicTask *next_after_next_to_release_task = this->periodicWaitingQueue.top();
@@ -108,10 +103,14 @@ namespace realtime_vehicle_monitoring_diagnostics
 			}
 		}
 
+		int waiting_tasks_to_pop = 0;
+		std::queue<PeriodicTask *> temp_periodic_running_queue;
+
+		bool done = 0;
 		while (!done)
 		{
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
-			// PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
+			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
 
 			/* Update Executed Time */
 			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
