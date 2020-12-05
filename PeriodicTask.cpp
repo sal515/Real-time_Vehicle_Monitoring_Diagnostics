@@ -29,8 +29,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		this->task_name = task_name;
 		this->task_type = PERIODIC;
+		this->released_time = 0;
 		this->executed_time = 0;
-		this->priority = LOW;
+		this->priority = THREAD_IDLE_PRIORITY;
 		/* TODO: NUCLEAR Setup Thread Creation */
 		// this->thread = null;
 	}
@@ -48,14 +49,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		this->phase = periodicTask.phase;
 		this->period = periodicTask.period;
-		this->executed_time = periodicTask.executed_time;
+		this->execution_time = periodicTask.execution_time;
 		this->relative_deadline = periodicTask.relative_deadline;
 		this->deadline = periodicTask.deadline;
 
 		this->task_name = periodicTask.task_name;
 		this->task_type = periodicTask.task_type;
+		this->released_time = periodicTask.released_time;
 		this->executed_time = periodicTask.executed_time;
-		this->priority = LOW;
+		this->priority = THREAD_IDLE_PRIORITY;
 		/* TODO: !!!!NUCLEAR Setup Thread Creation */
 		this->thread = periodicTask.thread;
 	}
