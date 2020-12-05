@@ -70,13 +70,20 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Scheduler::update_executed_time(unsigned timer_storage)
 	{
-		printf("Updating executed time at time %u\n", timer_storage);
+		// printf("Updating executed time at time %u\n", timer_storage);
+
+		if (this->periodicRunningQueue.empty())
+		{
+			printf("No running task at %u\n", timer_storage);
+			return;
+		}
 
 		int periodic_task_queue_size = this->periodicRunningQueue.size();
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
 
 		for (int i = 0; i < periodic_task_queue_size; i++)
 		{
+
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
 
 			/*
@@ -112,6 +119,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/* Update executed time */
 			current_running_task->executed_time = timer_storage - current_running_task->released_time;
 
+			Logger::log_task_details(current_running_task, "Execution Time Updated");
+
 			/* If the executed time is greater than the execution time */
 			if (current_running_task->executed_time > current_running_task->execution_time)
 			{
@@ -138,7 +147,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	}
 
-	void Scheduler::update_priority(unsigned timer_storage)
+	void Scheduler::update_priority()
 	{
 
 		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
@@ -253,7 +262,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 			this->periodicRunningQueue.push(highest_prio_waiting_task);
 			this->periodicWaitingQueue.pop();
-			
+
 			int waiting_queue_size = this->periodicWaitingQueue.size();
 			for (int i = 0; i < waiting_queue_size; i++)
 			{
@@ -273,7 +282,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	}
 
-	void Scheduler::run_tasks(unsigned timer_storage)
+	void Scheduler::run_tasks()
 	{
 		int periodic_task_queue_size = this->periodicRunningQueue.size();
 
