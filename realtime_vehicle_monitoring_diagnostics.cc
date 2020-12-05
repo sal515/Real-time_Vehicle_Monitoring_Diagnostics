@@ -26,9 +26,9 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 
 // #define RUN_TIME 30000
 // #define RUN_TIME 5000
-// #define RUN_TIME 2000
+#define RUN_TIME 2000
 // #define RUN_TIME 10
-#define RUN_TIME 11
+// #define RUN_TIME 11
 // #define RUN_TIME 5
 
 #define TIMER_1_MS_IN_NS (1000000)
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 		if (timer_storage >= RUN_TIME)
 		{
 			/* CLEAN: Test */
-			// Test::test_priority_queues_EDF(&scheduler);
+			Test::test_priority_queues_EDF(&scheduler);
 			/* CLEAN: Test */
 
 			return 0;
@@ -207,7 +207,7 @@ void timer_timeout_handler(int sig_number)
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
 	/* Update Executed Time */
-	// scheduler.update_executed_time(timer_storage);
+	//  scheduler.update_executed_time(timer_storage);
 	/* Update Priority */
 	// scheduler.update_priority(timer_storage);
 	/* Run Tasks */
