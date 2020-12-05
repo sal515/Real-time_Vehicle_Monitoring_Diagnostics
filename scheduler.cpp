@@ -42,7 +42,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 		int periodicTasksSize = this->periodicTasks.size();
 		for (int i = 0; i < periodicTasksSize; i++)
 		{
-			if (timer_storage % this->periodicTasks.at(i).period == 0)
+			if (timer_storage < this->periodicTasks.at(i).phase)
+			{
+				continue;
+			}
+
+			if ((timer_storage % this->periodicTasks.at(i).period == 0))
 			{
 
 				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));

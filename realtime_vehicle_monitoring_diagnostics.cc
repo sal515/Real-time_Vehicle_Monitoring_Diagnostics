@@ -25,9 +25,11 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define DEBUG_PRINT 1
 
 // #define RUN_TIME 30000
-#define RUN_TIME 5000
-#define RUN_TIME 2000
+// #define RUN_TIME 5000
+// #define RUN_TIME 2000
 // #define RUN_TIME 10
+#define RUN_TIME 11
+// #define RUN_TIME 5
 
 #define TIMER_1_MS_IN_NS (1000000)
 #define TIMER_10_MS_IN_NS (10000000)
@@ -38,7 +40,7 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 
 /* Timer */
 /* Rotates in 4294967295 ~1.6months */
-volatile unsigned timer_storage;
+volatile unsigned timer_storage = 0;
 Scheduler scheduler = Scheduler();
 
 /* Function prototypes */
@@ -149,8 +151,6 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
-	/* Increment Timer Value */
-	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
 
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
@@ -164,8 +164,12 @@ void timer_timeout_handler(int sig_number)
 		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size());
 	}
 
+	/* TODO */
 	/* Update Priority */
 	/* Update Running Queue */
 	/* Update Update Execution Time */
 	/* Update Run Tasks */
+
+	/* Increment Timer Value */
+	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
 }
