@@ -13,12 +13,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Logger::Logger()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	Logger::~Logger()
 	{
-		// TODO Auto-generated destructor stub
 	}
 
 	void Logger::log_task_details(Task *task, char *event_string)
