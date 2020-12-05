@@ -49,12 +49,41 @@ void *producer(void *args);
 void build_periodic_tasks_list(Scheduler *scheduler);
 void timer_timeout_handler(int sig_number);
 
+enum TASK_NAME
+{
+	FUEL_CONSUMPTION,
+	ENGINE_SPEED_RPM,
+	ENGINE_COOLANT_TEMP,
+	CURRENT_GEAR,
+	TRANSMISSION_OIL_TEMP,
+	VEHICLE_SPEED,
+	ACCELERATION_SPEED_LONGITUDINAL,
+	INDICATION_BREAK_SWITCH
+};
+
+struct PRODUCER_VALUES
+{
+	string fuel_consumption;
+	string engine_speed_rpm;
+	string engine_coolant_temp;
+	string current_gear;
+	string transmission_oil_temp;
+	string vehicle_speed;
+	string acceleration_speed_longitudinal;
+	string indication_break_switch;
+};
+
+PRODUCER_VALUES producer_buffer;
+pthread_mutex_t data_mutex;
+
 int main(int argc, char *argv[])
 {
 	/* CLEAN: Test */
 	// Test::test_thread(producer, consumer);
 	// return 0;
 	/* CLEAN: Test */
+
+	pthread_mutex_init(&data_mutex, NULL);
 
 	build_periodic_tasks_list(&scheduler);
 
@@ -98,8 +127,13 @@ void *consumer(void *args)
 	// 	printf("Consumer: Data Processed\n");
 	// 	thread->unblock();
 	// }
+	char *task_name = thread->thread_name;
 	thread->block();
+	pthread_mutex_lock(&data_mutex);
 	printf("Consumer: Data Processed\n");
+	// read from producer_buffer -> producer_buffer
+	// read_next_value(task_name, time_now_ms);
+	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 }
 
@@ -113,8 +147,14 @@ void *producer(void *args)
 	// 	printf("Producer: Data Processed\n");
 	// 	thread->unblock();
 	// }
+
+	char *task_name = thread->thread_name;
 	thread->block();
+	pthread_mutex_lock(&data_mutex);
 	printf("Producer: Data Processed\n");
+	// write to producer_buffer -> producer_buffer
+	// read_next_value(task_name, time_now_ms);
+	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 }
 
