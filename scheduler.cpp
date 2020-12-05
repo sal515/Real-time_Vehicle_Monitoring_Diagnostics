@@ -69,11 +69,16 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
 
+		// int running_tasks_to_pop = 0;
+		int waiting_tasks_to_pop = 0;
+		// bool found_equal_deadline_flag = 0;
+
 		std::queue<PeriodicTask *> temp_periodic_running_queue;
 
 		while (!this->periodicRunningQueue.empty())
 		{
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
+			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
 
 			/* Update Executed Time */
 			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
@@ -99,7 +104,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/*
 				If task is not complete and waiting
 			*/
-			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
+			if (current_running_task->deadline < next_to_release_periodic_task->deadline)
+			{
+				break;
+			}
 
 			/* TODO: Check logic - check how deadline is calculated */
 			if (current_running_task->deadline > next_to_release_periodic_task->deadline)
@@ -110,7 +118,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				current_running_task->thread.block();
 				/* Lower the Priority of Current_running_task*/
 				current_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
-				/* Add the Current_running_task Back to the Periodicreleasequeue */
+				/* Add the Current_running_task Back to the Periodic_release_queue */
 				this->periodicWaitingQueue.push(current_running_task);
 				/* Pop the Current_running_task From the Runningqueue */
 				this->periodicRunningQueue.pop();
@@ -118,16 +126,31 @@ namespace realtime_vehicle_monitoring_diagnostics
 				next_to_release_periodic_task->thread.update_priority(THREAD_RUN_PRIORITY);
 				/* Add the Next_to_release_periodic_task to the Temp_running_queue */
 				temp_periodic_running_queue.push(next_to_release_periodic_task);
+				/* Pop the waiting task From the periodicWaitingQueue */
+				waiting_tasks_to_pop++;
+			}
+
+			/* TODO: Check logic - check how deadline is calculated */
+			else if (current_running_task->deadline == next_to_release_periodic_task->deadline)
+			{
+				/* Increase the Priority of Next_to_release_periodic_task */
+				next_to_release_periodic_task->thread.update_priority(THREAD_RUN_PRIORITY);
+				/* Add the Next_to_release_periodic_task to the Temp_running_queue */
+				temp_periodic_running_queue.push(next_to_release_periodic_task);
+				/* Pop the waiting task From the periodicWaitingQueue */
+				waiting_tasks_to_pop++;
+				break;
 			}
 
 			/* TODO: Update priority based on EDF? */
 
 			/* CLEAN: Static Casting  */
 			// PeriodicTask *current_running_task = static_cast<PeriodicTask *>(current_running_task);
-
-			break;
 		}
 		/* TODO: Add all the temporary running queued task to running queu */
+		/* TODO: Pop all the tasks accoring to the counter */
+		/* Pop the Current_running_task From the Runningqueue */
+		// this->periodicRunningQueue.pop();
 	}
 
 	int Scheduler::get_running_queue_size()
