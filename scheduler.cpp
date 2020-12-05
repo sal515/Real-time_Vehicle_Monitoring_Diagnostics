@@ -53,6 +53,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 
 				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));
+				periodic_task->released_time = timer_storage;
 				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
 				this->periodicWaitingQueue.push(periodic_task);
 
@@ -89,7 +90,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 				/* release memory */
 				delete current_running_task;
 				/* TODO: LOG: completion of task  */
-				
+				Logger::log_task_details(current_running_task, "Completed Task");
+
 				continue;
 			}
 			current_running_task->thread.release_completion_mutex();
@@ -97,9 +99,23 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/*
 				Not Complete, Update Executed time
 			*/
-			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
+			current_running_task->executed_time = timer_storage - current_running_task->released_time;
 			tempRunningQueue.push(current_running_task);
 			this->periodicRunningQueue.pop();
+
+			if (current_running_task->executed_time > current_running_task->execution_time)
+			{
+				Logger::log_task_details(current_running_task, "?Executed > Execution Time?");
+
+				printf("Executed time passed the execution time, Error in estimation of execution time?");
+
+				// exit(-1);
+			}
+			if (current_running_task->executed_time + current_running_task->released_time > current_running_task->deadline)
+			{
+				Logger::log_task_details(current_running_task, "?Deadline Missed?");
+				// exit(-1);
+			}
 		}
 
 		for (int i = 0; i < periodic_task_queue_size; i++)
@@ -248,7 +264,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			PeriodicTask *running_task = this->periodicRunningQueue.top();
 			running_task->thread.signal();
-			running_task->last_start_time = timer_storage;
+			// running_task->released_time = timer_storage;
 			tempRunningQueue.push(running_task);
 			this->periodicRunningQueue.pop();
 		}
