@@ -7,91 +7,155 @@
 
 #include "Scheduler.h"
 #include <iostream>
-
 #include <stdio.h>
 
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
+// #define DEBUG_PRINT 1
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
 	Scheduler::Scheduler()
 	{
-		std::cout << "Scheduler object created" << std::endl;
+		if (DEBUG_PRINT)
+		{
+			printf("Scheduler object created\n");
+		}
 	}
 
 	Scheduler::~Scheduler()
 	{
-		std::cout << "Scheduler object destroyed" << std::endl;
+		if (DEBUG_PRINT)
+		{
+			printf("Scheduler object destroyed\n");
+		}
 	}
 
-	void Scheduler::add_periodic_task(PeriodicTask perodicTask, std::vector<PeriodicTask> *periodicTasks)
+	void Scheduler::add_periodic_task(PeriodicTask perodicTask)
 	{
-		periodicTasks->push_back(perodicTask);
+		this->periodicTasks.push_back(perodicTask);
 	}
 
-	void Scheduler::release_periodic_tasks(unsigned timer_storage,
-										   std::vector<PeriodicTask> *periodicTasks,
-										   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue)
+	void Scheduler::release_periodic_tasks(unsigned timer_storage)
 	{
 		/* Release Periodic Tasks */
-		int periodicTasksSize = periodicTasks->size();
+		int periodicTasksSize = this->periodicTasks.size();
 		for (int i = 0; i < periodicTasksSize; i++)
 		{
-			if (timer_storage % periodicTasks->at(i).period == 0)
+			if (timer_storage < this->periodicTasks.at(i).phase)
 			{
-				PeriodicTask *temp = new PeriodicTask(periodicTasks->at(i));
-				temp->deadline = timer_storage + temp->relative_deadline;
-				periodicReleasedQueue->push(temp);
+				continue;
+			}
+
+			if ((timer_storage % this->periodicTasks.at(i).period == 0))
+			{
+
+				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));
+				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
+				this->periodicWaitingQueue.push(periodic_task);
 
 				if (DEBUG_PRINT)
 				{
-					printf("Added task name is: %s\n", periodicTasks->at(i).task_name);
+					printf("Added task name is: %s\n", this->periodicTasks.at(i).task_name);
 				}
 			}
 		}
 	}
 
-	/* TODO: Release Aperiodic Tasks */
-	/* TODO: Release Sporatic Tasks */
+	/* FUTURE IMPLEMENTATION: Release Aperiodic Tasks */
+	/* FUTURE IMPLEMENTATION: Release Sporatic Tasks */
 
-	void Scheduler::priority_update_periodic_tasks(unsigned timer_storage,
-												   std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue, std::queue<Task *> *runningQueue)
+	void Scheduler::update_executed_priority(unsigned timer_storage)
 	{
-		/* Update executed time */
-		while (!runningQueue->empty())
-		{
-			Task *temp = runningQueue->front();
+		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
 
-			switch (temp->task_type)
+		// int running_tasks_to_pop = 0;
+		int waiting_tasks_to_pop = 0;
+		// bool found_equal_deadline_flag = 0;
+
+		std::queue<PeriodicTask *> temp_periodic_running_queue;
+
+		while (!this->periodicRunningQueue.empty())
+		{
+			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
+			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
+
+			/* Update Executed Time */
+			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
+			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
+
+			/*
+				Check if the task is complete
+			*/
+			current_running_task->thread.acquire_completion_mutex();
+			if (current_running_task->thread.is_complete)
 			{
-			case PERIODIC:
-				/* update executed time */
-				temp->executed_time += timer_storage - temp->last_start_time;
-				/* TODO: Update priority */
-				/* add the task back to the periodicReleaseQueue */
-				periodicReleasedQueue->push(static_cast<PeriodicTask *>(temp));
-				runningQueue->pop();
-				break;
-			case APERIODIC:
-				printf("WARNING: APERIODIC - NOT IMPLEMENTED");
-				break;
-			case SPORADIC:
-				printf("WARNING: SPORADIC - NOT IMPLEMENTED");
-				break;
-			default:
+				/* Remove the completed task from running queue */
+				this->periodicRunningQueue.pop();
+				current_running_task->thread.release_completion_mutex();
+
+				/* release memory */
+				delete current_running_task;
+				/* TODO: LOG: completion of task  */
+				continue;
+			}
+			current_running_task->thread.release_completion_mutex();
+
+			/*
+				If task is not complete and waiting
+			*/
+			if (current_running_task->deadline < next_to_release_periodic_task->deadline)
+			{
 				break;
 			}
-		}
 
-		/* Pop tasks from priority queue and set highest priority */
-		
-	
+			/* TODO: Check logic - check how deadline is calculated */
+			if (current_running_task->deadline > next_to_release_periodic_task->deadline)
+			{
+				// TODO: CHECK VERIFY logic
+				/* TODO: can it be Block or kill -> current_running_task? */
+				/* Put Current_running_task to Wait */
+				current_running_task->thread.block();
+				/* Lower the Priority of Current_running_task*/
+				current_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
+				/* Add the Current_running_task Back to the Periodic_release_queue */
+				this->periodicWaitingQueue.push(current_running_task);
+				/* Pop the Current_running_task From the Runningqueue */
+				this->periodicRunningQueue.pop();
+				/* Increase the Priority of Next_to_release_periodic_task */
+				next_to_release_periodic_task->thread.update_priority(THREAD_RUN_PRIORITY);
+				/* Add the Next_to_release_periodic_task to the Temp_running_queue */
+				temp_periodic_running_queue.push(next_to_release_periodic_task);
+				/* Pop the waiting task From the periodicWaitingQueue */
+				waiting_tasks_to_pop++;
+			}
+
+			/* TODO: Check logic - check how deadline is calculated */
+			else if (current_running_task->deadline == next_to_release_periodic_task->deadline)
+			{
+				/* Increase the Priority of Next_to_release_periodic_task */
+				next_to_release_periodic_task->thread.update_priority(THREAD_RUN_PRIORITY);
+				/* Add the Next_to_release_periodic_task to the Temp_running_queue */
+				temp_periodic_running_queue.push(next_to_release_periodic_task);
+				/* Pop the waiting task From the periodicWaitingQueue */
+				waiting_tasks_to_pop++;
+				break;
+			}
+
+			/* TODO: Update priority based on EDF? */
+
+			/* CLEAN: Static Casting  */
+			// PeriodicTask *current_running_task = static_cast<PeriodicTask *>(current_running_task);
+		}
+		/* TODO: Add all the temporary running queued task to running queu */
+		/* TODO: Pop all the tasks accoring to the counter */
+		/* Pop the Current_running_task From the Runningqueue */
+		// this->periodicRunningQueue.pop();
 	}
 
-	int Scheduler::get_running_queue_size(std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, comparePeriodicTasks> *periodicReleasedQueue)
+	int Scheduler::get_running_queue_size()
 	{
-		return periodicReleasedQueue->size();
+		return this->periodicWaitingQueue.size();
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

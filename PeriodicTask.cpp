@@ -8,6 +8,9 @@
 #include "PeriodicTask.h"
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
+
+#define DEBUG_PRINT 0
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -28,13 +31,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = PERIODIC;
 		this->executed_time = 0;
 		this->priority = LOW;
-		/* TODO: Setup Thread Creation */
+		/* TODO: NUCLEAR Setup Thread Creation */
 		// this->thread = null;
 	}
 
 	PeriodicTask::~PeriodicTask()
 	{
-		// std::cout << "PeriodicTask object destroyed" << std::endl;
+		/* TODO: Kill the thread if not killed */
+		if (DEBUG_PRINT)
+		{
+			printf("PeriodicTask object destroyed\n");
+		}
 	}
 
 	PeriodicTask::PeriodicTask(const PeriodicTask &periodicTask)
@@ -49,23 +56,23 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = periodicTask.task_type;
 		this->executed_time = periodicTask.executed_time;
 		this->priority = LOW;
-		/* TODO: Setup Thread Creation */
-		//		this->thread = PeriodicTask.thread;
+		/* TODO: NUCLEAR Setup Thread Creation */
+		this->thread = periodicTask.thread;
 	}
 
 	void PeriodicTask::debug_print()
 	{
-		std::cout << "________________________________" << std::endl;
-		std::cout << "Periodic Task class debug print" << std::endl;
-		std::cout << "________________________________" << std::endl;
+		printf("________________________________\n");
+		printf("Periodic Task class debug print\n");
+		printf("________________________________\n");
 
-		std::cout << "Phase is: " << this->phase << std::endl;
-		std::cout << "Period is: " << this->period << std::endl;
-		std::cout << "Execution_time is: " << this->execution_time << std::endl;
-		std::cout << "Executed_time is: " << this->executed_time << std::endl;
-		std::cout << "Task_type is: " << this->task_type << std::endl;
-		std::cout << "Relative_deadline is: " << this->relative_deadline << std::endl;
-		std::cout << "Deadline is: " << this->deadline << std::endl;
+		printf("Phase is: %l \n", this->phase);
+		printf("Period is: %l \n", this->period);
+		printf("Execution_time is: %l \n", this->execution_time);
+		printf("Executed_time is: %l \n", this->executed_time);
+		printf("Task_type is: %l \n", this->task_type);
+		printf("Relative_deadline is: %l \n", this->relative_deadline);
+		printf("Deadline is: %l \n", this->deadline);
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

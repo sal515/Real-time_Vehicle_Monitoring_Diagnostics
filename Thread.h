@@ -13,12 +13,13 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 #define THREAD_IDLE_PRIORITY (1)
-#define THREAD_IDLE_PRIORITY (60)
+#define THREAD_RUN_PRIORITY (60)
 
 	typedef void *(*start_routine_t)(void *);
 	struct Thread_Control
 	{
 		// int data_ready = 0;
+		pthread_mutex_t completion_mutex;
 		pthread_mutex_t mutex;
 		pthread_cond_t condvar;
 	};
@@ -40,13 +41,18 @@ namespace realtime_vehicle_monitoring_diagnostics
 		struct sched_param params;
 		start_routine_t start_routine;
 		struct Thread_Control thread_control;
+		bool is_complete;
+
+		void release_completion_mutex();
+		int acquire_completion_mutex();
 
 		void signal();
 		void block();
 		void unblock();
+		void release_lock();
+		int acquire_lock();
 
-		int update_priority(int prio);
-		// int pthread_setschedprio( pthread_t thread, int prio );
+		void update_priority(int prio);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
