@@ -203,24 +203,21 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
-
+	/* TODO: Uncomment calls */
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
+	/* Update Executed Time */
+	// scheduler.update_executed_time(timer_storage);
 	/* Update Priority */
-	// scheduler.update_executed_priority(timer_storage);
+	// scheduler.update_priority(timer_storage);
 	/* Run Tasks */
+	// scheduler.run_tasks();
 
 	if (DEBUG_PRINT)
 	{
 		printf("At time t = : %u\n", timer_storage);
 		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size());
 	}
-
-	/* TODO : Task list */
-	/* Update Priority */
-	/* Update Running Queue */
-	/* Update Update Execution Time */
-	/* Update Run Tasks */
 
 	/* Increment Timer Value */
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);

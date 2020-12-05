@@ -66,8 +66,30 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* FUTURE IMPLEMENTATION: Release Aperiodic Tasks */
 	/* FUTURE IMPLEMENTATION: Release Sporatic Tasks */
 
-	void Scheduler::update_executed_priority(unsigned timer_storage)
+	void Scheduler::update_executed_time(unsigned timer_storage)
 	{
+		int periodic_task_queue_size = this->periodicRunningQueue.size();
+		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
+
+		for (int i = 0; i < periodic_task_queue_size; i++)
+		{
+			/* Update Executed Time */
+			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
+			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
+			tempRunningQueue.push(current_running_task);
+			this->periodicRunningQueue.pop();
+			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
+		}
+
+		for (int i = 0; i < periodic_task_queue_size; i++)
+		{
+			periodicRunningQueue.push(tempRunningQueue.top());
+			tempRunningQueue.pop();
+		}
+	}
+
+	{
+
 		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
 
 		// int running_tasks_to_pop = 0;
@@ -111,10 +133,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
 			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
-
-			/* Update Executed Time */
-			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
-			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
 
 			/*
 				Check if the task is complete
