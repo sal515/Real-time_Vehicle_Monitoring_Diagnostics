@@ -16,7 +16,6 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-	/* TODO: FIXME - NUCLEAR -> THE SORTING SHOULD BE BASED ON DEADLINE (EDF) NOT PERIOID  */
 
 	/* EDF = Earliest_Deadline_First */
 	struct Compare_Periodic_Task_by_EDF
