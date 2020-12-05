@@ -78,8 +78,6 @@ int main(int argc, char *argv[])
 	{
 		if (timer_storage >= RUN_TIME)
 		{
-			Test::test_priority_queues_EDF(&scheduler);
-
 			return 0;
 		}
 	}
