@@ -59,7 +59,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		void release_periodic_tasks(unsigned timer_storage);
 		void update_executed_time(unsigned timer_storage);
 		void update_priority(unsigned timer_storage);
-		void run_tasks();
+		void run_tasks(unsigned timer_storage);
 		int get_running_queue_size();
 	};
 

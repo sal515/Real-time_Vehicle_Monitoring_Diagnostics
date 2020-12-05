@@ -237,7 +237,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	}
 
-	void Scheduler::run_tasks()
+	void Scheduler::run_tasks(unsigned timer_storage)
 	{
 		int periodic_task_queue_size = this->periodicRunningQueue.size();
 
@@ -247,6 +247,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			PeriodicTask *running_task = this->periodicRunningQueue.top();
 			running_task->thread.signal();
+			running_task->last_start_time = timer_storage;
 			tempRunningQueue.push(running_task);
 			this->periodicRunningQueue.pop();
 		}
