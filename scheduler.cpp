@@ -152,8 +152,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 				return;
 			}
-			PeriodicTask *next_to_run_periodic_task = this->periodicWaitingQueue.top();
-			this->periodicRunningQueue.push(next_to_run_periodic_task);
+			PeriodicTask *highest_prio_waiting_task = this->periodicWaitingQueue.top();
+			this->periodicRunningQueue.push(highest_prio_waiting_task);
 			this->periodicWaitingQueue.pop();
 
 			/* Find task with same deadline as the first one pushed to the empty running queue  */
@@ -165,20 +165,20 @@ namespace realtime_vehicle_monitoring_diagnostics
 					return;
 				}
 
-				PeriodicTask *next_after_next_to_run_task = this->periodicWaitingQueue.top();
+				PeriodicTask *next_highest_prio_waiting_task = this->periodicWaitingQueue.top();
 
 				/* no other same priority tasks */
-				if (next_after_next_to_run_task->deadline > next_to_run_periodic_task->deadline)
+				if (next_highest_prio_waiting_task->deadline > highest_prio_waiting_task->deadline)
 				{
 					done_flag = 1;
 					return;
 				}
-				else if (next_after_next_to_run_task->deadline == next_to_run_periodic_task->deadline)
+				else if (next_highest_prio_waiting_task->deadline == highest_prio_waiting_task->deadline)
 				{
-					this->periodicRunningQueue.push(next_after_next_to_run_task);
+					this->periodicRunningQueue.push(next_highest_prio_waiting_task);
 					this->periodicWaitingQueue.pop();
 				}
-				else if (next_after_next_to_run_task->deadline < next_to_run_periodic_task->deadline)
+				else if (next_highest_prio_waiting_task->deadline < highest_prio_waiting_task->deadline)
 				{
 					printf("FATAL ERROR: Error with Priority Queues");
 					exit(-1);
@@ -194,7 +194,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/* nothing to swap */
 			return;
 		}
-		PeriodicTask *next_to_run_periodic_task = this->periodicWaitingQueue.top();
+		PeriodicTask *highest_prio_waiting_task = this->periodicWaitingQueue.top();
 		bool move_waiting_task_to_running_queue_flag = 0;
 		bool done_flag = 0;
 		while (!done_flag)
@@ -205,12 +205,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 				done_flag = 1;
 				break;
 			}
-			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
+			PeriodicTask *lowest_prio_running_task = this->periodicRunningQueue.top();
 
 			/* 
 				No task to swap
 			*/
-			if (current_running_task->deadline < next_to_run_periodic_task->deadline)
+			if (lowest_prio_running_task->deadline < highest_prio_waiting_task->deadline)
 			{
 				done_flag = 1;
 				break;
@@ -219,17 +219,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/* 
 				waiting task has higher priority 
 			*/
-			else if (current_running_task->deadline > next_to_run_periodic_task->deadline)
+			else if (lowest_prio_running_task->deadline > highest_prio_waiting_task->deadline)
 			{
-				/* TODO: can it be Block or kill -> current_running_task? */
-				/* Put Current_running_task to Wait */
+				/* TODO: can it be Block or kill -> lowest_prio_running_task? */
+				/* Put lowest_prio_running_task to Wait */
 				/* TODO: NUCLEAR !!Can I call this?  */
-				current_running_task->thread.block();
-				/* Lower the Priority of Current_running_task*/
-				current_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
-				/* Add the Current_running_task Back to the Periodic_release_queue */
-				this->periodicWaitingQueue.push(current_running_task);
-				/* Pop the Current_running_task From the Runningqueue */
+				// lowest_prio_running_task->thread.block();
+				/* Lower the Priority of lowest_prio_running_task*/
+				lowest_prio_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
+				/* Add the lowest_prio_running_task Back to the Periodic_release_queue */
+				this->periodicWaitingQueue.push(lowest_prio_running_task);
+				/* Pop the lowest_prio_running_task From the Runningqueue */
 				this->periodicRunningQueue.pop();
 
 				move_waiting_task_to_running_queue_flag = 1;
@@ -238,7 +238,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/* 
 				waiting task has equal priority 
 			*/
-			else if (current_running_task->deadline == next_to_run_periodic_task->deadline)
+			else if (lowest_prio_running_task->deadline == highest_prio_waiting_task->deadline)
 			{
 				move_waiting_task_to_running_queue_flag = 1;
 				break;
@@ -251,16 +251,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 		if (move_waiting_task_to_running_queue_flag)
 		{
 
-			this->periodicWaitingQueue.push(next_to_run_periodic_task);
+			this->periodicRunningQueue.push(highest_prio_waiting_task);
 			this->periodicWaitingQueue.pop();
+			
 			int waiting_queue_size = this->periodicWaitingQueue.size();
 			for (int i = 0; i < waiting_queue_size; i++)
 			{
-				if (this->periodicWaitingQueue.top()->deadline > next_to_run_periodic_task->deadline)
+				if (this->periodicWaitingQueue.top()->deadline > highest_prio_waiting_task->deadline)
 				{
 					return;
 				}
-				else if (this->periodicWaitingQueue.top()->deadline < next_to_run_periodic_task->deadline)
+				else if (this->periodicWaitingQueue.top()->deadline < highest_prio_waiting_task->deadline)
 				{
 					printf("FATAL ERROR: Issue with priority queue\n");
 					exit(-1);
