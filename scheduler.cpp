@@ -8,6 +8,7 @@
 #include "Scheduler.h"
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define DEBUG_PRINT 0
 // #define DEBUG_PRINT 1
@@ -70,15 +71,47 @@ namespace realtime_vehicle_monitoring_diagnostics
 		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
 
 		// int running_tasks_to_pop = 0;
-		int waiting_tasks_to_pop = 0;
 		// bool found_equal_deadline_flag = 0;
 
 		std::queue<PeriodicTask *> temp_periodic_running_queue;
 
-		while (!this->periodicRunningQueue.empty())
+		int waiting_tasks_to_pop = 0;
+		PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
+
+		if (this->periodicRunningQueue.empty())
+		{
+			this->periodicRunningQueue.push(next_to_release_periodic_task);
+			this->periodicWaitingQueue.pop();
+
+			bool done = 0;
+
+			while (!done)
+			{
+				PeriodicTask *next_after_next_to_release_task = this->periodicWaitingQueue.top();
+
+				/* no other same priority tasks */
+				if (next_after_next_to_release_task->deadline > next_to_release_periodic_task->deadline)
+				{
+					done = 1;
+					return;
+				}
+				else if (next_after_next_to_release_task->deadline == next_to_release_periodic_task->deadline)
+				{
+					this->periodicRunningQueue.push(next_after_next_to_release_task);
+					this->periodicWaitingQueue.pop();
+				}
+				else if (next_after_next_to_release_task->deadline < next_to_release_periodic_task->deadline)
+				{
+					printf("FATAL ERROR: Error with Priority Queues");
+					exit(-1);
+				}
+			}
+		}
+
+		while (!done)
 		{
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
-			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
+			// PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
 
 			/* Update Executed Time */
 			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
