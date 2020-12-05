@@ -73,12 +73,32 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		for (int i = 0; i < periodic_task_queue_size; i++)
 		{
-			/* Update Executed Time */
-			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
+
+			/*
+				Remove if the task is complete
+			*/
+			current_running_task->thread.acquire_completion_mutex();
+			if (current_running_task->thread.is_complete)
+			{
+				/* Remove the completed task from running queue */
+				this->periodicRunningQueue.pop();
+				current_running_task->thread.release_completion_mutex();
+
+				/* release memory */
+				delete current_running_task;
+				/* TODO: LOG: completion of task  */
+				continue;
+			}
+			current_running_task->thread.release_completion_mutex();
+
+			/*
+				Not Complete, Update Executed time
+			*/
+			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
+			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
 			tempRunningQueue.push(current_running_task);
 			this->periodicRunningQueue.pop();
-			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
 		}
 
 		for (int i = 0; i < periodic_task_queue_size; i++)
@@ -134,31 +154,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
 			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
 
-			/*
-				Check if the task is complete
+			/* 
+				No task to swap
 			*/
-			current_running_task->thread.acquire_completion_mutex();
-			if (current_running_task->thread.is_complete)
+			if (current_running_task->deadline < next_to_release_periodic_task->deadline)
 			{
-				/* Remove the completed task from running queue */
-				this->periodicRunningQueue.pop();
-				current_running_task->thread.release_completion_mutex();
-
-				/* release memory */
-				delete current_running_task;
-				/* TODO: LOG: completion of task  */
-				continue;
+				return;
 			}
-			current_running_task->thread.release_completion_mutex();
 
 			/*
 				If task is not complete and waiting
 			*/
-			if (current_running_task->deadline < next_to_release_periodic_task->deadline)
-			{
-				break;
-			}
-
 			/* TODO: Check logic - check how deadline is calculated */
 			if (current_running_task->deadline > next_to_release_periodic_task->deadline)
 			{
