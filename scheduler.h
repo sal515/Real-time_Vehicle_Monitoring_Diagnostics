@@ -38,33 +38,20 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	};
 
-	/* FUTURE IMPLEMENTATION */
-	// struct Compare_Sporadic_Task
-	// {
-	// 	bool operator()(SporadicTask *const t1, SporadicTask *const t2)
-	// 	{
-	// 		// return "true" if "p1" is ordered before "p2", for example:
-	// 		return t1->relative_deadline > t2->relative_deadline;
-	// 	}
-	// };
-
 	class Scheduler
 	{
-		/* TODO: Fixme */
-		// private:
-	public:
-		// std::queue<AperiodicTask> aperiodicReleasedQueue;
 
+	private:
 		std::vector<PeriodicTask> periodicTasks;
 
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_EDF> periodicWaitingQueue;
 
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> periodicRunningQueue;
 
-		/* TODO: NUCLEAR NEED TO SWITCH TO PRIORITY QUEUE WITH HIGHEST D AS TOP */
-		// std::queue<Task *> periodicRunningQueue;
+	public:
+		// TODO: Clean
+		friend class Test;
 
-		/* TODO: Fixme */
 		Scheduler(); // initializatin of a Scheduler
 		virtual ~Scheduler();
 
@@ -78,3 +65,13 @@ namespace realtime_vehicle_monitoring_diagnostics
 } // namespace realtime_vehicle_monitoring_diagnostics
 
 #endif /* SCHEDULER_H_ */
+
+/* FUTURE IMPLEMENTATION */
+// struct Compare_Sporadic_Task
+// {
+// 	bool operator()(SporadicTask *const t1, SporadicTask *const t2)
+// 	{
+// 		// return "true" if "p1" is ordered before "p2", for example:
+// 		return t1->relative_deadline > t2->relative_deadline;
+// 	}
+// };

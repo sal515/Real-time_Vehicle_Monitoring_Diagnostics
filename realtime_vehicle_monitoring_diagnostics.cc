@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 	{
 		if (timer_storage >= RUN_TIME)
 		{
+			// Test::test_priority_queues_EDF(&scheduler);
 			return 0;
 		}
 	}
@@ -162,7 +163,7 @@ void timer_timeout_handler(int sig_number)
 		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size());
 	}
 
-	/* TODO */
+	/* TODO : Task list */
 	/* Update Priority */
 	/* Update Running Queue */
 	/* Update Update Execution Time */

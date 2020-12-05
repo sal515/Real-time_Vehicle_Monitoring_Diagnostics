@@ -51,7 +51,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 
 				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));
-				/* TODO: SORT PRIORITY QUEUE BY DEADLINE */
 				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
 				this->periodicWaitingQueue.push(periodic_task);
 
@@ -121,7 +120,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 				temp_periodic_running_queue.push(next_to_release_periodic_task);
 			}
 
-			/* TODO: Update priority based on EDF? */
 			/* TODO: Update priority based on EDF? */
 
 			/* CLEAN: Static Casting  */
