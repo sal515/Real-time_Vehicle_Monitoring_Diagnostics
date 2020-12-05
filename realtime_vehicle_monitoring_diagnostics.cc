@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <vector>
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
@@ -85,6 +86,38 @@ int string_to_enum_converter(char *task_name)
 	/* TODO: Implement  */
 }
 
+/* Provides the value for the task identified by the parameter */
+string read_next_value(int task_name, string time_now_ms)
+{
+	std::string next_value;
+	//producer_buffer.fuel_consumption = next_value;
+	std::string time = time_now_ms;
+	ifstream input_from_file("data.csv");
+	   std::string line;
+	    while (getline(input_from_file, line)) {
+	        line += ",";
+	        stringstream ss(line);
+	        std::string word;
+	        vector<string> words;
+	        while (getline(ss, word, ',')){
+                words.push_back(word);
+	        }
+                while(1){
+                	        	if(words[7]==time){
+                                cout<<"In the fct: "<<words[task_name]<<endl;
+                                next_value = words[task_name];
+                                break;
+                                }
+
+                	        	else{break;}
+                }
+	    }
+	     return next_value;
+}
+
+
+
+
 int main(int argc, char *argv[])
 {
 	// make a for loop and pass different values to the next_value function
@@ -94,6 +127,12 @@ int main(int argc, char *argv[])
 	// Test::test_thread(producer, consumer);
 	// return 0;
 	/* CLEAN: Test */
+
+	std::string time = "5";
+
+		    producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
+
+		    printf("in main: "<<producer_buffer.engine_speed_rpm);
 
 	pthread_mutex_init(&data_mutex, NULL);
 
