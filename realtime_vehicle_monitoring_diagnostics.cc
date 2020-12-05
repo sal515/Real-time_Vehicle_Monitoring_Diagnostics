@@ -26,7 +26,8 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 
 // #define RUN_TIME 30000
 // #define RUN_TIME 5000
-#define RUN_TIME 2000
+// #define RUN_TIME 2000
+#define RUN_TIME 1000
 // #define RUN_TIME 10
 // #define RUN_TIME 11
 // #define RUN_TIME 5
@@ -177,41 +178,55 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 	/* Initialize Given Periodic Tasks */
 	scheduler->add_periodic_task(PeriodicTask(10,
 											  PRODUCER_EXECUTION_TIME,
-											  "fuel_consumption")); // total - 3000
+											  "fuel_consumption",
+											  producer)); // total - 3000
 	scheduler->add_periodic_task(PeriodicTask(500,
 											  PRODUCER_EXECUTION_TIME,
-											  "engine_speed_rpm")); // total - 60
+											  "engine_speed_rpm",
+											  producer)); // total - 60
 	scheduler->add_periodic_task(PeriodicTask(2000,
 											  PRODUCER_EXECUTION_TIME,
-											  "engine_coolant_temp")); // total - 15
+											  "engine_coolant_temp",
+											  producer)); // total - 15
 	scheduler->add_periodic_task(PeriodicTask(100,
-											  PRODUCER_EXECUTION_TIME, "current_gear")); // total - 300
+											  PRODUCER_EXECUTION_TIME, "current_gear",
+											  producer)); // total - 300
 	scheduler->add_periodic_task(PeriodicTask(5000,
 											  PRODUCER_EXECUTION_TIME,
-											  "transmission_oil_temp")); // total - 6
+											  "transmission_oil_temp",
+											  producer)); // total - 6
 	scheduler->add_periodic_task(PeriodicTask(100,
 											  PRODUCER_EXECUTION_TIME,
-											  "vehicle_speed")); // total - 300
+											  "vehicle_speed",
+											  producer)); // total - 300
 	scheduler->add_periodic_task(PeriodicTask(150,
 											  PRODUCER_EXECUTION_TIME,
-											  "acceleration_speed_longitudinal")); // total - 200
+											  "acceleration_speed_longitudinal",
+											  producer)); // total - 200
 	scheduler->add_periodic_task(PeriodicTask(100,
 											  PRODUCER_EXECUTION_TIME,
-											  "indication_break_switch")); // total - 300
+											  "indication_break_switch",
+											  producer)); // total - 300
+
+	scheduler->add_periodic_task(PeriodicTask(10,
+											  CONSUMER_EXECUTION_TIME,
+											  "Consumer_Print_Function",
+											  consumer)); // total - 300
 }
 
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
 	/* TODO: Uncomment calls */
+
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
-	/* Update Executed Time */
-	 scheduler.update_executed_time(timer_storage);
 	/* Update Priority */
-	// scheduler.update_priority(timer_storage);
+	scheduler.update_priority();
+	/* Update Executed Time */
+	scheduler.update_executed_time(timer_storage);
 	/* Run Tasks */
-	// scheduler.run_tasks();
+	scheduler.run_tasks();
 
 	if (DEBUG_PRINT)
 	{
