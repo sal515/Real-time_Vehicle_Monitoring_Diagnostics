@@ -52,14 +52,10 @@ void timer_timeout_handler(int sig_number);
 int main(int argc, char *argv[])
 {
 	/* CLEAN: Test */
-	// testing priority queues
-	// Test::test_priority_queues_EDF();
-
 	// Test::test_thread(producer, consumer);
 	// return 0;
 	/* CLEAN: Test */
 
-	int res;
 	build_periodic_tasks_list(&scheduler);
 
 	const int signal_type = SIGUSR1;
@@ -78,7 +74,10 @@ int main(int argc, char *argv[])
 	{
 		if (timer_storage >= RUN_TIME)
 		{
+			/* CLEAN: Test */
 			// Test::test_priority_queues_EDF(&scheduler);
+			/* CLEAN: Test */
+
 			return 0;
 		}
 	}
