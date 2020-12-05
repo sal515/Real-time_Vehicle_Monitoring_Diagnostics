@@ -63,21 +63,33 @@ enum TASK_NAME
 
 struct PRODUCER_VALUES
 {
-	string fuel_consumption;
-	string engine_speed_rpm;
-	string engine_coolant_temp;
-	string current_gear;
-	string transmission_oil_temp;
-	string vehicle_speed;
-	string acceleration_speed_longitudinal;
-	string indication_break_switch;
+	std::string fuel_consumption;
+	std::string engine_speed_rpm;
+	std::string engine_coolant_temp;
+	std::string current_gear;
+	std::string transmission_oil_temp;
+	std::string vehicle_speed;
+	std::string acceleration_speed_longitudinal;
+	std::string indication_break_switch;
 };
 
 PRODUCER_VALUES producer_buffer;
 pthread_mutex_t data_mutex;
 
+int string_to_enum_converter(char *task_name)
+{
+	// if(task_name == "fuel_consumption"){
+	// 	return FUEL_CONSUMPTION;
+	// }
+	// else if()
+	/* TODO: Implement  */
+}
+
 int main(int argc, char *argv[])
 {
+	// make a for loop and pass different values to the next_value function
+	// check the printout against the csv file
+
 	/* CLEAN: Test */
 	// Test::test_thread(producer, consumer);
 	// return 0;
@@ -128,10 +140,11 @@ void *consumer(void *args)
 	// 	thread->unblock();
 	// }
 	char *task_name = thread->thread_name;
+
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
 	printf("Consumer: Data Processed\n");
-	// read from producer_buffer -> producer_buffer
+	// read from producer_buffer and print out using printf
 	// read_next_value(task_name, time_now_ms);
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
@@ -141,6 +154,7 @@ void *producer(void *args)
 {
 	printf("***Producer Thread***\n");
 	Thread *thread = (Thread *)(args);
+
 	// while (1)
 	// {
 	// 	thread->block();
@@ -152,7 +166,7 @@ void *producer(void *args)
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
 	printf("Producer: Data Processed\n");
-	// write to producer_buffer -> producer_buffer
+	// write to producer_buffer from file
 	// read_next_value(task_name, time_now_ms);
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
