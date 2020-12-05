@@ -17,37 +17,54 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 	/* TODO: FIXME - NUCLEAR -> THE SORTING SHOULD BE BASED ON DEADLINE (EDF) NOT PERIOID  */
-	struct Compare_Periodic_Task
+
+	/* EDF = Earliest_Deadline_First */
+	struct Compare_Periodic_Task_by_EDF
 	{
 		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
 		{
 			// return "true" if "p1" is ordered before "p2", for example:
-			return t1->period > t2->period;
+			return t1->deadline > t2->deadline;
 		}
 	};
 
-	struct Compare_Sporadic_Task
+	/* LDF = Latest_Deadline_First */
+	struct Compare_Periodic_Task_by_LDF
 	{
-		bool operator()(SporadicTask *const t1, SporadicTask *const t2)
+		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
 		{
 			// return "true" if "p1" is ordered before "p2", for example:
-			return t1->relative_deadline > t2->relative_deadline;
+			return t1->deadline < t2->deadline;
 		}
 	};
+
+	/* FUTURE IMPLEMENTATION */
+	// struct Compare_Sporadic_Task
+	// {
+	// 	bool operator()(SporadicTask *const t1, SporadicTask *const t2)
+	// 	{
+	// 		// return "true" if "p1" is ordered before "p2", for example:
+	// 		return t1->relative_deadline > t2->relative_deadline;
+	// 	}
+	// };
 
 	class Scheduler
 	{
-	private:
+		/* TODO: Fixme */
+		// private:
+	public:
 		// std::queue<AperiodicTask> aperiodicReleasedQueue;
 
 		std::vector<PeriodicTask> periodicTasks;
 
-		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task> periodicReleasedQueue;
+		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_EDF> periodicWaitingQueue;
+
+		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> periodicRunningQueue;
 
 		/* TODO: NUCLEAR NEED TO SWITCH TO PRIORITY QUEUE WITH HIGHEST D AS TOP */
-		std::queue<Task *> runningQueue;
+		// std::queue<Task *> periodicRunningQueue;
 
-	public:
+		/* TODO: Fixme */
 		Scheduler(); // initializatin of a Scheduler
 		virtual ~Scheduler();
 

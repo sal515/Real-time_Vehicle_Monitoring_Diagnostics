@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
 
 namespace realtime_vehicle_monitoring_diagnostics
 {

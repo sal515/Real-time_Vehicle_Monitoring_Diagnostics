@@ -21,11 +21,12 @@
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
-// #define DEBUG_PRINT 0
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
+// #define DEBUG_PRINT 1
 
 // #define RUN_TIME 30000
 #define RUN_TIME 5000
+#define RUN_TIME 2000
 // #define RUN_TIME 10
 
 #define TIMER_1_MS_IN_NS (1000000)
@@ -49,6 +50,9 @@ void timer_timeout_handler(int sig_number);
 int main(int argc, char *argv[])
 {
 	/* CLEAN: Test */
+	// testing priority queues
+	// Test::test_priority_queues_EDF();
+
 	// Test::test_thread(producer, consumer);
 	// return 0;
 	/* CLEAN: Test */
@@ -72,6 +76,8 @@ int main(int argc, char *argv[])
 	{
 		if (timer_storage >= RUN_TIME)
 		{
+			Test::test_priority_queues_EDF(&scheduler);
+
 			return 0;
 		}
 	}

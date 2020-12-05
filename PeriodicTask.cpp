@@ -57,7 +57,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->executed_time = periodicTask.executed_time;
 		this->priority = LOW;
 		/* TODO: NUCLEAR Setup Thread Creation */
-		this->thread = PeriodicTask.thread;
+		this->thread = periodicTask.thread;
 	}
 
 	void PeriodicTask::debug_print()

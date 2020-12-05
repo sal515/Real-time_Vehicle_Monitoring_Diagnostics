@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -60,6 +61,55 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// }
 	}
 
+	void Test::test_priority_queues_EDF(Scheduler *scheduler)
+	{
+		// Scheduler scheduler = Scheduler();
+
+		/* Priority Queue Test */
+		// scheduler->periodicWaitingQueue.push(new PeriodicTask(500, 15, "p500,e15"));
+		// scheduler->periodicWaitingQueue.push(new PeriodicTask(10, 5, "p10,e5"));
+		// scheduler->periodicWaitingQueue.push(new PeriodicTask(2000, 25, "p2000,e25"));
+		// scheduler->periodicWaitingQueue.push(new PeriodicTask(13, 900, "p13,e900"));
+
+		std::cout << "periodicWaitingQueue Size: "
+				  << scheduler->periodicWaitingQueue.size()
+				  << std::endl;
+
+		int periodicWaitingQueue_size = scheduler->periodicWaitingQueue.size();
+		for (int i = 0; i < periodicWaitingQueue_size; i++)
+		{
+			PeriodicTask *t = scheduler->periodicWaitingQueue.top();
+			scheduler->periodicWaitingQueue.pop();
+			std::cout << "Task name: "
+					  << t->task_name
+					  << " Task period:"
+					  << t->period
+					  << " Task deadline:"
+					  << t->deadline << std::endl;
+
+			scheduler->periodicRunningQueue.push(t);
+			// delete t;
+		}
+
+		std::cout << "periodicRunningQueue Size: "
+				  << scheduler->periodicRunningQueue.size()
+				  << std::endl;
+
+		int periodicRunningQueue_size = scheduler->periodicRunningQueue.size();
+		for (int i = 0; i < periodicRunningQueue_size; i++)
+		{
+			PeriodicTask *t = scheduler->periodicRunningQueue.top();
+			scheduler->periodicRunningQueue.pop();
+			std::cout << "Task name: "
+					  << t->task_name
+					  << " Task period:"
+					  << t->period
+					  << " Task deadline:"
+					  << t->deadline << std::endl;
+			delete t;
+		}
+	}
+
 	// enum Task_Name
 	// {
 	// 	FUEL_CONSUMPTION,
@@ -83,27 +133,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	// 	int acceleration_speed_longitudinal;
 	// 	int indication_break_switch;
 	// };
-
-	/* Priority Queue Test */
-	// periodicWaitingQueue.push(new PeriodicTask(500, 15));
-	// periodicWaitingQueue.push(new PeriodicTask(10, 5));
-	// periodicWaitingQueue.push(new PeriodicTask(2000, 25));
-	// periodicWaitingQueue.push(new PeriodicTask(13, 900));
-
-	// std::cout << "-----------Size:" << std::endl;
-	// std::cout << "-----------Size:" << periodicWaitingQueue.size() << std::endl;
-
-	// int size = periodicWaitingQueue.size();
-	// for (int i = 0; i < size; i++)
-	// {
-	// 	PeriodicTask *t = periodicWaitingQueue.top();
-	// 	periodicWaitingQueue.pop();
-	// 	// std::cout << "task executed time" << t->executed_time << std::endl;
-	// 	std::cout << "task executed time: " << t->period << std::endl;
-	// 	delete t;
-	// }
-	// return 0;
-	/* Priority Queue Test */
 
 	/* Classes test */
 	// DatasetManager ds_manager_obj = DatasetManager();
