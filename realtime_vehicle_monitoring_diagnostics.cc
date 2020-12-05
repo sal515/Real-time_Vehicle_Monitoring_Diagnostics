@@ -110,7 +110,7 @@ std::string read_next_value(int task_name, std::string time_now_ms)
 		{
 			if (words[7] == time)
 			{
-				printf("In the fct: %s\n", words[task_name]);
+				printf("In the fct: %s\n", words[task_name].c_str());
 				next_value = words[task_name];
 				break;
 			}
@@ -134,13 +134,12 @@ int main(int argc, char *argv[])
 	/* CLEAN: Test */
 
 	std::string time = "5";
-
 	producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
+	printf("in main: %s\n", producer_buffer.engine_speed_rpm.c_str());
 
-	printf("in main: %s\n", producer_buffer.engine_speed_rpm);
-
+	return 0;
+	
 	pthread_mutex_init(&data_mutex, NULL);
-
 	build_periodic_tasks_list(&scheduler);
 
 	const int signal_type = SIGUSR1;
