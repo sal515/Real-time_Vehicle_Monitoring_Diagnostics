@@ -28,11 +28,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 		case PERIODIC:
 		{
 			PeriodicTask *task_periodic = static_cast<PeriodicTask *>(task);
-			printf(" %s -> Name: %s, Period: %u, Deadline: %u, Executed Time: %u\n",
+			printf(" %s -> Name: %s, Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u\n",
 				   event_string,
 				   task_periodic->task_name,
 				   task_periodic->period,
 				   task_periodic->deadline,
+				   task_periodic->released_time,
 				   task_periodic->executed_time);
 			break;
 		}
