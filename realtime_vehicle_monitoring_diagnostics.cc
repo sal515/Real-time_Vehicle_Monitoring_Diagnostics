@@ -134,8 +134,12 @@ int main(int argc, char *argv[])
 	// Test::test_thread(producer, consumer);
 	// return 0;
 	/* CLEAN: Test */
-
-	std::string time = "6";
+    float timer;
+	std::string time;
+	timer = 1005/1000;
+			std::stringstream ss;
+					ss <<timer;
+					time= ss.str();
 	producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
 	printf("in main: %s\n", producer_buffer.engine_speed_rpm.c_str());
 
@@ -228,7 +232,7 @@ void *producer(void *args)
 		ss <<timer;
 		string_time= ss.str();}
 	else{//floor of timer storage
-		timer = std::floor(timer_storage);
+		timer = timer_storage/1000;
 		std::stringstream ss;
 				ss <<timer;
 				string_time= ss.str();
