@@ -50,4 +50,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 		}
 	}
 
+	void Logger::log_thread_details(Thread *thread, char *event_string)
+	{
+		printf(" %s -> Thread Name: %s, \n",
+			   event_string,
+			   thread->thread_name);
+	}
+
 } // namespace realtime_vehicle_monitoring_diagnostics

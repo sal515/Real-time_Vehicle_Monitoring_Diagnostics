@@ -10,6 +10,7 @@
 
 #include "task.h"
 #include "PeriodicTask.h"
+#include "Thread.h"
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
@@ -19,6 +20,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Logger();
 		virtual ~Logger();
 		static void log_task_details(Task *task, char *event_string);
+		static void log_thread_details(Thread *thread, char *event_string);
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
