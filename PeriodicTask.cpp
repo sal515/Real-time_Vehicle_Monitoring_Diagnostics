@@ -15,8 +15,14 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	PeriodicTask::PeriodicTask(long period, long execution_time, char task_name[], long relative_deadline, long phase)
+	PeriodicTask::PeriodicTask(long period,
+							   long execution_time,
+							   char task_name[],
+							   start_routine_t routine,
+							   long relative_deadline,
+							   long phase)
 	{
+
 		this->phase = phase;
 		this->period = period;
 		this->execution_time = execution_time;
@@ -31,9 +37,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = PERIODIC;
 		this->released_time = 0;
 		this->executed_time = 0;
-		this->priority = THREAD_IDLE_PRIORITY;
 		/* TODO: NUCLEAR Setup Thread Creation */
-		// this->thread = null;
+		this->thread = Thread(routine,
+							  THREAD_IDLE_PRIORITY,
+							  this->task_name);
 	}
 
 	PeriodicTask::~PeriodicTask()
@@ -57,7 +64,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->task_type = periodicTask.task_type;
 		this->released_time = periodicTask.released_time;
 		this->executed_time = periodicTask.executed_time;
-		this->priority = THREAD_IDLE_PRIORITY;
 		/* TODO: !!!!NUCLEAR Setup Thread Creation */
 		this->thread = periodicTask.thread;
 	}
