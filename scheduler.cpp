@@ -134,6 +134,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				printf("!?FATAL::Deadline Missed?!\n");
 				// exit(-1);
 				this->print_queue_sizes();
+				delete current_running_task;
 				continue;
 			}
 
@@ -307,8 +308,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 			this->periodicRunningQueue.push(highest_prio_waiting_task);
 			this->periodicWaitingQueue.pop();
 
-			int waiting_queue_size = this->periodicWaitingQueue.size();
-			for (int i = 0; i < waiting_queue_size; i++)
+			// int waiting_queue_size = this->periodicWaitingQueue.size();
+			// for (int i = 0; i < waiting_queue_size; i++)
+			while(!this->periodicWaitingQueue.empty())
 			{
 				if (this->periodicWaitingQueue.top()->deadline > highest_prio_waiting_task->deadline)
 				{
