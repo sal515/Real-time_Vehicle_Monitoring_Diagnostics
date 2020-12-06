@@ -54,9 +54,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Logger::log_thread_details(Thread *thread, char *event_string)
 	{
-		printf("%s -> Thread Name: %s, \n",
+		printf("%s -> Thread Name: %s, priority: %u, completed: %u \n",
 			   event_string,
-			   thread->thread_name);
+			   thread->thread_name,
+			   thread->prio,
+			   thread->is_complete);
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

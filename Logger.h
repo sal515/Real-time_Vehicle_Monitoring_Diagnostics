@@ -11,6 +11,7 @@
 #include "task.h"
 #include "PeriodicTask.h"
 #include "Thread.h"
+
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
