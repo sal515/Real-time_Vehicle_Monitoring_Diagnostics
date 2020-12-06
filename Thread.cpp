@@ -17,6 +17,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 {
 	Thread::Thread()
 	{
+		this->is_complete = 0;
+		this->prio = 0;
+
 		if (DEBUG_PRINT)
 		{
 			printf("Thread object created\n");

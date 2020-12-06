@@ -103,13 +103,14 @@ namespace realtime_vehicle_monitoring_diagnostics
 				current_running_task->thread.release_completion_mutex();
 
 				/* TODO: LOG: completion of task  */
-				Logger::log_task_details(current_running_task, "Completed Task");
+				Logger::log_task_details(current_running_task, "Completed Task\n");
+				this->print_queue_sizes();
 
 				/* If the deadline was misseed */
 				if (current_running_task->executed_time + current_running_task->released_time > current_running_task->deadline)
 				{
 
-					Logger::log_task_details(current_running_task, "?Log Deadline Missed?");
+					Logger::log_task_details(current_running_task, "?Log Deadline Missed?\n");
 					// exit(-1);
 				}
 
@@ -125,25 +126,31 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/* Update executed time */
 			current_running_task->executed_time = timer_storage - current_running_task->released_time;
 
-			Logger::log_task_details(current_running_task, "Execution Time Updated");
+			Logger::log_task_details(current_running_task, "Execution Time Updated\n");
 
 			/* If the executed time is greater than the execution time */
 			if (current_running_task->executed_time > current_running_task->execution_time)
 			{
 				tempRunningQueue.push(current_running_task);
 				this->periodicRunningQueue.pop();
-
-				Logger::log_task_details(current_running_task, "?Executed > Execution Time?");
+				printf("!?Executed > Execution Time?!\n");
 				// exit(-1);
+				this->print_queue_sizes();
+				continue;
 			}
 			/* If the deadline was misseed */
-			if (current_running_task->executed_time + current_running_task->released_time > current_running_task->deadline)
+			if ((current_running_task->executed_time + current_running_task->released_time) > current_running_task->deadline)
 			{
 				this->periodicRunningQueue.pop();
-
-				Logger::log_task_details(current_running_task, "?Deadline Missed?");
+				printf("!?Deadline Missed?!\n");
 				// exit(-1);
+				this->print_queue_sizes();
+				continue;
 			}
+
+			tempRunningQueue.push(current_running_task);
+			this->periodicRunningQueue.pop();
+			this->print_queue_sizes();
 		}
 
 		for (int i = 0; i < periodic_task_queue_size; i++)
@@ -151,6 +158,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 			periodicRunningQueue.push(tempRunningQueue.top());
 			tempRunningQueue.pop();
 		}
+
+		printf("End of executed time updating, queue sizes are:\n");
+		this->print_queue_sizes();
+		printf("\n\n\n");
 	}
 
 	void Scheduler::update_periodic_priority()

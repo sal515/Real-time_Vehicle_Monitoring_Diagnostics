@@ -29,10 +29,11 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define RUN_TIME 5000
 // #define RUN_TIME 2000
 // #define RUN_TIME 1000
-//#define RUN_TIME 500
-//#define RUN_TIME 101
+// #define RUN_TIME 500
+// #define RUN_TIME 101
+#define RUN_TIME 31
+// #define RUN_TIME 11
 // #define RUN_TIME 10
- #define RUN_TIME 11
 // #define RUN_TIME 5
 
 #define TIMER_1_MS_IN_NS (1000000)
@@ -227,12 +228,15 @@ void timer_timeout_handler(int sig_number)
 
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
-	/* Update Priority */
-	scheduler.update_priority();
-	/* Update Executed Time */
-	scheduler.update_executed_time(timer_storage);
-	/* Run Tasks */
-	scheduler.run_tasks();
+
+	// /* Update Priority */
+	scheduler.update_periodic_priority();
+
+	// /* Update Executed Time */
+	scheduler.update_periodic_executed_time(timer_storage);
+
+	// /* Run Tasks */
+	// scheduler.run_tasks();
 
 	if (DEBUG_PRINT)
 	{
