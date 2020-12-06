@@ -55,7 +55,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// 	printf("Error: %s\n", strerror(errno));
 		// }
 		/* TODO: Kill the thread if not killed */
-		Logger::log_task_details(this, "Remove Periodic Task\n");
+		Logger::log_task_details(this, "Removed Periodic Task Detailed:\n");
 	}
 
 	PeriodicTask::PeriodicTask(const PeriodicTask &periodicTask)

@@ -122,56 +122,44 @@ int main(int argc, char *argv[])
 
 void *consumer(void *args)
 {
-
 	Thread *thread = (Thread *)(args);
-	// while (1)
-	// {
-	// 	thread->is_complete = 0;
-	// 	thread->block();
-	// 	thread->is_complete = 1;
-	// 	printf("Consumer: Data Processed\n");
-	// 	thread->unblock();
-	// }
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
-
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+
 	thread->block();
-	// pthread_mutex_lock(&data_mutex);
-	// printf("Consumer: Data Processed\n");
+	pthread_mutex_lock(&data_mutex);
+
 	Logger::log_thread_details(thread, "Details of the thread - waking up:");
-	// read from producer_buffer and print out using printf
-	// read_next_value(task_name, time_now_ms);
-	// pthread_mutex_unlock(&data_mutex);
+	// -- critical section --
+
+	// -- critical section --
+
+	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
+
 	printf("***%s task --> execution ended***\n", task_name);
 }
 
 void *producer(void *args)
 {
 	Thread *thread = (Thread *)(args);
-
-	// while (1)
-	// {
-	// 	thread->block();
-	// 	printf("Producer: Data Processed\n");
-	// 	thread->unblock();
-	// }
-
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
-
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+
 	thread->block();
-	// pthread_mutex_lock(&data_mutex);
-	// printf("Producer: Data Processed\n");
+	pthread_mutex_lock(&data_mutex);
+
 	Logger::log_thread_details(thread, "Details of the thread - waking up:");
-	// write to producer_buffer from file
-	// read_next_value(task_name, time_now_ms);
-	// pthread_mutex_unlock(&data_mutex);
+	// -- critical section --
+
+	// -- critical section --
+	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
+
 	printf("***%s task --> execution ended***\n", task_name);
 }
 

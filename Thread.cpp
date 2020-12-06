@@ -21,7 +21,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->is_complete = 0;
 		this->prio = 0;
 		this->thread_name = "default";
-		Logger::log_thread_details(this, "Default Thread was created\n");
+		Logger::log_thread_details(this, "Default Thread Created Details:\n");
 	}
 
 	Thread::~Thread()
@@ -29,7 +29,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->prio = 0;
 		/* TODO: Thread kill */
 		// pthread_kill(this->thread, SIGKILL);
-		Logger::log_thread_details(this, "Terminated\n");
+		Logger::log_thread_details(this, "Terminated Thread Details:\n");
 	}
 
 	Thread::Thread(start_routine_t start_routine,
@@ -39,7 +39,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->is_complete = 0;
 		this->prio = sched_priority;
 		this->thread_name = thread_name;
-		Logger::log_thread_details(this, "Created Thread\n");
+		Logger::log_thread_details(this, "Created Thread Details:\n");
 
 		pthread_mutex_init(&this->thread_control.mutex, NULL);
 		pthread_mutex_init(&this->thread_control.completion_mutex, NULL);
