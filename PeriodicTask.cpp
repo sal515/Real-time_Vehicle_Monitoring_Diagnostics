@@ -12,6 +12,9 @@
 #include "Logger.h"
 #include <cerrno>
 
+#define LOG_COPY_CONSTRUCTOR 0
+#define LOG_CREATED_TASK 0
+#define LOG_REMOVED_TASK 0
 #define DEBUG_PRINT 0
 
 namespace realtime_vehicle_monitoring_diagnostics
@@ -40,8 +43,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->released_time = 0;
 		this->executed_time = 0;
 		this->routine = routine;
-
-		// Logger::log_task_details(this, "Created Periodic Task\n");
+		if (LOG_CREATED_TASK)
+		{
+			Logger::log_task_details(this, "Created Periodic Task\n");
+		}
 	}
 
 	PeriodicTask::~PeriodicTask()
@@ -55,7 +60,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// 	printf("Error: %s\n", strerror(errno));
 		// }
 		/* TODO: Kill the thread if not killed */
-		Logger::log_task_details(this, "Removed Periodic Task Detailed:\n");
+		if (LOG_REMOVED_TASK)
+		{
+			Logger::log_task_details(this, "Removed Periodic Task Detailed:\n");
+		}
 	}
 
 	PeriodicTask::PeriodicTask(const PeriodicTask &periodicTask)
@@ -72,7 +80,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->executed_time = periodicTask.executed_time;
 		this->routine = periodicTask.routine;
 
-		// Logger::log_task_details(this, "Copy Constructor Periodic Task\n");
+		if (LOG_COPY_CONSTRUCTOR)
+		{
+			Logger::log_task_details(this, "Copy Constructor Periodic Task\n");
+		}
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics

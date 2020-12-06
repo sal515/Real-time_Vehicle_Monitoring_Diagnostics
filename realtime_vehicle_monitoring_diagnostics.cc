@@ -93,8 +93,9 @@ int string_to_enum_converter(char *task_name)
 
 int main(int argc, char *argv[])
 {
-	// make a for loop and pass different values to the next_value function
-	// check the printout against the csv file
+	/* For tests */
+	// 		// test code here
+	// return 0;
 
 	pthread_mutex_init(&data_mutex, NULL);
 	build_periodic_tasks_list(&scheduler);
@@ -135,7 +136,6 @@ void *consumer(void *args)
 	// -- critical section --
 
 	// -- critical section --
-
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
