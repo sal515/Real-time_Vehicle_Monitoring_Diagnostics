@@ -26,11 +26,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Thread::~Thread()
 	{
-		this->is_complete = 1;
+		// this->is_complete = 1;
 		this->prio = 0;
 
 		/* TODO: Thread kill */
-		pthread_kill(this->thread, SIGKILL);
+		// pthread_kill(this->thread, SIGKILL);
 		Logger::log_thread_details(this, "Terminated\n");
 	}
 
@@ -39,9 +39,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 				   char *thread_name)
 	{
 		this->is_complete = 0;
-		this->prio = 0;
+		this->prio = sched_priority;
 		this->thread_name = thread_name;
-		Logger::log_thread_details(this, "Created\n");
+		Logger::log_thread_details(this, "Created Thread\n");
 
 		pthread_mutex_init(&this->thread_control.mutex, NULL);
 		pthread_mutex_init(&this->thread_control.completion_mutex, NULL);
@@ -94,16 +94,16 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EOK
 	}
 
-	Thread::Thread(const Thread &thread)
-	{
-		this->thread = thread.thread;
-		this->thread_name = thread.thread_name;
-		this->attr = thread.attr;
-		this->params = thread.params;
-		this->start_routine = thread.start_routine;
-		this->thread_control = thread.thread_control;
-		this->is_complete = thread.is_complete;
-	}
+	// Thread::Thread(const Thread &thread)
+	// {
+	// 	this->thread = thread.thread;
+	// 	this->thread_name = thread.thread_name;
+	// 	this->attr = thread.attr;
+	// 	this->params = thread.params;
+	// 	this->start_routine = thread.start_routine;
+	// 	this->thread_control = thread.thread_control;
+	// 	this->is_complete = thread.is_complete;
+	// }
 
 	void Thread::release_completion_mutex()
 	{
