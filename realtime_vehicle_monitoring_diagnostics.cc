@@ -9,6 +9,7 @@
 #include "PeriodicTask.h"
 #include "AperiodicTask.h"
 #include "SporadicTask.h"
+#include "Logger.h"
 // #include "DatasetManager.h"
 
 #include <atomic.h>
@@ -27,9 +28,11 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define RUN_TIME 30000
 // #define RUN_TIME 5000
 // #define RUN_TIME 2000
-#define RUN_TIME 1000
+// #define RUN_TIME 1000
+//#define RUN_TIME 500
+//#define RUN_TIME 101
 // #define RUN_TIME 10
-// #define RUN_TIME 11
+ #define RUN_TIME 11
 // #define RUN_TIME 5
 
 #define TIMER_1_MS_IN_NS (1000000)
@@ -108,7 +111,7 @@ int main(int argc, char *argv[])
 							   signal_type);
 	if (one_ms_timer.start() < 0)
 	{
-		printf("Failed to start perioidc timer - %s", one_ms_timer.timer_name);
+		printf("Failed to start perioidc timer - %s\n", one_ms_timer.timer_name);
 		return -1;
 	}
 
@@ -143,11 +146,12 @@ void *consumer(void *args)
 	char *task_name = thread->thread_name;
 
 	thread->block();
-	pthread_mutex_lock(&data_mutex);
-	printf("Consumer: Data Processed\n");
+	// pthread_mutex_lock(&data_mutex);
+	// printf("Consumer: Data Processed\n");
+	Logger::log_thread_details(thread, "Consumer is awake: CS is executing");
 	// read from producer_buffer and print out using printf
 	// read_next_value(task_name, time_now_ms);
-	pthread_mutex_unlock(&data_mutex);
+	// pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 }
 
@@ -165,11 +169,12 @@ void *producer(void *args)
 
 	char *task_name = thread->thread_name;
 	thread->block();
-	pthread_mutex_lock(&data_mutex);
-	printf("Producer: Data Processed\n");
+	// pthread_mutex_lock(&data_mutex);
+	// printf("Producer: Data Processed\n");
+	Logger::log_thread_details(thread, "Producer is awake: CS is executing");
 	// write to producer_buffer from file
 	// read_next_value(task_name, time_now_ms);
-	pthread_mutex_unlock(&data_mutex);
+	// pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 }
 
@@ -218,6 +223,7 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 void timer_timeout_handler(int sig_number)
 {
 	/* TODO: Uncomment calls */
+	printf("At time t = : %u\n", timer_storage);
 
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);

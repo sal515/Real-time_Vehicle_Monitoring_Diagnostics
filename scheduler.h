@@ -56,10 +56,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		void add_periodic_task(PeriodicTask perodicTask);
 		void release_periodic_tasks(unsigned timer_storage);
-		void update_executed_time(unsigned timer_storage);
-		void update_priority();
+		void update_periodic_executed_time(unsigned timer_storage);
+		void update_periodic_priority();
 		void run_tasks();
 		int get_running_queue_size();
+		int get_waiting_queue_size();
+		void print_queue_sizes();
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics
