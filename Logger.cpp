@@ -26,13 +26,15 @@ namespace realtime_vehicle_monitoring_diagnostics
 		case PERIODIC:
 		{
 			PeriodicTask *task_periodic = static_cast<PeriodicTask *>(task);
-			printf(" %s -> Name: %s, Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u\n",
+			printf("%s -> Name: %s, Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Processing Done: %u, Priority: %u\n",
 				   event_string,
 				   task_periodic->task_name,
 				   task_periodic->period,
 				   task_periodic->deadline,
 				   task_periodic->released_time,
-				   task_periodic->executed_time);
+				   task_periodic->executed_time,
+				   task_periodic->thread.is_complete,
+				   task_periodic->thread.prio);
 			break;
 		}
 		case APERIODIC:
@@ -52,7 +54,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Logger::log_thread_details(Thread *thread, char *event_string)
 	{
-		printf(" %s -> Thread Name: %s, \n",
+		printf("%s -> Thread Name: %s, \n",
 			   event_string,
 			   thread->thread_name);
 	}
