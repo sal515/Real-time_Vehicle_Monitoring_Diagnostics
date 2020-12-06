@@ -44,6 +44,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		start_routine_t start_routine;
 		struct Thread_Control thread_control;
 		bool is_complete;
+		bool prio;
 
 		void release_completion_mutex();
 		int acquire_completion_mutex();

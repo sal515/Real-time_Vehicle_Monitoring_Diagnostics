@@ -174,6 +174,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Thread::update_priority(int prio)
 	{
+		this->prio = prio;
 		// int pthread_setschedprio( pthread_t thread, int prio );
 		if (pthread_setschedprio(this->thread, prio) != EOK)
 		{
