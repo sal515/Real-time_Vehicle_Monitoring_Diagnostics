@@ -308,9 +308,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			this->periodicRunningQueue.push(highest_prio_waiting_task);
 			this->periodicWaitingQueue.pop();
 
-			// int waiting_queue_size = this->periodicWaitingQueue.size();
-			// for (int i = 0; i < waiting_queue_size; i++)
-			while(!this->periodicWaitingQueue.empty())
+			while (!this->periodicWaitingQueue.empty())
 			{
 				if (this->periodicWaitingQueue.top()->deadline > highest_prio_waiting_task->deadline)
 				{
