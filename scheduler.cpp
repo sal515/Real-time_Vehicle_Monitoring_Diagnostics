@@ -19,18 +19,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Scheduler::Scheduler()
 	{
-		if (DEBUG_PRINT)
-		{
-			printf("Scheduler object created\n");
-		}
+		printf("Scheduler object created\n");
 	}
 
 	Scheduler::~Scheduler()
 	{
-		if (DEBUG_PRINT)
-		{
-			printf("Scheduler object destroyed\n");
-		}
+		printf("Scheduler object destroyed\n");
 	}
 
 	void Scheduler::add_periodic_task(PeriodicTask perodicTask)
@@ -84,10 +78,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 			return;
 		}
 
-		int periodic_task_queue_size = this->periodicRunningQueue.size();
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
 
-		for (int i = 0; i < periodic_task_queue_size; i++)
+		while (!this->periodicRunningQueue.empty())
 		{
 
 			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
@@ -131,18 +124,14 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/* If the executed time is greater than the execution time */
 			if (current_running_task->executed_time > current_running_task->execution_time)
 			{
-				tempRunningQueue.push(current_running_task);
-				this->periodicRunningQueue.pop();
-				printf("!?Executed > Execution Time?!\n");
+				printf("!?WARNING::Executed > Execution Time?!\n");
 				// exit(-1);
-				this->print_queue_sizes();
-				continue;
 			}
 			/* If the deadline was misseed */
 			if ((current_running_task->executed_time + current_running_task->released_time) > current_running_task->deadline)
 			{
 				this->periodicRunningQueue.pop();
-				printf("!?Deadline Missed?!\n");
+				printf("!?FATAL::Deadline Missed?!\n");
 				// exit(-1);
 				this->print_queue_sizes();
 				continue;
@@ -153,7 +142,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			this->print_queue_sizes();
 		}
 
-		for (int i = 0; i < periodic_task_queue_size; i++)
+		while (!tempRunningQueue.empty())
 		{
 			periodicRunningQueue.push(tempRunningQueue.top());
 			tempRunningQueue.pop();
@@ -343,11 +332,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Scheduler::run_tasks()
 	{
-		int periodic_task_queue_size = this->periodicRunningQueue.size();
 
 		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
 
-		for (int i = 0; i < periodic_task_queue_size; i++)
+		while (!this->periodicRunningQueue.empty())
 		{
 			PeriodicTask *running_task = this->periodicRunningQueue.top();
 			running_task->thread.signal();
@@ -358,7 +346,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			this->periodicRunningQueue.pop();
 		}
 
-		for (int i = 0; i < periodic_task_queue_size; i++)
+		while (!tempRunningQueue.empty())
 		{
 			periodicRunningQueue.push(tempRunningQueue.top());
 			tempRunningQueue.pop();
