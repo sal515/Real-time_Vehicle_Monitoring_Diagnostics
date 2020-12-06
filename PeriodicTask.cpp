@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
+#include "Logger.h"
 
 #define DEBUG_PRINT 0
 
@@ -38,18 +39,18 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->released_time = 0;
 		this->executed_time = 0;
 		/* TODO: NUCLEAR Setup Thread Creation */
-		this->thread = Thread(routine,
-							  THREAD_IDLE_PRIORITY,
-							  this->task_name);
+		// this->thread = Thread(routine,
+		// 					  THREAD_IDLE_PRIORITY,
+		// 					  this->task_name);
+
+		Logger::log_task_details(this, "Created Periodic Task\n");
+		// printf("Created Periodic Task\n");
 	}
 
 	PeriodicTask::~PeriodicTask()
 	{
 		/* TODO: Kill the thread if not killed */
-		if (DEBUG_PRINT)
-		{
-			printf("PeriodicTask object destroyed\n");
-		}
+		Logger::log_task_details(this, "Destroy Periodic Task\n");
 	}
 
 	PeriodicTask::PeriodicTask(const PeriodicTask &periodicTask)
@@ -65,7 +66,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->released_time = periodicTask.released_time;
 		this->executed_time = periodicTask.executed_time;
 		/* TODO: !!!!NUCLEAR Setup Thread Creation */
-		this->thread = periodicTask.thread;
+		// this->thread = periodicTask.thread;
+
+		// Logger::log_task_details(this, "Copy Constructor Periodic Task\n");
 	}
 
 	void PeriodicTask::debug_print()

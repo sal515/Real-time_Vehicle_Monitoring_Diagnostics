@@ -27,9 +27,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 		printf("Scheduler object destroyed\n");
 	}
 
-	void Scheduler::add_periodic_task(PeriodicTask perodicTask)
+	void Scheduler::add_periodic_task(PeriodicTask &perodicTask)
 	{
-		Logger::log_task_details(&perodicTask, "Periodic Task created");
+		// Logger::log_task_details(&perodicTask, "Periodic Task created");
 		this->periodicTasks.push_back(perodicTask);
 	}
 
