@@ -32,13 +32,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 			   int sched_priority,
 			   char *thread_name);
 		Thread(const Thread &thread);
-		
+
 		virtual ~Thread();
 
 		pthread_t thread;
 		char *thread_name;
 
-		// void *args;
 		pthread_attr_t attr;
 		struct sched_param params;
 		start_routine_t start_routine;

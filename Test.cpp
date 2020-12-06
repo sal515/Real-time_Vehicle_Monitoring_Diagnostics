@@ -70,7 +70,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			PeriodicTask *t = scheduler->periodicWaitingQueue.top();
 			scheduler->periodicWaitingQueue.pop();
-			Logger::log_task_details(t, "Waiting Queue Tasks" );
+			Logger::log_task_details(t, "Waiting Queue Tasks details:");
 			scheduler->periodicRunningQueue.push(t);
 		}
 
@@ -81,7 +81,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		{
 			PeriodicTask *t = scheduler->periodicRunningQueue.top();
 			scheduler->periodicRunningQueue.pop();
-			Logger::log_task_details(t,"Running Queue Tasks");
+			Logger::log_task_details(t, "Running Queue Tasks details:");
 			delete t;
 		}
 	}

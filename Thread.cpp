@@ -13,6 +13,7 @@
 #include "Logger.h"
 
 #define DEBUG_PRINT 0
+#define LOG_THREAD_TERMINATION_CREATION 0
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
@@ -21,17 +22,21 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->is_complete = 0;
 		this->prio = 0;
 		this->thread_name = "default";
-		Logger::log_thread_details(this, "Default Thread was created\n");
+		if (LOG_THREAD_TERMINATION_CREATION)
+		{
+			Logger::log_thread_details(this, "Default Thread Created Details:\n");
+		}
 	}
 
 	Thread::~Thread()
 	{
-		// this->is_complete = 1;
 		this->prio = 0;
-
 		/* TODO: Thread kill */
 		// pthread_kill(this->thread, SIGKILL);
-		Logger::log_thread_details(this, "Terminated\n");
+		if (LOG_THREAD_TERMINATION_CREATION)
+		{
+			Logger::log_thread_details(this, "Terminated Thread Details:\n");
+		}
 	}
 
 	Thread::Thread(start_routine_t start_routine,
@@ -41,8 +46,10 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->is_complete = 0;
 		this->prio = sched_priority;
 		this->thread_name = thread_name;
-		Logger::log_thread_details(this, "Created Thread\n");
-
+		if (LOG_THREAD_TERMINATION_CREATION)
+		{
+			Logger::log_thread_details(this, "Created Thread Details:\n");
+		}
 		pthread_mutex_init(&this->thread_control.mutex, NULL);
 		pthread_mutex_init(&this->thread_control.completion_mutex, NULL);
 		pthread_cond_init(&this->thread_control.condvar, NULL);
@@ -178,7 +185,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	void Thread::update_priority(int prio)
 	{
 		this->prio = prio;
-		// int pthread_setschedprio( pthread_t thread, int prio );
 		if (pthread_setschedprio(this->thread, prio) != EOK)
 		{
 			printf("Thread Fatal Error: Couldn't change the priority of the Thread\n");
