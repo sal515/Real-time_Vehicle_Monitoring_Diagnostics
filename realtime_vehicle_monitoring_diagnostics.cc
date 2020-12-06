@@ -147,6 +147,7 @@ void *consumer(void *args)
 	// }
 	char *task_name = thread->thread_name;
 
+	Logger::log_thread_details(thread, "Consumer is going to sleep now...");
 	thread->block();
 	// pthread_mutex_lock(&data_mutex);
 	// printf("Consumer: Data Processed\n");
@@ -170,6 +171,7 @@ void *producer(void *args)
 	// }
 
 	char *task_name = thread->thread_name;
+	Logger::log_thread_details(thread, "Producer is going to sleep now...");
 	thread->block();
 	// pthread_mutex_lock(&data_mutex);
 	// printf("Producer: Data Processed\n");
@@ -188,47 +190,47 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 								  "fuel_consumption",
 								  producer);
 	scheduler->add_periodic_task(p); // total - 3000
-	p = PeriodicTask(500,
-					 PRODUCER_EXECUTION_TIME,
-					 "engine_speed_rpm",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 60
-	p = PeriodicTask(2000,
-					 PRODUCER_EXECUTION_TIME,
-					 "engine_coolant_temp",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 15
-	p = PeriodicTask(100,
-					 PRODUCER_EXECUTION_TIME, "current_gear",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 300
-	p = PeriodicTask(5000,
-					 PRODUCER_EXECUTION_TIME,
-					 "transmission_oil_temp",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 6
-	p = PeriodicTask(100,
-					 PRODUCER_EXECUTION_TIME,
-					 "vehicle_speed",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 300
-	p = PeriodicTask(150,
-					 PRODUCER_EXECUTION_TIME,
-					 "acceleration_speed_longitudinal",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 200
-	p = PeriodicTask(100,
-					 PRODUCER_EXECUTION_TIME,
-					 "indication_break_switch",
-					 producer);
-	scheduler->add_periodic_task(p); // total - 300
+									 // p = PeriodicTask(500,
+									 // 				 PRODUCER_EXECUTION_TIME,
+									 // 				 "engine_speed_rpm",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 60
+									 // p = PeriodicTask(2000,
+									 // 				 PRODUCER_EXECUTION_TIME,
+									 // 				 "engine_coolant_temp",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 15
+									 // p = PeriodicTask(100,
+									 // 				 PRODUCER_EXECUTION_TIME, "current_gear",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 300
+									 // p = PeriodicTask(5000,
+									 // 				 PRODUCER_EXECUTION_TIME,
+									 // 				 "transmission_oil_temp",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 6
+									 // p = PeriodicTask(100,
+									 // 				 PRODUCER_EXECUTION_TIME,
+									 // 				 "vehicle_speed",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 300
+									 // p = PeriodicTask(150,
+									 // 				 PRODUCER_EXECUTION_TIME,
+									 // 				 "acceleration_speed_longitudinal",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 200
+									 // p = PeriodicTask(100,
+									 // 				 PRODUCER_EXECUTION_TIME,
+									 // 				 "indication_break_switch",
+									 // 				 producer);
+									 // scheduler->add_periodic_task(p); // total - 300
 
-	p = PeriodicTask(10,
-					 CONSUMER_EXECUTION_TIME,
-					 "Consumer_Print_Function",
-					 consumer);
+	// p = PeriodicTask(10,
+	// 				 CONSUMER_EXECUTION_TIME,
+	// 				 "Consumer_Print_Function",
+	// 				 consumer);
 
-	scheduler->add_periodic_task(p); // total - 300
+	// scheduler->add_periodic_task(p); // total - 300
 }
 
 /* Signal handler */

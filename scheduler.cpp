@@ -33,6 +33,18 @@ namespace realtime_vehicle_monitoring_diagnostics
 		this->periodicTasks.push_back(perodicTask);
 	}
 
+	void Scheduler::create_assign_thread(PeriodicTask *perodicTask)
+	{
+		perodicTask->thread = new Thread(perodicTask->routine,
+										 THREAD_IDLE_PRIORITY,
+										 perodicTask->task_name);
+	}
+
+	void Scheduler::delete_thread(PeriodicTask *perodicTask)
+	{
+		delete perodicTask->thread;
+	}
+
 	void Scheduler::release_periodic_tasks(unsigned timer_storage)
 	{
 
@@ -53,7 +65,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
 				this->periodicWaitingQueue.push(periodic_task);
 
-				Logger::log_task_details(periodic_task, "Task Released");
+				this->create_assign_thread(periodic_task);
+
+				Logger::log_task_details(periodic_task, "Periodic Task Released");
 
 				if (DEBUG_PRINT)
 				{
@@ -88,12 +102,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 			/*
 				Remove if the task is complete
 			*/
-			current_running_task->thread.acquire_completion_mutex();
-			if (current_running_task->thread.is_complete)
+			current_running_task->thread->acquire_completion_mutex();
+			if (current_running_task->thread->is_complete)
 			{
 				/* Remove the completed task from running queue */
 				this->periodicRunningQueue.pop();
-				current_running_task->thread.release_completion_mutex();
+				current_running_task->thread->release_completion_mutex();
 
 				Logger::log_task_details(current_running_task, "Completed Task\n");
 				this->print_queue_sizes();
@@ -107,10 +121,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 				}
 
 				/* release memory */
+				this->delete_thread(current_running_task);
 				delete current_running_task;
 				continue;
 			}
-			current_running_task->thread.release_completion_mutex();
+			current_running_task->thread->release_completion_mutex();
 
 			/*
 				Not Complete, Update Executed time
@@ -133,6 +148,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 				printf("!?FATAL::Deadline Missed?!\n");
 				// exit(-1);
 				this->print_queue_sizes();
+
+				this->delete_thread(current_running_task);
 				delete current_running_task;
 				continue;
 			}
@@ -160,8 +177,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
 
-		/* 
-			Running queue - empty 
+		/*
+			Running queue - empty
 		*/
 		if (this->periodicRunningQueue.empty())
 		{
@@ -216,8 +233,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 			}
 		}
 
-		/* 
-			Running queue is not empty 
+		/*
+			Running queue is not empty
 		*/
 		if (this->periodicWaitingQueue.empty())
 		{
@@ -246,7 +263,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			PeriodicTask *lowest_prio_running_task = this->periodicRunningQueue.top();
 			Logger::log_task_details(lowest_prio_running_task, "Priority Updading: Comparing the current lowest priority running task with the highest priority waiting task\n");
 
-			/* 
+			/*
 				No task to swap
 			*/
 			if (lowest_prio_running_task->deadline < highest_prio_waiting_task->deadline)
@@ -259,8 +276,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 				break;
 			}
 
-			/* 
-				waiting task has higher priority 
+			/*
+				waiting task has higher priority
 			*/
 			else if (lowest_prio_running_task->deadline > highest_prio_waiting_task->deadline)
 			{
@@ -268,9 +285,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 				/* TODO: can it be Block or kill -> lowest_prio_running_task? */
 				/* Put lowest_prio_running_task to Wait */
 				/* TODO: NUCLEAR !!Can I call this?  */
-				// lowest_prio_running_task->thread.block();
+				// lowest_prio_running_task->thread->block();
 				/* Lower the Priority of lowest_prio_running_task*/
-				lowest_prio_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
+				lowest_prio_running_task->thread->update_priority(THREAD_IDLE_PRIORITY);
 				/* Add the lowest_prio_running_task Back to the Periodic_release_queue */
 				this->periodicWaitingQueue.push(lowest_prio_running_task);
 				/* Pop the lowest_prio_running_task From the Runningqueue */
@@ -284,8 +301,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 				this->print_queue_sizes();
 			}
 
-			/* 
-				waiting task has equal priority 
+			/*
+				waiting task has equal priority
 			*/
 			else if (lowest_prio_running_task->deadline == highest_prio_waiting_task->deadline)
 			{
@@ -298,7 +315,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 			}
 		}
 
-		/* 
+		/*
 			Move waiting task to the Running queue
 		*/
 		if (move_waiting_task_to_running_queue_flag)
@@ -337,8 +354,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		while (!this->periodicRunningQueue.empty())
 		{
 			PeriodicTask *running_task = this->periodicRunningQueue.top();
-
-			running_task->thread.signal();
+			running_task->thread->update_priority(THREAD_RUN_PRIORITY);
+			running_task->thread->signal();
 			Logger::log_task_details(running_task, "Signalling running task\n");
 
 			tempRunningQueue.push(running_task);

@@ -26,7 +26,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		case PERIODIC:
 		{
 			PeriodicTask *task_periodic = static_cast<PeriodicTask *>(task);
-			printf("%s -> Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Name: %s\n",
+			printf("%s ---> Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Name: %s\n",
 				   event_string,
 				   task_periodic->period,
 				   task_periodic->deadline,
@@ -63,7 +63,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Logger::log_thread_details(Thread *thread, char *event_string)
 	{
-		printf("%s -> Thread Name: %s, priority: %u, completed: %u \n",
+		printf("%s ---> Thread Name: %s, priority: %u, completed: %u \n",
 			   event_string,
 			   thread->thread_name,
 			   thread->prio,

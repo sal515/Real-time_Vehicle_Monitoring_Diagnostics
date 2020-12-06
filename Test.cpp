@@ -25,8 +25,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 	void Test::test_thread(start_routine_t producer, start_routine_t consumer)
 	{
 		printf("Starting consumer/producer example...\n");
-		Thread producer_thread1 = Thread(producer, 11, "P-P60");
-		Thread consumer_thread = Thread(consumer, 10, "C-P10");
+		Thread producer_thread1 = Thread(producer, THREAD_RUN_PRIORITY, "P-P60");
+		Thread consumer_thread = Thread(consumer, THREAD_IDLE_PRIORITY, "C-P10");
 
 		sleep(5);
 		printf("======5s======\n");
