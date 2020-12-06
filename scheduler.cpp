@@ -95,7 +95,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 				this->periodicRunningQueue.pop();
 				current_running_task->thread.release_completion_mutex();
 
-				/* TODO: LOG: completion of task  */
 				Logger::log_task_details(current_running_task, "Completed Task\n");
 				this->print_queue_sizes();
 
@@ -338,8 +337,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		while (!this->periodicRunningQueue.empty())
 		{
 			PeriodicTask *running_task = this->periodicRunningQueue.top();
-			running_task->thread.signal();
 
+			running_task->thread.signal();
 			Logger::log_task_details(running_task, "Signalling running task\n");
 
 			tempRunningQueue.push(running_task);

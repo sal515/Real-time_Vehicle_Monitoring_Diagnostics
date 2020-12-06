@@ -25,7 +25,7 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 #define DEBUG_PRINT 0
 // #define DEBUG_PRINT 1
 
- #define RUN_TIME (5*60*1000)
+//  #define RUN_TIME (5*60*1000)
 //  #define RUN_TIME (30000)
 // #define RUN_TIME (5000)
 // #define RUN_TIME (2000)
@@ -33,7 +33,7 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define RUN_TIME (500)
 // #define RUN_TIME (101)
 // #define RUN_TIME (31)
-// #define RUN_TIME (11)
+#define RUN_TIME (11)
 // #define RUN_TIME (10)
 // #define RUN_TIME (5)
 
@@ -224,7 +224,6 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
-	/* TODO: Uncomment calls */
 	printf("At time t = : %u\n", timer_storage);
 
 	/* Release Periodic Tasks */
@@ -237,7 +236,7 @@ void timer_timeout_handler(int sig_number)
 	scheduler.update_periodic_executed_time(timer_storage);
 
 	// /* Run Tasks */
-	// scheduler.run_tasks();
+	scheduler.run_tasks();
 
 	if (DEBUG_PRINT)
 	{
