@@ -10,6 +10,7 @@
 #include <cerrno>
 #include <stdio.h>
 #include <stdlib.h>
+#include "Logger.h"
 
 #define DEBUG_PRINT 0
 
@@ -17,20 +18,20 @@ namespace realtime_vehicle_monitoring_diagnostics
 {
 	Thread::Thread()
 	{
-		if (DEBUG_PRINT)
-		{
-			printf("Thread object created\n");
-		}
+		this->is_complete = 0;
+		this->prio = 0;
+		this->thread_name = "default";
+		Logger::log_thread_details(this, "Default Thread was created\n");
 	}
 
 	Thread::~Thread()
 	{
+		this->is_complete = 1;
+		this->prio = 0;
+
 		/* TODO: Thread kill */
-		// pthread_kill(this->thread, SIGKILL);
-		if (DEBUG_PRINT)
-		{
-			printf("Thread object destroyed\n");
-		}
+		pthread_kill(this->thread, SIGKILL);
+		Logger::log_thread_details(this, "Terminated\n");
 	}
 
 	Thread::Thread(start_routine_t start_routine,
@@ -38,7 +39,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 				   char *thread_name)
 	{
 		this->is_complete = 0;
+		this->prio = 0;
 		this->thread_name = thread_name;
+		Logger::log_thread_details(this, "Created\n");
 
 		pthread_mutex_init(&this->thread_control.mutex, NULL);
 		pthread_mutex_init(&this->thread_control.completion_mutex, NULL);
@@ -89,6 +92,17 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// EFAULT
 		// EINVAL
 		// EOK
+	}
+
+	Thread::Thread(const Thread &thread)
+	{
+		this->thread = thread.thread;
+		this->thread_name = thread.thread_name;
+		this->attr = thread.attr;
+		this->params = thread.params;
+		this->start_routine = thread.start_routine;
+		this->thread_control = thread.thread_control;
+		this->is_complete = thread.is_complete;
 	}
 
 	void Thread::release_completion_mutex()
@@ -163,10 +177,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	void Thread::update_priority(int prio)
 	{
+		this->prio = prio;
 		// int pthread_setschedprio( pthread_t thread, int prio );
 		if (pthread_setschedprio(this->thread, prio) != EOK)
 		{
-			printf("Fatal Error: Couldn't change the priority of the Thread\n");
+			printf("Thread Fatal Error: Couldn't change the priority of the Thread\n");
 			/* TODO: Remove */
 			exit(-1);
 		}

@@ -8,6 +8,8 @@
 #include "Scheduler.h"
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
+#include "Logger.h"
 
 #define DEBUG_PRINT 0
 // #define DEBUG_PRINT 1
@@ -17,27 +19,23 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Scheduler::Scheduler()
 	{
-		if (DEBUG_PRINT)
-		{
-			printf("Scheduler object created\n");
-		}
+		printf("Scheduler object created\n");
 	}
 
 	Scheduler::~Scheduler()
 	{
-		if (DEBUG_PRINT)
-		{
-			printf("Scheduler object destroyed\n");
-		}
+		printf("Scheduler object destroyed\n");
 	}
 
 	void Scheduler::add_periodic_task(PeriodicTask perodicTask)
 	{
+		Logger::log_task_details(&perodicTask, "Periodic Task created");
 		this->periodicTasks.push_back(perodicTask);
 	}
 
 	void Scheduler::release_periodic_tasks(unsigned timer_storage)
 	{
+
 		/* Release Periodic Tasks */
 		int periodicTasksSize = this->periodicTasks.size();
 		for (int i = 0; i < periodicTasksSize; i++)
@@ -51,8 +49,11 @@ namespace realtime_vehicle_monitoring_diagnostics
 			{
 
 				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));
+				periodic_task->released_time = timer_storage;
 				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
 				this->periodicWaitingQueue.push(periodic_task);
+
+				Logger::log_task_details(periodic_task, "Task Released");
 
 				if (DEBUG_PRINT)
 				{
@@ -65,27 +66,27 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* FUTURE IMPLEMENTATION: Release Aperiodic Tasks */
 	/* FUTURE IMPLEMENTATION: Release Sporatic Tasks */
 
-	void Scheduler::update_executed_priority(unsigned timer_storage)
+	void Scheduler::update_periodic_executed_time(unsigned timer_storage)
 	{
-		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
+		printf("Start of executed time updating, queue sizes are:\n");
+		this->print_queue_sizes();
 
-		// int running_tasks_to_pop = 0;
-		int waiting_tasks_to_pop = 0;
-		// bool found_equal_deadline_flag = 0;
+		if (this->periodicRunningQueue.empty())
+		{
+			printf("No running task.\n");
+			this->print_queue_sizes();
+			return;
+		}
 
-		std::queue<PeriodicTask *> temp_periodic_running_queue;
+		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
 
 		while (!this->periodicRunningQueue.empty())
 		{
-			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
-			PeriodicTask *next_to_release_periodic_task = this->periodicWaitingQueue.top();
 
-			/* Update Executed Time */
-			/* TODO: FIXME  -NUCLEAR- How to set the last start time?? */
-			current_running_task->executed_time += timer_storage - current_running_task->last_start_time;
+			PeriodicTask *current_running_task = this->periodicRunningQueue.top();
 
 			/*
-				Check if the task is complete
+				Remove if the task is complete
 			*/
 			current_running_task->thread.acquire_completion_mutex();
 			if (current_running_task->thread.is_complete)
@@ -94,68 +95,279 @@ namespace realtime_vehicle_monitoring_diagnostics
 				this->periodicRunningQueue.pop();
 				current_running_task->thread.release_completion_mutex();
 
+				Logger::log_task_details(current_running_task, "Completed Task\n");
+				this->print_queue_sizes();
+
+				/* If the deadline was misseed */
+				if (current_running_task->executed_time + current_running_task->released_time > current_running_task->deadline)
+				{
+
+					Logger::log_task_details(current_running_task, "?Log Deadline Missed?\n");
+					// exit(-1);
+				}
+
 				/* release memory */
 				delete current_running_task;
-				/* TODO: LOG: completion of task  */
 				continue;
 			}
 			current_running_task->thread.release_completion_mutex();
 
 			/*
-				If task is not complete and waiting
+				Not Complete, Update Executed time
 			*/
-			if (current_running_task->deadline < next_to_release_periodic_task->deadline)
-			{
-				break;
-			}
+			/* Update executed time */
+			current_running_task->executed_time = timer_storage - current_running_task->released_time;
 
-			/* TODO: Check logic - check how deadline is calculated */
-			if (current_running_task->deadline > next_to_release_periodic_task->deadline)
+			Logger::log_task_details(current_running_task, "Execution Time Updated\n");
+
+			/* If the executed time is greater than the execution time */
+			if (current_running_task->executed_time > current_running_task->execution_time)
 			{
-				// TODO: CHECK VERIFY logic
-				/* TODO: can it be Block or kill -> current_running_task? */
-				/* Put Current_running_task to Wait */
-				current_running_task->thread.block();
-				/* Lower the Priority of Current_running_task*/
-				current_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
-				/* Add the Current_running_task Back to the Periodic_release_queue */
-				this->periodicWaitingQueue.push(current_running_task);
-				/* Pop the Current_running_task From the Runningqueue */
+				printf("!?WARNING::Executed > Execution Time?!\n");
+				// exit(-1);
+			}
+			/* If the deadline was misseed */
+			if ((current_running_task->executed_time + current_running_task->released_time) > current_running_task->deadline)
+			{
 				this->periodicRunningQueue.pop();
-				/* Increase the Priority of Next_to_release_periodic_task */
-				next_to_release_periodic_task->thread.update_priority(THREAD_RUN_PRIORITY);
-				/* Add the Next_to_release_periodic_task to the Temp_running_queue */
-				temp_periodic_running_queue.push(next_to_release_periodic_task);
-				/* Pop the waiting task From the periodicWaitingQueue */
-				waiting_tasks_to_pop++;
+				printf("!?FATAL::Deadline Missed?!\n");
+				// exit(-1);
+				this->print_queue_sizes();
+				delete current_running_task;
+				continue;
 			}
 
-			/* TODO: Check logic - check how deadline is calculated */
-			else if (current_running_task->deadline == next_to_release_periodic_task->deadline)
+			tempRunningQueue.push(current_running_task);
+			this->periodicRunningQueue.pop();
+			this->print_queue_sizes();
+		}
+
+		while (!tempRunningQueue.empty())
+		{
+			periodicRunningQueue.push(tempRunningQueue.top());
+			tempRunningQueue.pop();
+		}
+
+		printf("End of executed time updating, queue sizes are:\n");
+		this->print_queue_sizes();
+		printf("\n\n\n");
+	}
+
+	void Scheduler::update_periodic_priority()
+	{
+		printf("Start of priority updating, queue sizes are:\n");
+		this->print_queue_sizes();
+
+		/* ***NOTE: Current Implementation only handles Periodic Tasks*** */
+
+		/* 
+			Running queue - empty 
+		*/
+		if (this->periodicRunningQueue.empty())
+		{
+			if (this->periodicWaitingQueue.empty())
 			{
-				/* Increase the Priority of Next_to_release_periodic_task */
-				next_to_release_periodic_task->thread.update_priority(THREAD_RUN_PRIORITY);
-				/* Add the Next_to_release_periodic_task to the Temp_running_queue */
-				temp_periodic_running_queue.push(next_to_release_periodic_task);
-				/* Pop the waiting task From the periodicWaitingQueue */
-				waiting_tasks_to_pop++;
+				printf("Priority Updading: Running queue and Waiting queue was empty.\n\n\n");
+				this->print_queue_sizes();
+				return;
+			}
+			PeriodicTask *highest_prio_waiting_task = this->periodicWaitingQueue.top();
+			this->periodicRunningQueue.push(highest_prio_waiting_task);
+			this->periodicWaitingQueue.pop();
+
+			Logger::log_task_details(highest_prio_waiting_task, "Priority Updading: Moving highest priority waiting task to running queue\n");
+			this->print_queue_sizes();
+
+			/* Find task with same deadline as the first one pushed to the empty running queue  */
+			bool done_flag = 0;
+			while (!done_flag)
+			{
+				if (this->periodicWaitingQueue.empty())
+				{
+					printf("Priority Updading: Only task in waiting queue was moved to running queue.\n\n\n");
+					this->print_queue_sizes();
+					return;
+				}
+
+				PeriodicTask *next_highest_prio_waiting_task = this->periodicWaitingQueue.top();
+
+				/* no other same priority tasks */
+				if (next_highest_prio_waiting_task->deadline > highest_prio_waiting_task->deadline)
+				{
+					printf("Priority Updading: Completed moving all eligible waiting task to running queue.\n\n\n");
+
+					done_flag = 1;
+					return;
+				}
+				else if (next_highest_prio_waiting_task->deadline == highest_prio_waiting_task->deadline)
+				{
+
+					this->periodicRunningQueue.push(next_highest_prio_waiting_task);
+					this->periodicWaitingQueue.pop();
+
+					Logger::log_task_details(next_highest_prio_waiting_task, "Priority Updading: Another task with same waiting priority has been moved to running queue\n");
+					this->print_queue_sizes();
+				}
+				else if (next_highest_prio_waiting_task->deadline < highest_prio_waiting_task->deadline)
+				{
+					printf("Priority Updading: FATAL ERROR: Error with Priority Queues\n");
+					exit(-1);
+				}
+			}
+		}
+
+		/* 
+			Running queue is not empty 
+		*/
+		if (this->periodicWaitingQueue.empty())
+		{
+			/* nothing to swap */
+			printf("Priority Updading: Running queue is not empty, Waiting queue is empty. No tasks to swap.\n\n\n");
+			return;
+		}
+
+		PeriodicTask *highest_prio_waiting_task = this->periodicWaitingQueue.top();
+
+		Logger::log_task_details(highest_prio_waiting_task, "Priority Updading: Running queue is not empty, Looking at highest priority waiting task\n");
+
+		bool move_waiting_task_to_running_queue_flag = 0;
+		bool done_flag = 0;
+		while (!done_flag)
+		{
+
+			if (this->periodicRunningQueue.empty())
+			{
+				printf("Priority Updading: All running tasks has lower priority than the highest priority waiting task, all running tasks has been moved to waiting queue.\n\n\n");
+
+				done_flag = 1;
 				break;
 			}
 
-			/* TODO: Update priority based on EDF? */
+			PeriodicTask *lowest_prio_running_task = this->periodicRunningQueue.top();
+			Logger::log_task_details(lowest_prio_running_task, "Priority Updading: Comparing the current lowest priority running task with the highest priority waiting task\n");
 
-			/* CLEAN: Static Casting  */
-			// PeriodicTask *current_running_task = static_cast<PeriodicTask *>(current_running_task);
+			/* 
+				No task to swap
+			*/
+			if (lowest_prio_running_task->deadline < highest_prio_waiting_task->deadline)
+			{
+				Logger::log_task_details(lowest_prio_running_task, "Priority Updading: Details of the lowest priority running task\n");
+				Logger::log_task_details(highest_prio_waiting_task, "Priority Updading: Details of the highest priority waiting task\n");
+				printf("Priority Updading: Priority(highest priority waiting task) < Priority(lowest priority running task), nothing more to swap.\n\n\n");
+
+				done_flag = 1;
+				break;
+			}
+
+			/* 
+				waiting task has higher priority 
+			*/
+			else if (lowest_prio_running_task->deadline > highest_prio_waiting_task->deadline)
+			{
+
+				/* TODO: can it be Block or kill -> lowest_prio_running_task? */
+				/* Put lowest_prio_running_task to Wait */
+				/* TODO: NUCLEAR !!Can I call this?  */
+				// lowest_prio_running_task->thread.block();
+				/* Lower the Priority of lowest_prio_running_task*/
+				lowest_prio_running_task->thread.update_priority(THREAD_IDLE_PRIORITY);
+				/* Add the lowest_prio_running_task Back to the Periodic_release_queue */
+				this->periodicWaitingQueue.push(lowest_prio_running_task);
+				/* Pop the lowest_prio_running_task From the Runningqueue */
+				this->periodicRunningQueue.pop();
+
+				move_waiting_task_to_running_queue_flag = 1;
+
+				Logger::log_task_details(lowest_prio_running_task, "Priority Updading: Details of the lowest priority running task\n");
+				Logger::log_task_details(highest_prio_waiting_task, "Priority Updading: Details of the highest priority waiting task\n");
+				printf("Priority Updading: Priority(highest priority waiting task) > Priority(lowest priority running task), moving lowest priority running task to waiting queue.\n");
+				this->print_queue_sizes();
+			}
+
+			/* 
+				waiting task has equal priority 
+			*/
+			else if (lowest_prio_running_task->deadline == highest_prio_waiting_task->deadline)
+			{
+				Logger::log_task_details(lowest_prio_running_task, "Priority Updading: Details of the lowest priority running task\n");
+				Logger::log_task_details(highest_prio_waiting_task, "Priority Updading: Details of the highest priority waiting task\n");
+				printf("Priority Updading: Priority(highest priority waiting task) == Priority(lowest priority running task), waiting task will be moved to running queue.\n\n\n");
+
+				move_waiting_task_to_running_queue_flag = 1;
+				break;
+			}
 		}
-		/* TODO: Add all the temporary running queued task to running queu */
-		/* TODO: Pop all the tasks accoring to the counter */
-		/* Pop the Current_running_task From the Runningqueue */
-		// this->periodicRunningQueue.pop();
+
+		/* 
+			Move waiting task to the Running queue
+		*/
+		if (move_waiting_task_to_running_queue_flag)
+		{
+
+			this->periodicRunningQueue.push(highest_prio_waiting_task);
+			this->periodicWaitingQueue.pop();
+
+			while (!this->periodicWaitingQueue.empty())
+			{
+				if (this->periodicWaitingQueue.top()->deadline > highest_prio_waiting_task->deadline)
+				{
+					printf("Priority Updading: Completed moving all eligible waiting task to running queue.\n\n\n");
+					return;
+				}
+				else if (this->periodicWaitingQueue.top()->deadline < highest_prio_waiting_task->deadline)
+				{
+					printf("Priority Updading: FATAL ERROR: Issue with priority queue\n");
+					exit(-1);
+				}
+
+				Logger::log_task_details(this->periodicWaitingQueue.top(), "Priority Updading: Moving waiting task to running queue\n");
+				this->print_queue_sizes();
+
+				this->periodicRunningQueue.push(this->periodicWaitingQueue.top());
+				this->periodicWaitingQueue.pop();
+			}
+		}
+	}
+
+	void Scheduler::run_tasks()
+	{
+
+		std::priority_queue<PeriodicTask *, std::vector<PeriodicTask *>, Compare_Periodic_Task_by_LDF> tempRunningQueue;
+
+		while (!this->periodicRunningQueue.empty())
+		{
+			PeriodicTask *running_task = this->periodicRunningQueue.top();
+
+			running_task->thread.signal();
+			Logger::log_task_details(running_task, "Signalling running task\n");
+
+			tempRunningQueue.push(running_task);
+			this->periodicRunningQueue.pop();
+		}
+
+		while (!tempRunningQueue.empty())
+		{
+			periodicRunningQueue.push(tempRunningQueue.top());
+			tempRunningQueue.pop();
+		}
 	}
 
 	int Scheduler::get_running_queue_size()
 	{
+		return this->periodicRunningQueue.size();
+	}
+
+	int Scheduler::get_waiting_queue_size()
+	{
 		return this->periodicWaitingQueue.size();
+	}
+	void Scheduler::print_queue_sizes()
+	{
+		printf("Running queue size: %u\n", this->get_running_queue_size());
+		printf("Waiting queue size: %u\n", this->get_waiting_queue_size());
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics
+
+/* CLEAN: Static Casting  */
+// PeriodicTask *current_running_task = static_cast<PeriodicTask *>(current_running_task);

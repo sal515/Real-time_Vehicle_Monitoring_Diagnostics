@@ -35,9 +35,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		char *task_name; // max length of task name
 		// char task_name[100]; // max length of task name
 		TaskType task_type;
-		long last_start_time;
+		long released_time;
 		long executed_time;
-		long priority;
 		Thread thread;
 	};
 

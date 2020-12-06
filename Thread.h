@@ -31,6 +31,8 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Thread(start_routine_t start_routine,
 			   int sched_priority,
 			   char *thread_name);
+		Thread(const Thread &thread);
+		
 		virtual ~Thread();
 
 		pthread_t thread;
@@ -42,6 +44,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 		start_routine_t start_routine;
 		struct Thread_Control thread_control;
 		bool is_complete;
+		bool prio;
 
 		void release_completion_mutex();
 		int acquire_completion_mutex();

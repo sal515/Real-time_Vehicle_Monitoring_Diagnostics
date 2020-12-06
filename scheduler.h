@@ -16,7 +16,6 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
-	/* TODO: FIXME - NUCLEAR -> THE SORTING SHOULD BE BASED ON DEADLINE (EDF) NOT PERIOID  */
 
 	/* EDF = Earliest_Deadline_First */
 	struct Compare_Periodic_Task_by_EDF
@@ -55,11 +54,14 @@ namespace realtime_vehicle_monitoring_diagnostics
 		Scheduler(); // initializatin of a Scheduler
 		virtual ~Scheduler();
 
-		void release_periodic_tasks(unsigned timer_storage);
-		void update_executed_priority(unsigned timer_storage);
-
 		void add_periodic_task(PeriodicTask perodicTask);
+		void release_periodic_tasks(unsigned timer_storage);
+		void update_periodic_executed_time(unsigned timer_storage);
+		void update_periodic_priority();
+		void run_tasks();
 		int get_running_queue_size();
+		int get_waiting_queue_size();
+		void print_queue_sizes();
 	};
 
 } // namespace realtime_vehicle_monitoring_diagnostics

@@ -15,8 +15,14 @@
 namespace realtime_vehicle_monitoring_diagnostics
 {
 
-	PeriodicTask::PeriodicTask(long period, long execution_time, char task_name[], long relative_deadline, long phase)
+	PeriodicTask::PeriodicTask(long period,
+							   long execution_time,
+							   char task_name[],
+							   start_routine_t routine,
+							   long relative_deadline,
+							   long phase)
 	{
+
 		this->phase = phase;
 		this->period = period;
 		this->execution_time = execution_time;
@@ -29,10 +35,12 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 		this->task_name = task_name;
 		this->task_type = PERIODIC;
+		this->released_time = 0;
 		this->executed_time = 0;
-		this->priority = LOW;
 		/* TODO: NUCLEAR Setup Thread Creation */
-		// this->thread = null;
+		this->thread = Thread(routine,
+							  THREAD_IDLE_PRIORITY,
+							  this->task_name);
 	}
 
 	PeriodicTask::~PeriodicTask()
@@ -48,31 +56,32 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		this->phase = periodicTask.phase;
 		this->period = periodicTask.period;
-		this->executed_time = periodicTask.executed_time;
+		this->execution_time = periodicTask.execution_time;
 		this->relative_deadline = periodicTask.relative_deadline;
 		this->deadline = periodicTask.deadline;
 
 		this->task_name = periodicTask.task_name;
 		this->task_type = periodicTask.task_type;
+		this->released_time = periodicTask.released_time;
 		this->executed_time = periodicTask.executed_time;
-		this->priority = LOW;
-		/* TODO: NUCLEAR Setup Thread Creation */
+		/* TODO: !!!!NUCLEAR Setup Thread Creation */
 		this->thread = periodicTask.thread;
 	}
 
 	void PeriodicTask::debug_print()
 	{
-		printf("________________________________\n");
-		printf("Periodic Task class debug print\n");
-		printf("________________________________\n");
+		return;
+		// 	printf("________________________________\n");
+		// 	printf("Periodic Task class debug print\n");
+		// 	printf("________________________________\n");
 
-		printf("Phase is: %l \n", this->phase);
-		printf("Period is: %l \n", this->period);
-		printf("Execution_time is: %l \n", this->execution_time);
-		printf("Executed_time is: %l \n", this->executed_time);
-		printf("Task_type is: %l \n", this->task_type);
-		printf("Relative_deadline is: %l \n", this->relative_deadline);
-		printf("Deadline is: %l \n", this->deadline);
+		// 	printf("Phase is: %l \n", this->phase);
+		// 	printf("Period is: %l \n", this->period);
+		// 	printf("Execution_time is: %l \n", this->execution_time);
+		// 	printf("Executed_time is: %l \n", this->executed_time);
+		// 	printf("Task_type is: %l \n", this->task_type);
+		// 	printf("Relative_deadline is: %l \n", this->relative_deadline);
+		// 	printf("Deadline is: %l \n", this->deadline);
 	}
 
 } // namespace realtime_vehicle_monitoring_diagnostics
