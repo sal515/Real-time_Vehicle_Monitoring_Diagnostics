@@ -22,7 +22,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
 		{
-			// return "true" if "p1" is ordered before "p2", for example:
 			return t1->deadline > t2->deadline;
 		}
 	};
@@ -32,7 +31,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	{
 		bool operator()(PeriodicTask *const t1, PeriodicTask *const t2)
 		{
-			// return "true" if "p1" is ordered before "p2", for example:
 			return t1->deadline < t2->deadline;
 		}
 	};

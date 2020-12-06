@@ -26,9 +26,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	Thread::~Thread()
 	{
-		// this->is_complete = 1;
 		this->prio = 0;
-
 		/* TODO: Thread kill */
 		// pthread_kill(this->thread, SIGKILL);
 		Logger::log_thread_details(this, "Terminated\n");
@@ -178,7 +176,6 @@ namespace realtime_vehicle_monitoring_diagnostics
 	void Thread::update_priority(int prio)
 	{
 		this->prio = prio;
-		// int pthread_setschedprio( pthread_t thread, int prio );
 		if (pthread_setschedprio(this->thread, prio) != EOK)
 		{
 			printf("Thread Fatal Error: Couldn't change the priority of the Thread\n");

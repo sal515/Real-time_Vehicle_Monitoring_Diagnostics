@@ -96,13 +96,7 @@ int main(int argc, char *argv[])
 	// make a for loop and pass different values to the next_value function
 	// check the printout against the csv file
 
-	/* CLEAN: Test */
-	// Test::test_thread(producer, consumer);
-	// return 0;
-	/* CLEAN: Test */
-
 	pthread_mutex_init(&data_mutex, NULL);
-
 	build_periodic_tasks_list(&scheduler);
 
 	const int signal_type = SIGUSR1;
@@ -117,16 +111,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	while (1)
+	while (timer_storage < RUN_TIME)
 	{
-		if (timer_storage >= RUN_TIME)
-		{
-			/* CLEAN: Test */
-			// Test::test_priority_queues_EDF(&scheduler);
-			/* CLEAN: Test */
-
-			return 0;
-		}
+		/* Run program */
 	}
 
 	int pause = 0;
@@ -135,7 +122,7 @@ int main(int argc, char *argv[])
 
 void *consumer(void *args)
 {
-	printf("***Consumer Thread***\n");
+
 	Thread *thread = (Thread *)(args);
 	// while (1)
 	// {
@@ -147,20 +134,22 @@ void *consumer(void *args)
 	// }
 	char *task_name = thread->thread_name;
 
-	Logger::log_thread_details(thread, "Consumer is going to sleep now...");
+	printf("\n***%s task --> execution started***\n", task_name);
+
+	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
 	thread->block();
 	// pthread_mutex_lock(&data_mutex);
 	// printf("Consumer: Data Processed\n");
-	Logger::log_thread_details(thread, "Consumer is awake: CS is executing");
+	Logger::log_thread_details(thread, "Details of the thread - waking up:");
 	// read from producer_buffer and print out using printf
 	// read_next_value(task_name, time_now_ms);
 	// pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
+	printf("***%s task --> execution ended***\n", task_name);
 }
 
 void *producer(void *args)
 {
-	printf("***Producer Thread***\n");
 	Thread *thread = (Thread *)(args);
 
 	// while (1)
@@ -171,15 +160,19 @@ void *producer(void *args)
 	// }
 
 	char *task_name = thread->thread_name;
-	Logger::log_thread_details(thread, "Producer is going to sleep now...");
+
+	printf("\n***%s task --> execution started***\n", task_name);
+
+	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
 	thread->block();
 	// pthread_mutex_lock(&data_mutex);
 	// printf("Producer: Data Processed\n");
-	Logger::log_thread_details(thread, "Producer is awake: CS is executing");
+	Logger::log_thread_details(thread, "Details of the thread - waking up:");
 	// write to producer_buffer from file
 	// read_next_value(task_name, time_now_ms);
 	// pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
+	printf("***%s task --> execution ended***\n", task_name);
 }
 
 void build_periodic_tasks_list(Scheduler *scheduler)
@@ -189,54 +182,56 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 								  PRODUCER_EXECUTION_TIME,
 								  "fuel_consumption",
 								  producer);
-	scheduler->add_periodic_task(p); // total - 3000
-									 // p = PeriodicTask(500,
-									 // 				 PRODUCER_EXECUTION_TIME,
-									 // 				 "engine_speed_rpm",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 60
-									 // p = PeriodicTask(2000,
-									 // 				 PRODUCER_EXECUTION_TIME,
-									 // 				 "engine_coolant_temp",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 15
-									 // p = PeriodicTask(100,
-									 // 				 PRODUCER_EXECUTION_TIME, "current_gear",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 300
-									 // p = PeriodicTask(5000,
-									 // 				 PRODUCER_EXECUTION_TIME,
-									 // 				 "transmission_oil_temp",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 6
-									 // p = PeriodicTask(100,
-									 // 				 PRODUCER_EXECUTION_TIME,
-									 // 				 "vehicle_speed",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 300
-									 // p = PeriodicTask(150,
-									 // 				 PRODUCER_EXECUTION_TIME,
-									 // 				 "acceleration_speed_longitudinal",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 200
-									 // p = PeriodicTask(100,
-									 // 				 PRODUCER_EXECUTION_TIME,
-									 // 				 "indication_break_switch",
-									 // 				 producer);
-									 // scheduler->add_periodic_task(p); // total - 300
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(500,
+					 PRODUCER_EXECUTION_TIME,
+					 "engine_speed_rpm",
+					 producer);
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(2000,
+					 PRODUCER_EXECUTION_TIME,
+					 "engine_coolant_temp",
+					 producer);
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(100,
+					 PRODUCER_EXECUTION_TIME, "current_gear",
+					 producer);
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(5000,
+					 PRODUCER_EXECUTION_TIME,
+					 "transmission_oil_temp",
+					 producer);
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(100,
+					 PRODUCER_EXECUTION_TIME,
+					 "vehicle_speed",
+					 producer);
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(150,
+					 PRODUCER_EXECUTION_TIME,
+					 "acceleration_speed_longitudinal",
+					 producer);
+	scheduler->add_periodic_task(p);
+	p = PeriodicTask(100,
+					 PRODUCER_EXECUTION_TIME,
+					 "indication_break_switch",
+					 producer);
+	scheduler->add_periodic_task(p);
 
-	// p = PeriodicTask(10,
-	// 				 CONSUMER_EXECUTION_TIME,
-	// 				 "Consumer_Print_Function",
-	// 				 consumer);
+	p = PeriodicTask(10,
+					 CONSUMER_EXECUTION_TIME,
+					 "Consumer_Print_Function",
+					 consumer);
 
-	// scheduler->add_periodic_task(p); // total - 300
+	scheduler->add_periodic_task(p);
 }
 
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
-	printf("At time t = : %u\n", timer_storage);
+	printf("\n\n\n=======================================================================================\n", timer_storage);
+	printf("================================== At time t = : %u  ==================================\n", timer_storage);
+	printf("=======================================================================================\n", timer_storage);
 
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
@@ -249,12 +244,6 @@ void timer_timeout_handler(int sig_number)
 
 	// /* Run Tasks */
 	scheduler.run_tasks();
-
-	if (DEBUG_PRINT)
-	{
-		printf("At time t = : %u\n", timer_storage);
-		printf("Number of Tasks: %u\n", scheduler.get_running_queue_size());
-	}
 
 	/* Increment Timer Value */
 	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);

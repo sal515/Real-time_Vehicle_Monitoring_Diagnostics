@@ -30,10 +30,9 @@ namespace realtime_vehicle_monitoring_diagnostics
 	class Task
 	{
 	public:
-		virtual void debug_print() = 0;
+		// virtual void debug_print() = 0;
 
 		char *task_name; // max length of task name
-		// char task_name[100]; // max length of task name
 		TaskType task_type;
 		long released_time;
 		long executed_time;

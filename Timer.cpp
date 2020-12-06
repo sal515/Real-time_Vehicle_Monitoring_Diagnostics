@@ -60,7 +60,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	Timer::~Timer()
 	{
 		this->destroy();
-		printf("Timer object destroyed\n");
+		// printf("Timer object destroyed\n");
 	}
 
 	int Timer::start()
@@ -71,7 +71,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 
 	int Timer::destroy()
 	{
-		printf("Timer destroy method called\n");
+		// printf("Timer destroy method called\n");
 		/* activate the timer */
 		return timer_delete(this->timer);
 	}
