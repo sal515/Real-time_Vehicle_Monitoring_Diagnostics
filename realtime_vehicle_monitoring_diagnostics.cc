@@ -17,7 +17,8 @@
 // #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+// #include <string.h>
+#include <string>
 #include <unistd.h>
 
 using namespace realtime_vehicle_monitoring_diagnostics;
@@ -79,6 +80,9 @@ struct PRODUCER_VALUES
 	std::string indication_break_switch;
 };
 
+int file_id;
+
+// std::ofstream file;
 PRODUCER_VALUES producer_buffer;
 pthread_mutex_t data_mutex;
 
@@ -96,6 +100,11 @@ int main(int argc, char *argv[])
 	/* For tests */
 	// 		// test code here
 	// return 0;
+
+	// while (1)
+	// {
+
+	Logger::create_open_log_file(file_id);
 
 	pthread_mutex_init(&data_mutex, NULL);
 	build_periodic_tasks_list(&scheduler);
@@ -118,21 +127,30 @@ int main(int argc, char *argv[])
 	}
 
 	int pause = 0;
+	// }
 	return EXIT_SUCCESS;
 }
 
 void *consumer(void *args)
 {
+	char buffer[500];
+	int string_size;
+	std::string regular_str;
+
 	Thread *thread = (Thread *)(args);
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+	string_size = sprintf(buffer, "\n***%s task --> execution started***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
 
-	Logger::log_thread_details(thread, "Details of the thread - waking up:");
+	regular_str = "Details of the thread - waking up:";
+	Logger::log_thread_details(thread, regular_str.c_str());
+	Logger::write_to_file(file_id, regular_str.c_str(), regular_str.size());
 	// -- critical section --
 
 	// -- critical section --
@@ -140,20 +158,30 @@ void *consumer(void *args)
 	thread->unblock();
 
 	printf("***%s task --> execution ended***\n", task_name);
+	string_size = sprintf(buffer, "***%s task --> execution ended***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 }
 
 void *producer(void *args)
 {
+	char buffer[500];
+	int string_size;
+	std::string regular_str;
+
 	Thread *thread = (Thread *)(args);
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+	string_size = sprintf(buffer, "\n***%s task --> execution started***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
 
-	Logger::log_thread_details(thread, "Details of the thread - waking up:");
+	regular_str = "Details of the thread - waking up:";
+	Logger::log_thread_details(thread, regular_str.c_str());
+	Logger::write_to_file(file_id, regular_str.c_str(), regular_str.size());
 	// -- critical section --
 
 	// -- critical section --
@@ -161,6 +189,8 @@ void *producer(void *args)
 	thread->unblock();
 
 	printf("***%s task --> execution ended***\n", task_name);
+	string_size = sprintf(buffer, "***%s task --> execution ended***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 }
 
 void build_periodic_tasks_list(Scheduler *scheduler)
@@ -220,6 +250,10 @@ void timer_timeout_handler(int sig_number)
 	printf("\n\n\n=======================================================================================\n", timer_storage);
 	printf("================================== At time t = : %u  ==================================\n", timer_storage);
 	printf("=======================================================================================\n", timer_storage);
+
+	char buffer[200];
+	int string_size = sprintf(buffer, "\n\nAt time t = : %u\n", timer_storage);
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage);
