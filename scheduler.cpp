@@ -36,6 +36,30 @@ namespace realtime_vehicle_monitoring_diagnostics
 		// printf("Scheduler object destroyed\n");
 	}
 
+	void Scheduler::cleanup()
+	{
+		while (!this->periodicWaitingQueue.empty())
+		{
+			PeriodicTask *t = this->periodicWaitingQueue.top();
+			if (t->thread != NULL)
+			{
+				delete t->thread;
+			}
+			delete t;
+			this->periodicWaitingQueue.pop();
+		}
+		while (!this->periodicRunningQueue.empty())
+		{
+			PeriodicTask *t = this->periodicRunningQueue.top();
+			if (t->thread != NULL)
+			{
+				delete t->thread;
+			}
+			delete t;
+			this->periodicRunningQueue.pop();
+		}
+	}
+
 	void Scheduler::add_periodic_task(PeriodicTask &perodicTask)
 	{
 		// Logger::log_task_details(&perodicTask, "Periodic Task created");
