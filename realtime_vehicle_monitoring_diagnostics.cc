@@ -27,13 +27,13 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define DEBUG_PRINT 1
 
 //  #define RUN_TIME (5*60*1000)
-//  #define RUN_TIME (30000)
+#define RUN_TIME (30000)
 // #define RUN_TIME (5000)
 // #define RUN_TIME (2000)
 // #define RUN_TIME (1000)
 // #define RUN_TIME (500)
 // #define RUN_TIME (101)
-#define RUN_TIME (31)
+// #define RUN_TIME (31)
 // #define RUN_TIME (11)
 // #define RUN_TIME (10)
 // #define RUN_TIME (5)
@@ -44,11 +44,6 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 
 #define CONSUMER_EXECUTION_TIME (1)
 #define PRODUCER_EXECUTION_TIME (1)
-
-/* Timer */
-/* Rotates in 4294967295 ~1.6months */
-volatile unsigned timer_storage = 0;
-Scheduler scheduler = Scheduler();
 
 /* Function prototypes */
 void *consumer(void *args);
@@ -80,6 +75,10 @@ struct PRODUCER_VALUES
 	std::string indication_break_switch;
 };
 
+/* Timer */
+/* Rotates in 4294967295 ~1.6months */
+volatile unsigned timer_storage = 0;
+Scheduler scheduler = Scheduler();
 int file_id;
 PRODUCER_VALUES producer_buffer;
 pthread_mutex_t data_mutex;
@@ -99,33 +98,33 @@ int main(int argc, char *argv[])
 	// 		// test code here
 	// return 0;
 
-	// while (1)
-	// {
-
-	Logger::create_open_log_file(file_id);
-
-	pthread_mutex_init(&data_mutex, NULL);
-	build_periodic_tasks_list(&scheduler);
-
-	const int signal_type = SIGUSR1;
-	signal(signal_type, timer_timeout_handler);
-
-	Timer one_ms_timer = Timer(TIMER_1_MS_IN_NS,
-							   "Task Release Timer",
-							   signal_type);
-	if (one_ms_timer.start() < 0)
+	while (1)
 	{
-		printf("Failed to start perioidc timer - %s\n", one_ms_timer.timer_name);
-		return -1;
-	}
 
-	while (timer_storage < RUN_TIME)
-	{
-		/* Run program */
-	}
+		Logger::create_open_log_file(file_id);
 
-	int pause = 0;
-	// }
+		pthread_mutex_init(&data_mutex, NULL);
+		build_periodic_tasks_list(&scheduler);
+
+		const int signal_type = SIGUSR1;
+		signal(signal_type, timer_timeout_handler);
+
+		Timer one_ms_timer = Timer(TIMER_1_MS_IN_NS,
+								   "Task Release Timer",
+								   signal_type);
+		if (one_ms_timer.start() < 0)
+		{
+			printf("Failed to start perioidc timer - %s\n", one_ms_timer.timer_name);
+			return -1;
+		}
+
+		while (timer_storage < RUN_TIME)
+		{
+			/* Run program */
+		}
+
+		Logger::close_file(file_id);
+	}
 	return EXIT_SUCCESS;
 }
 
@@ -145,11 +144,11 @@ void *consumer(void *args)
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
+	// -- critical section --
 
 	regular_str = "Details of the thread - waking up:";
 	Logger::log_thread_details(thread, regular_str.c_str());
 	Logger::write_to_file(file_id, regular_str.c_str(), regular_str.size());
-	// -- critical section --
 
 	// -- critical section --
 	pthread_mutex_unlock(&data_mutex);
@@ -176,11 +175,11 @@ void *producer(void *args)
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
+	// -- critical section --
 
 	regular_str = "Details of the thread - waking up:";
 	Logger::log_thread_details(thread, regular_str.c_str());
 	Logger::write_to_file(file_id, regular_str.c_str(), regular_str.size());
-	// -- critical section --
 
 	// -- critical section --
 	pthread_mutex_unlock(&data_mutex);
