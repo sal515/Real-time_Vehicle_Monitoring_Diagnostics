@@ -16,6 +16,11 @@
 #define LOG_UPDATE_PERIODIC_PRIORITY 0
 #define LOG_UPDATE_RUN_TASKS 0
 
+// #define LOG_RELEASE_TASKS 1
+// #define LOG_UPDATE_PERIODIC_EXECUTION_TIME 1
+// #define LOG_UPDATE_PERIODIC_PRIORITY 1
+// #define LOG_UPDATE_RUN_TASKS 1
+
 #define DEBUG_PRINT 0
 
 namespace realtime_vehicle_monitoring_diagnostics
@@ -49,24 +54,24 @@ namespace realtime_vehicle_monitoring_diagnostics
 		delete perodicTask->thread;
 	}
 
-	void Scheduler::release_periodic_tasks(unsigned timer_storage)
+	void Scheduler::release_periodic_tasks(unsigned timer_storage_ms)
 	{
 
 		/* Release Periodic Tasks */
 		int periodicTasksSize = this->periodicTasks.size();
 		for (int i = 0; i < periodicTasksSize; i++)
 		{
-			if (timer_storage < this->periodicTasks.at(i).phase)
+			if (timer_storage_ms < this->periodicTasks.at(i).phase)
 			{
 				continue;
 			}
 
-			if ((timer_storage % this->periodicTasks.at(i).period == 0))
+			if ((timer_storage_ms % this->periodicTasks.at(i).period == 0))
 			{
 
 				PeriodicTask *periodic_task = new PeriodicTask(this->periodicTasks.at(i));
-				periodic_task->released_time = timer_storage;
-				periodic_task->deadline = timer_storage + periodic_task->relative_deadline;
+				periodic_task->released_time = timer_storage_ms;
+				periodic_task->deadline = timer_storage_ms + periodic_task->relative_deadline;
 				this->periodicWaitingQueue.push(periodic_task);
 
 				this->create_assign_thread(periodic_task);
@@ -82,7 +87,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 	/* FUTURE IMPLEMENTATION: Release Aperiodic Tasks */
 	/* FUTURE IMPLEMENTATION: Release Sporatic Tasks */
 
-	void Scheduler::update_periodic_executed_time(unsigned timer_storage)
+	void Scheduler::update_periodic_executed_time(unsigned timer_storage_ms)
 	{
 		if (LOG_UPDATE_PERIODIC_EXECUTION_TIME)
 		{
@@ -146,7 +151,7 @@ namespace realtime_vehicle_monitoring_diagnostics
 				Not Complete, Update Executed time
 			*/
 			/* Update executed time */
-			current_running_task->executed_time = timer_storage - current_running_task->released_time;
+			current_running_task->executed_time = timer_storage_ms - current_running_task->released_time;
 
 			if (LOG_UPDATE_PERIODIC_EXECUTION_TIME)
 			{
