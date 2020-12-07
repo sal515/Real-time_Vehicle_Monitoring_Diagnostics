@@ -31,19 +31,6 @@
 using namespace realtime_vehicle_monitoring_diagnostics;
 
 #define DEBUG_PRINT 0
-// #define DEBUG_PRINT 1
-
-//  #define RUN_TIME (5*60*1000)
-// #define RUN_TIME (30000)
-// #define RUN_TIME (5000)
-// #define RUN_TIME (2000)
-// #define RUN_TIME (1000)
-// #define RUN_TIME (500)
-// #define RUN_TIME (101)
-// #define RUN_TIME (31)
-// #define RUN_TIME (11)
-// #define RUN_TIME (10)
-// #define RUN_TIME (5)
 
 #define CONSUMER_EXECUTION_TIME (1)
 #define PRODUCER_EXECUTION_TIME (1)
@@ -51,8 +38,8 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 /* Function prototypes */
 void *consumer(void *args);
 void *producer(void *args);
-void build_periodic_tasks_list(Scheduler *scheduler);
 void timer_timeout_handler(int sig_number);
+void build_periodic_tasks_list(Scheduler *scheduler);
 
 enum TASK_NAME
 {
@@ -65,26 +52,13 @@ enum TASK_NAME
 	INDICATION_BREAK_SWITCH
 };
 
-// struct PRODUCER_VALUES
-// {
-// 	std::string fuel_consumption;
-// 	std::string engine_speed_rpm;
-// 	std::string engine_coolant_temp;
-// 	std::string current_gear;
-// 	std::string transmission_oil_temp;
-// 	std::string vehicle_speed;
-// 	std::string acceleration_speed_longitudinal;
-// 	std::string indication_break_switch;
-// };
-// PRODUCER_VALUES producer_buffer;
-
 /* Timer */
 /* Rotates in 4294967295 ~1.6months */
 int file_id;
-volatile unsigned timer_storage = 0;
-Scheduler scheduler = Scheduler();
 pthread_mutex_t data_mutex;
 std::queue<Output> output_queue;
+Scheduler scheduler = Scheduler();
+volatile unsigned timer_storage_ms = 0;
 
 int producer_string_to_enum_converter(char *task_name)
 {
@@ -121,47 +95,6 @@ int producer_string_to_enum_converter(char *task_name)
 		return INDICATION_BREAK_SWITCH;
 	}
 }
-
-// /* Provides the value for the task identified by the parameter */
-// std::string read_next_value(int task_name, std::string time_now_ms)
-// {
-// 	std::string next_value;
-// 	//producer_buffer.fuel_consumption = next_value;
-// 	std::string time = time_now_ms;
-// 	std::ifstream input_from_file("data.csv");
-// 	std::string line;
-// 	while (getline(input_from_file, line))
-// 	{
-// 		line += ",";
-// 		std::stringstream ss(line);
-// 		std::string word;
-// 		std::vector<std::string> words;
-// 		while (getline(ss, word, ','))
-// 		{
-// 			words.push_back(word);
-// 		}
-// 		while (1)
-// 		{
-// 			if (words[7] == time)
-// 			{
-// 				printf("In the fct: %s\n", words[task_name].c_str());
-// 				next_value = words[task_name];
-// 				break;
-// 			}
-// 			else
-// 			{
-// 				break;
-// 			}
-// 		}
-// 	}
-
-// 	if (input_from_file.is_open())
-// 	{
-// 		input_from_file.close();
-// 	}
-
-// 	return next_value;
-// }
 
 float read_next_value(char *task_name, unsigned timer_storage)
 {
@@ -217,16 +150,16 @@ int main(int argc, char *argv[])
 	// 	output = read_next_value("current_gear", i);
 	// 	printf("Time: %d, Found value is: %f \n", i, output);
 	// }
-
 	// return 0;
 
 	build_periodic_tasks_list(&scheduler);
+
 	Timer *one_ms_timer;
-	std::string RUN_TIME_STR;
 	unsigned long RUN_TIME;
+	std::string RUN_TIME_STR;
 	const int signal_type = SIGUSR1;
-	signal(signal_type, timer_timeout_handler);
 	pthread_mutex_init(&data_mutex, NULL);
+	signal(signal_type, timer_timeout_handler);
 
 	while (1)
 	{
@@ -241,7 +174,6 @@ int main(int argc, char *argv[])
 			}
 		}
 		RUN_TIME = atoi(RUN_TIME_STR.c_str()) * 1000;
-		// RUN_TIME = stoul(RUN_TIME_STR.c_str(), nullptr, 10) * 1000;
 		printf("\nThe program is going to run for %d seconds \n", RUN_TIME);
 
 		Logger::create_open_log_file(file_id);
@@ -255,11 +187,11 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 
-		while (timer_storage < RUN_TIME)
+		while (timer_storage_ms < RUN_TIME)
 		{
 			/* Run program */
 		}
-		timer_storage = 0;
+		timer_storage_ms = 0;
 		one_ms_timer->destroy();
 		delete one_ms_timer;
 		scheduler.cleanup();
@@ -279,7 +211,7 @@ void *consumer(void *args)
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
-	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+	Logger::log_thread_details(thread, "Details of the thread - going to sleep:\n");
 	string_size = sprintf(buffer, "\n***%s task --> execution started***\n", task_name);
 	Logger::write_to_file(file_id, buffer, string_size);
 
@@ -287,15 +219,18 @@ void *consumer(void *args)
 	pthread_mutex_lock(&data_mutex);
 
 	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
+
 	// -- critical section --
 
 	while (!output_queue.empty())
 	{
-		printf("Updated value for \nTask Name: %s, Value: %s\n", output_queue.front().task_name, output_queue.front().value.c_str());
+		printf("Consumer consuming values:\nTask Name: %s, Value: %s\n", output_queue.front().task_name,
+			   output_queue.front().value.c_str());
 		output_queue.pop();
 	}
 
 	// -- critical section --
+
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
@@ -314,7 +249,7 @@ void *producer(void *args)
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
-	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+	Logger::log_thread_details(thread, "Details of the thread - going to sleep:\n");
 	string_size = sprintf(buffer, "\n***%s task --> execution started***\n", task_name);
 	Logger::write_to_file(file_id, buffer, string_size);
 
@@ -322,26 +257,8 @@ void *producer(void *args)
 	pthread_mutex_lock(&data_mutex);
 
 	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
+
 	// -- critical section --
-
-	// int timer_s = 0;
-	// std::string string_time; //time we pass to the function
-	// 						 // write to producer_buffer from file
-	// 						 /*take timer_s storage and take the floor */
-
-	// //floor of timer_s storage
-	// timer_s = timer_storage_ms / 1000;
-	// if (timer_s < 1)
-	// {
-	// 	timer_s = 1;
-	// }
-	// std::stringstream ss;
-	// ss << timer_s;
-	// string_time = ss.str();
-
-	//	std::string value;
-
-	//	value = read_next_value(producer_string_to_enum_converter(task_name), string_time);
 
 	float new_value = read_next_value(task_name, timer_storage_ms);
 	std::stringstream string_builder;
@@ -349,9 +266,10 @@ void *producer(void *args)
 	Output o = Output(task_name, string_builder.str());
 	output_queue.push(o);
 
-	printf("New Output pushed to output queue is: \nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
+	printf("New Output pushed to output queue for consumer to consume are:\nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
 
 	// -- critical section --
+
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
@@ -419,7 +337,7 @@ void timer_timeout_handler(int sig_number)
 	printf("=======================================================================================\n", timer_storage_ms);
 
 	char buffer[200];
-	int string_size = sprintf(buffer, "\n\nAt time t = : %u\n", timer_storage);
+	int string_size = sprintf(buffer, "\n\nAt time t = : %u\n", timer_storage_ms);
 	Logger::write_to_file(file_id, buffer, string_size);
 
 	/* Release Periodic Tasks */
