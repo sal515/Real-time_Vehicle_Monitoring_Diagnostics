@@ -9,6 +9,7 @@
 #include "PeriodicTask.h"
 #include "AperiodicTask.h"
 #include "SporadicTask.h"
+#include <cmath>
 #include "Logger.h"
 // #include "DatasetManager.h"
 
@@ -17,8 +18,11 @@
 // #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <unistd.h>
+#include <vector>
+#include <fstream>
+#include <sstream>
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
@@ -81,6 +85,7 @@ struct PRODUCER_VALUES
 
 PRODUCER_VALUES producer_buffer;
 pthread_mutex_t data_mutex;
+std::vector<std::string> readValues;
 
 int string_to_enum_converter(char *task_name)
 {
@@ -91,11 +96,57 @@ int string_to_enum_converter(char *task_name)
 	/* TODO: Implement  */
 }
 
+/* Provides the value for the task identified by the parameter */
+std::string read_next_value(int task_name, std::string time_now_ms)
+{
+	std::string next_value;
+	//producer_buffer.fuel_consumption = next_value;
+	std::string time = time_now_ms;
+	std::ifstream input_from_file("data.csv");
+	std::string line;
+	while (getline(input_from_file, line))
+	{
+		line += ",";
+		std::stringstream ss(line);
+		std::string word;
+		std::vector<std::string> words;
+		while (getline(ss, word, ','))
+		{
+			words.push_back(word);
+		}
+		while (1)
+		{
+			if (words[7] == time)
+			{
+				printf("In the fct: %s\n", words[task_name].c_str());
+				next_value = words[task_name];
+				break;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	return next_value;
+}
+
 int main(int argc, char *argv[])
 {
 	/* For tests */
 	// 		// test code here
 	// return 0;
+	/* CLEAN: Test */
+    float timer;
+	std::string time;
+	timer = 1005/1000;
+			std::stringstream ss;
+					ss <<timer;
+					time= ss.str();
+	producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
+	printf("in main: %s\n", producer_buffer.engine_speed_rpm.c_str());
+
+	return 0;
 
 	pthread_mutex_init(&data_mutex, NULL);
 	build_periodic_tasks_list(&scheduler);
@@ -131,11 +182,13 @@ void *consumer(void *args)
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
-
-	Logger::log_thread_details(thread, "Details of the thread - waking up:");
-	// -- critical section --
-
-	// -- critical section --
+	printf("Consumer: Data Processed\n");
+	// read from producer_buffer and print out using printf
+	std::string value;
+	value = readValues[0];
+	printf("task name : %s\n", value.c_str() );
+	readValues.clear();
+	// read_next_value(task_name, time_now_ms);
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
@@ -157,6 +210,31 @@ void *producer(void *args)
 	// -- critical section --
 
 	// -- critical section --
+	printf("Producer: Data Processed\n");
+    int timer = 0;
+    std::string string_time;//time we pass to the function
+    std::string to_string( int value );
+
+	// write to producer_buffer from file
+	/*take timer storage and take the floor */
+	if(timer_storage < 1){
+		timer = 1;
+
+		std::stringstream ss;
+		ss <<timer;
+		string_time= ss.str();}
+	else{//floor of timer storage
+		timer = timer_storage/1000;
+		std::stringstream ss;
+				ss <<timer;
+				string_time= ss.str();
+	}
+
+	std::string value;
+     value = read_next_value(string_to_enum_converter(task_name), string_time);
+    readValues.push_back(value);
+
+	// read_next_value(task_name, time_now_ms);
 	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
