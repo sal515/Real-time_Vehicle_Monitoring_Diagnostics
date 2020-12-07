@@ -3,6 +3,7 @@
 
 #include "Test.h"
 #include "Thread.h"
+#include "Output.h"
 #include "Task.h"
 #include "Timer.h"
 #include "Scheduler.h"
@@ -14,6 +15,7 @@
 // #include "DatasetManager.h"
 
 #include <atomic.h>
+#include <queue>
 
 // #include <stdint.h>
 #include <stdio.h>
@@ -71,21 +73,22 @@ enum TASK_NAME
 	INDICATION_BREAK_SWITCH
 };
 
-struct PRODUCER_VALUES
-{
-	std::string fuel_consumption;
-	std::string engine_speed_rpm;
-	std::string engine_coolant_temp;
-	std::string current_gear;
-	std::string transmission_oil_temp;
-	std::string vehicle_speed;
-	std::string acceleration_speed_longitudinal;
-	std::string indication_break_switch;
-};
+// struct PRODUCER_VALUES
+// {
+// 	std::string fuel_consumption;
+// 	std::string engine_speed_rpm;
+// 	std::string engine_coolant_temp;
+// 	std::string current_gear;
+// 	std::string transmission_oil_temp;
+// 	std::string vehicle_speed;
+// 	std::string acceleration_speed_longitudinal;
+// 	std::string indication_break_switch;
+// };
 
-struct PRODUCER_VALUES producer_buffer;
+// struct PRODUCER_VALUES producer_buffer;
+// std::vector<std::string> readValues;
 pthread_mutex_t data_mutex;
-std::vector<std::string> readValues;
+std::queue<Output> output_queue;
 
 int producer_string_to_enum_converter(char *task_name)
 {
@@ -210,15 +213,14 @@ void *consumer(void *args)
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
 
-	Logger::log_thread_details(thread, "Details of the thread - waking up:");
+	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
 	// -- critical section --
 
-	// read from producer_buffer and print out using printf
-	std::string value;
-	value = readValues[0];
-	printf("task name : %s\n", value.c_str());
-	readValues.clear();
-	// read_next_value(task_name, time_now_ms);
+	// while (!output_queue.empty())
+	// {
+	// 	printf("Updated value for \nTask Name: %s, Value: %s\n", output_queue.front().task_name, output_queue.front().value.c_str());
+	// 	output_queue.pop();
+	// }
 
 	// -- critical section --
 	pthread_mutex_unlock(&data_mutex);
@@ -238,13 +240,11 @@ void *producer(void *args)
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
 
-	Logger::log_thread_details(thread, "Details of the thread - waking up:");
+	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
 	// -- critical section --
 
 	int timer = 0;
 	std::string string_time; //time we pass to the function
-	// std::string to_string(int value);
-
 	// write to producer_buffer from file
 	/*take timer storage and take the floor */
 	if (timer_storage < 1)
@@ -261,12 +261,12 @@ void *producer(void *args)
 		ss << timer;
 		string_time = ss.str();
 	}
-
 	std::string value;
 	value = read_next_value(producer_string_to_enum_converter(task_name), string_time);
-	readValues.push_back(value);
+	Output o = Output(task_name, value);
+	output_queue.push(o);
 
-	// read_next_value(task_name, time_now_ms);
+	printf("New Output pushed to output queue is: \nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
 
 	// -- critical section --
 	pthread_mutex_unlock(&data_mutex);
