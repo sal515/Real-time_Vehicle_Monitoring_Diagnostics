@@ -15,6 +15,11 @@
 
 namespace realtime_vehicle_monitoring_diagnostics
 {
+
+#define TIMER_1_MS_IN_NS (1000000)
+#define TIMER_10_MS_IN_NS (10000000)
+#define ONE_MILLION (1000000)
+
 	class Timer
 	{
 	public:

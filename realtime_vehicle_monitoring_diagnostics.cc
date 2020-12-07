@@ -20,6 +20,7 @@
 
 // #include <stdint.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string>
 #include <unistd.h>
@@ -33,28 +34,19 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define DEBUG_PRINT 1
 
 //  #define RUN_TIME (5*60*1000)
-//  #define RUN_TIME (30000)
+// #define RUN_TIME (30000)
 // #define RUN_TIME (5000)
 // #define RUN_TIME (2000)
 // #define RUN_TIME (1000)
 // #define RUN_TIME (500)
 // #define RUN_TIME (101)
-#define RUN_TIME (31)
+// #define RUN_TIME (31)
 // #define RUN_TIME (11)
 // #define RUN_TIME (10)
 // #define RUN_TIME (5)
 
-#define TIMER_1_MS_IN_NS (1000000)
-#define TIMER_10_MS_IN_NS (10000000)
-#define ONE_MILLION (1000000)
-
 #define CONSUMER_EXECUTION_TIME (1)
 #define PRODUCER_EXECUTION_TIME (1)
-
-/* Timer */
-/* Rotates in 4294967295 ~1.6months */
-volatile unsigned timer_storage_ms = 0;
-Scheduler scheduler = Scheduler();
 
 /* Function prototypes */
 void *consumer(void *args);
@@ -84,9 +76,13 @@ enum TASK_NAME
 // 	std::string acceleration_speed_longitudinal;
 // 	std::string indication_break_switch;
 // };
+// PRODUCER_VALUES producer_buffer;
 
-// struct PRODUCER_VALUES producer_buffer;
-// std::vector<std::string> readValues;
+/* Timer */
+/* Rotates in 4294967295 ~1.6months */
+int file_id;
+volatile unsigned timer_storage = 0;
+Scheduler scheduler = Scheduler();
 pthread_mutex_t data_mutex;
 std::queue<Output> output_queue;
 
@@ -212,19 +208,9 @@ float read_next_value(char *task_name, unsigned timer_storage)
 
 int main(int argc, char *argv[])
 {
-	// /* For tests */
-	// // 		// test code here
-	// // return 0;
-	// /* CLEAN: Test */
-	// float timer_s;
-	// std::string time;
-	// timer_s = 1005/1000;
-	// 		std::stringstream ss;
-	// 				ss <<timer_s;
-	// 				time= ss.str();
-	// producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
-	// printf("in main: %s\n", producer_buffer.engine_speed_rpm.c_str());
-
+	/* For tests */
+	// 		// test code here
+	// std::string RUN_TIME_STR;
 	// float output;
 	// for (int i = 0; i < 10000; i += 990)
 	// {
@@ -234,37 +220,68 @@ int main(int argc, char *argv[])
 
 	// return 0;
 
-	pthread_mutex_init(&data_mutex, NULL);
 	build_periodic_tasks_list(&scheduler);
-
+	Timer *one_ms_timer;
+	std::string RUN_TIME_STR;
+	unsigned long RUN_TIME;
 	const int signal_type = SIGUSR1;
 	signal(signal_type, timer_timeout_handler);
+	pthread_mutex_init(&data_mutex, NULL);
 
-	Timer one_ms_timer = Timer(TIMER_1_MS_IN_NS,
-							   "Task Release Timer",
-							   signal_type);
-	if (one_ms_timer.start() < 0)
+	while (1)
 	{
-		printf("Failed to start perioidc timer_s - %s\n", one_ms_timer.timer_name);
-		return -1;
-	}
+		printf("\n\nPlease enter the the duration you would like the real-time monitoring program to run (in seconds): ");
+		std::cin >> RUN_TIME_STR;
+		for (int i = 0; i < RUN_TIME_STR.size(); i++)
+		{
+			if (!isdigit(RUN_TIME_STR[i]))
+			{
+				printf("Not a digit %c\n", RUN_TIME_STR[i]);
+				continue;
+			}
+		}
+		RUN_TIME = atoi(RUN_TIME_STR.c_str()) * 1000;
+		// RUN_TIME = stoul(RUN_TIME_STR.c_str(), nullptr, 10) * 1000;
+		printf("\nThe program is going to run for %d seconds \n", RUN_TIME);
 
-	while (timer_storage_ms < RUN_TIME)
-	{
-		/* Run program */
-	}
+		Logger::create_open_log_file(file_id);
 
-	int pause = 0;
+		one_ms_timer = new Timer(TIMER_1_MS_IN_NS,
+								 "Task Release Timer",
+								 signal_type);
+		if (one_ms_timer->start() < 0)
+		{
+			printf("Failed to start perioidc timer - %s\n", one_ms_timer->timer_name);
+			return -1;
+		}
+
+		while (timer_storage < RUN_TIME)
+		{
+			/* Run program */
+		}
+		timer_storage = 0;
+		one_ms_timer->destroy();
+		delete one_ms_timer;
+		scheduler.cleanup();
+		// pthread_mutex_destroy(&data_mutex);
+		Logger::close_file(file_id);
+	}
 	return EXIT_SUCCESS;
 }
 
 void *consumer(void *args)
 {
+	char buffer[500];
+	int string_size;
+	std::string regular_str;
+
 	Thread *thread = (Thread *)(args);
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+	string_size = sprintf(buffer, "\n***%s task --> execution started***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
@@ -283,15 +300,23 @@ void *consumer(void *args)
 	thread->unblock();
 
 	printf("***%s task --> execution ended***\n", task_name);
+	string_size = sprintf(buffer, "***%s task --> execution ended***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 }
 
 void *producer(void *args)
 {
+	char buffer[500];
+	int string_size;
+	std::string regular_str;
+
 	Thread *thread = (Thread *)(args);
 	char *task_name = thread->thread_name;
 
 	printf("\n***%s task --> execution started***\n", task_name);
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
+	string_size = sprintf(buffer, "\n***%s task --> execution started***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	thread->block();
 	pthread_mutex_lock(&data_mutex);
@@ -331,6 +356,8 @@ void *producer(void *args)
 	thread->unblock();
 
 	printf("***%s task --> execution ended***\n", task_name);
+	string_size = sprintf(buffer, "***%s task --> execution ended***\n", task_name);
+	Logger::write_to_file(file_id, buffer, string_size);
 }
 
 void build_periodic_tasks_list(Scheduler *scheduler)
@@ -390,6 +417,10 @@ void timer_timeout_handler(int sig_number)
 	printf("\n\n\n=======================================================================================\n", timer_storage_ms);
 	printf("================================== At time t = : %u  ==================================\n", timer_storage_ms);
 	printf("=======================================================================================\n", timer_storage_ms);
+
+	char buffer[200];
+	int string_size = sprintf(buffer, "\n\nAt time t = : %u\n", timer_storage);
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	/* Release Periodic Tasks */
 	scheduler.release_periodic_tasks(timer_storage_ms);
