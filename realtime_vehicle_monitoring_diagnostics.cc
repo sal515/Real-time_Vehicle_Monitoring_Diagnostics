@@ -30,10 +30,10 @@
 
 using namespace realtime_vehicle_monitoring_diagnostics;
 
-#define DEBUG_PRINT 0
-
+#define DEBUG_PRINT (0)
+#define TEST_EXECUTION_TIME (0)
 #define CONSUMER_EXECUTION_TIME (1)
-#define PRODUCER_EXECUTION_TIME (1)
+#define PRODUCER_EXECUTION_TIME (2)
 
 /* Function prototypes */
 void *consumer(void *args);
@@ -59,6 +59,11 @@ pthread_mutex_t data_mutex;
 std::queue<Output> output_queue;
 Scheduler scheduler = Scheduler();
 volatile unsigned timer_storage_ms = 0;
+
+std::priority_queue<unsigned> pq;
+unsigned initial;
+unsigned final_val;
+unsigned executed_time;
 
 int producer_string_to_enum_converter(char *task_name)
 {
@@ -190,7 +195,34 @@ int main(int argc, char *argv[])
 		while (timer_storage_ms < RUN_TIME)
 		{
 			/* Run program */
+
+			if (TEST_EXECUTION_TIME)
+			{
+
+				/* Measure the Execution timer of the read_next_value_function  */
+				initial = timer_storage_ms;
+				std::stringstream timer_storage_string;
+				timer_storage_string << timer_storage_ms;
+
+				// read_next_value(task_name, timer_storage_ms);
+				printf("For task(%s) value: %f is at time: %u\n", "fuel_consumption",
+					   read_next_value("fuel_consumption", timer_storage_ms), timer_storage_ms);
+
+				final_val = timer_storage_ms;
+				executed_time = final_val - initial;
+				pq.push(executed_time);
+				printf("Executed time is %u\n", executed_time);
+			}
 		}
+		if (TEST_EXECUTION_TIME)
+		{
+			printf("Maximum Execution Time Measured is %u\n", pq.top());
+			while (!pq.empty())
+			{
+				pq.pop();
+			}
+		}
+
 		timer_storage_ms = 0;
 		one_ms_timer->destroy();
 		delete one_ms_timer;
@@ -332,26 +364,28 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
-	printf("\n\n\n=======================================================================================\n", timer_storage_ms);
-	printf("================================== At time t = : %u  ==================================\n", timer_storage_ms);
-	printf("=======================================================================================\n", timer_storage_ms);
+	if (!TEST_EXECUTION_TIME)
+	{
+		printf("\n\n\n=======================================================================================\n", timer_storage_ms);
+		printf("================================== At time t = : %u  ==================================\n", timer_storage_ms);
+		printf("=======================================================================================\n", timer_storage_ms);
 
-	char buffer[200];
-	int string_size = sprintf(buffer, "\n\nAt time t = : %u\n", timer_storage_ms);
-	Logger::write_to_file(file_id, buffer, string_size);
+		char buffer[200];
+		int string_size = sprintf(buffer, "\n\nAt time t = : %u\n", timer_storage_ms);
+		Logger::write_to_file(file_id, buffer, string_size);
 
-	/* Release Periodic Tasks */
-	scheduler.release_periodic_tasks(timer_storage_ms);
+		/* Release Periodic Tasks */
+		scheduler.release_periodic_tasks(timer_storage_ms);
 
-	// /* Update Priority */
-	scheduler.update_periodic_priority();
+		// /* Update Priority */
+		scheduler.update_periodic_priority();
 
-	// /* Update Executed Time */
-	scheduler.update_periodic_executed_time(timer_storage_ms);
+		// /* Update Executed Time */
+		scheduler.update_periodic_executed_time(timer_storage_ms);
 
-	// /* Run Tasks */
-	scheduler.run_tasks();
-
+		// /* Run Tasks */
+		scheduler.run_tasks();
+	}
 	/* Increment Timer Value */
 	atomic_add(&timer_storage_ms, TIMER_1_MS_IN_NS / ONE_MILLION);
 }
