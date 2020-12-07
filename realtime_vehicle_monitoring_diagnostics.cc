@@ -52,7 +52,7 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 
 /* Timer */
 /* Rotates in 4294967295 ~1.6months */
-volatile unsigned timer_storage = 0;
+volatile unsigned timer_storage_ms = 0;
 Scheduler scheduler = Scheduler();
 
 /* Function prototypes */
@@ -172,11 +172,11 @@ int main(int argc, char *argv[])
 	// // 		// test code here
 	// // return 0;
 	// /* CLEAN: Test */
-	// float timer;
+	// float timer_s;
 	// std::string time;
-	// timer = 1005/1000;
+	// timer_s = 1005/1000;
 	// 		std::stringstream ss;
-	// 				ss <<timer;
+	// 				ss <<timer_s;
 	// 				time= ss.str();
 	// producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
 	// printf("in main: %s\n", producer_buffer.engine_speed_rpm.c_str());
@@ -194,11 +194,11 @@ int main(int argc, char *argv[])
 							   signal_type);
 	if (one_ms_timer.start() < 0)
 	{
-		printf("Failed to start perioidc timer - %s\n", one_ms_timer.timer_name);
+		printf("Failed to start perioidc timer_s - %s\n", one_ms_timer.timer_name);
 		return -1;
 	}
 
-	while (timer_storage < RUN_TIME)
+	while (timer_storage_ms < RUN_TIME)
 	{
 		/* Run program */
 	}
@@ -221,11 +221,11 @@ void *consumer(void *args)
 	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
 	// -- critical section --
 
-	// while (!output_queue.empty())
-	// {
-	// 	printf("Updated value for \nTask Name: %s, Value: %s\n", output_queue.front().task_name, output_queue.front().value.c_str());
-	// 	output_queue.pop();
-	// }
+	while (!output_queue.empty())
+	{
+		printf("Updated value for \nTask Name: %s, Value: %s\n", output_queue.front().task_name, output_queue.front().value.c_str());
+		output_queue.pop();
+	}
 
 	// -- critical section --
 	pthread_mutex_unlock(&data_mutex);
@@ -243,31 +243,27 @@ void *producer(void *args)
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
 
 	thread->block();
-	pthread_mutex_lock(&data_mutex);
+	// pthread_mutex_lock(&data_mutex);
 
 	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
 	// -- critical section --
 
-	int timer = 0;
+	int timer_s = 0;
 	std::string string_time; //time we pass to the function
-	// write to producer_buffer from file
-	/*take timer storage and take the floor */
-	if (timer_storage < 1)
-	{
-		timer = 1;
-		std::stringstream ss;
-		ss << timer;
-		string_time = ss.str();
-	}
-	else
-	{ //floor of timer storage
-		timer = timer_storage / 1000;
-		std::stringstream ss;
-		ss << timer;
-		string_time = ss.str();
-	}
-	std::string value;
+							 // write to producer_buffer from file
+							 /*take timer_s storage and take the floor */
 
+	//floor of timer_s storage
+	timer_s = timer_storage_ms / 1000;
+	if (timer_s < 1)
+	{
+		timer_s = 1;
+	}
+	std::stringstream ss;
+	ss << timer_s;
+	string_time = ss.str();
+
+	std::string value;
 	value = read_next_value(producer_string_to_enum_converter(task_name), string_time);
 	Output o = Output(task_name, value);
 	output_queue.push(o);
@@ -275,7 +271,7 @@ void *producer(void *args)
 	printf("New Output pushed to output queue is: \nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
 
 	// -- critical section --
-	pthread_mutex_unlock(&data_mutex);
+	// pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
 	printf("***%s task --> execution ended***\n", task_name);
@@ -335,22 +331,22 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 /* Signal handler */
 void timer_timeout_handler(int sig_number)
 {
-	printf("\n\n\n=======================================================================================\n", timer_storage);
-	printf("================================== At time t = : %u  ==================================\n", timer_storage);
-	printf("=======================================================================================\n", timer_storage);
+	printf("\n\n\n=======================================================================================\n", timer_storage_ms);
+	printf("================================== At time t = : %u  ==================================\n", timer_storage_ms);
+	printf("=======================================================================================\n", timer_storage_ms);
 
 	/* Release Periodic Tasks */
-	scheduler.release_periodic_tasks(timer_storage);
+	scheduler.release_periodic_tasks(timer_storage_ms);
 
 	// /* Update Priority */
 	scheduler.update_periodic_priority();
 
 	// /* Update Executed Time */
-	scheduler.update_periodic_executed_time(timer_storage);
+	scheduler.update_periodic_executed_time(timer_storage_ms);
 
 	// /* Run Tasks */
 	scheduler.run_tasks();
 
 	/* Increment Timer Value */
-	atomic_add(&timer_storage, TIMER_1_MS_IN_NS / ONE_MILLION);
+	atomic_add(&timer_storage_ms, TIMER_1_MS_IN_NS / ONE_MILLION);
 }
