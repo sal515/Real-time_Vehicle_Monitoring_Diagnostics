@@ -78,24 +78,27 @@ namespace realtime_vehicle_monitoring_diagnostics
 		case PERIODIC:
 		{
 			PeriodicTask *task_periodic = static_cast<PeriodicTask *>(task);
-			printf("%s ---> Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Name: %s\n",
+			if (task_periodic->thread == NULL)
+			{
+				printf("%s ---> Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Name: %s\n",
+					   event_string,
+					   task_periodic->period,
+					   task_periodic->deadline,
+					   task_periodic->released_time,
+					   task_periodic->executed_time,
+					   task_periodic->task_name);
+				break;
+			}
+
+			printf("%s -> Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Processing Done: %u, Priority: %u, Name: %s\n",
 				   event_string,
 				   task_periodic->period,
 				   task_periodic->deadline,
 				   task_periodic->released_time,
 				   task_periodic->executed_time,
+				   task_periodic->thread->is_complete,
+				   task_periodic->thread->prio,
 				   task_periodic->task_name);
-
-			// PeriodicTask *task_periodic = static_cast<PeriodicTask *>(task);
-			// printf("%s -> Period: %u, Deadline: %u, Released Time: %u, Executed Time: %u, Processing Done: %u, Priority: %u, Name: %s\n",
-			// 	   event_string,
-			// 	   task_periodic->period,
-			// 	   task_periodic->deadline,
-			// 	   task_periodic->released_time,
-			// 	   task_periodic->executed_time,
-			// 	   task_periodic->thread.is_complete,
-			// 	   task_periodic->thread.prio,
-			// 	   task_periodic->task_name);
 			break;
 		}
 		case APERIODIC:

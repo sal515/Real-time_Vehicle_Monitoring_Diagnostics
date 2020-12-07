@@ -81,8 +81,6 @@ struct PRODUCER_VALUES
 };
 
 int file_id;
-
-// std::ofstream file;
 PRODUCER_VALUES producer_buffer;
 pthread_mutex_t data_mutex;
 
