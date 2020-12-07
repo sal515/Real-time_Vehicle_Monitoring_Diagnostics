@@ -67,7 +67,6 @@ enum TASK_NAME
 	ENGINE_SPEED_RPM,
 	ENGINE_COOLANT_TEMP,
 	CURRENT_GEAR,
-	TRANSMISSION_OIL_TEMP,
 	VEHICLE_SPEED,
 	ACCELERATION_SPEED_LONGITUDINAL,
 	INDICATION_BREAK_SWITCH
@@ -108,10 +107,10 @@ int producer_string_to_enum_converter(char *task_name)
 	{
 		return CURRENT_GEAR;
 	}
-	else if (!std::strcmp("transmission_oil_temp", task_name))
-	{
-		return TRANSMISSION_OIL_TEMP;
-	}
+	// else if (!std::strcmp("transmission_oil_temp", task_name))
+	// {
+	// 	return TRANSMISSION_OIL_TEMP;
+	// }
 	else if (!std::strcmp("vehicle_speed", task_name))
 	{
 		return VEHICLE_SPEED;
@@ -158,6 +157,12 @@ std::string read_next_value(int task_name, std::string time_now_ms)
 			}
 		}
 	}
+
+	if (input_from_file.is_open())
+	{
+		input_from_file.close();
+	}
+
 	return next_value;
 }
 
@@ -262,6 +267,7 @@ void *producer(void *args)
 		string_time = ss.str();
 	}
 	std::string value;
+
 	value = read_next_value(producer_string_to_enum_converter(task_name), string_time);
 	Output o = Output(task_name, value);
 	output_queue.push(o);
@@ -297,11 +303,11 @@ void build_periodic_tasks_list(Scheduler *scheduler)
 					 PRODUCER_EXECUTION_TIME, "current_gear",
 					 producer);
 	scheduler->add_periodic_task(p);
-	p = PeriodicTask(5000,
-					 PRODUCER_EXECUTION_TIME,
-					 "transmission_oil_temp",
-					 producer);
-	scheduler->add_periodic_task(p);
+	// p = PeriodicTask(5000,
+	// 				 PRODUCER_EXECUTION_TIME,
+	// 				 "transmission_oil_temp",
+	// 				 producer);
+	// scheduler->add_periodic_task(p);
 	p = PeriodicTask(100,
 					 PRODUCER_EXECUTION_TIME,
 					 "vehicle_speed",

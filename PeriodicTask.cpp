@@ -14,7 +14,8 @@
 
 #define LOG_COPY_CONSTRUCTOR 0
 #define LOG_CREATED_TASK 0
-#define LOG_REMOVED_TASK 0
+// #define LOG_REMOVED_TASK 0
+#define LOG_REMOVED_TASK 1
 #define DEBUG_PRINT 0
 
 namespace realtime_vehicle_monitoring_diagnostics
