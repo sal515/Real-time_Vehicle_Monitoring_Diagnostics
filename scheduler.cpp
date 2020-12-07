@@ -36,14 +36,20 @@ namespace realtime_vehicle_monitoring_diagnostics
 		while (!this->periodicWaitingQueue.empty())
 		{
 			PeriodicTask *t = this->periodicWaitingQueue.top();
-			delete t->thread;
+			if (t->thread != NULL)
+			{
+				delete t->thread;
+			}
 			delete t;
 			this->periodicWaitingQueue.pop();
 		}
 		while (!this->periodicRunningQueue.empty())
 		{
 			PeriodicTask *t = this->periodicRunningQueue.top();
-			delete t->thread;
+			if (t->thread != NULL)
+			{
+				delete t->thread;
+			}
 			delete t;
 			this->periodicRunningQueue.pop();
 		}

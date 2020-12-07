@@ -16,6 +16,7 @@
 
 // #include <stdint.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 // #include <string.h>
 #include <string>
@@ -27,7 +28,7 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define DEBUG_PRINT 1
 
 //  #define RUN_TIME (5*60*1000)
-#define RUN_TIME (30000)
+// #define RUN_TIME (30000)
 // #define RUN_TIME (5000)
 // #define RUN_TIME (2000)
 // #define RUN_TIME (1000)
@@ -37,10 +38,6 @@ using namespace realtime_vehicle_monitoring_diagnostics;
 // #define RUN_TIME (11)
 // #define RUN_TIME (10)
 // #define RUN_TIME (5)
-
-#define TIMER_1_MS_IN_NS (1000000)
-#define TIMER_10_MS_IN_NS (10000000)
-#define ONE_MILLION (1000000)
 
 #define CONSUMER_EXECUTION_TIME (1)
 #define PRODUCER_EXECUTION_TIME (1)
@@ -63,24 +60,24 @@ enum TASK_NAME
 	INDICATION_BREAK_SWITCH
 };
 
-struct PRODUCER_VALUES
-{
-	std::string fuel_consumption;
-	std::string engine_speed_rpm;
-	std::string engine_coolant_temp;
-	std::string current_gear;
-	std::string transmission_oil_temp;
-	std::string vehicle_speed;
-	std::string acceleration_speed_longitudinal;
-	std::string indication_break_switch;
-};
+// struct PRODUCER_VALUES
+// {
+// 	std::string fuel_consumption;
+// 	std::string engine_speed_rpm;
+// 	std::string engine_coolant_temp;
+// 	std::string current_gear;
+// 	std::string transmission_oil_temp;
+// 	std::string vehicle_speed;
+// 	std::string acceleration_speed_longitudinal;
+// 	std::string indication_break_switch;
+// };
+// PRODUCER_VALUES producer_buffer;
 
 /* Timer */
 /* Rotates in 4294967295 ~1.6months */
+int file_id;
 volatile unsigned timer_storage = 0;
 Scheduler scheduler = Scheduler();
-int file_id;
-PRODUCER_VALUES producer_buffer;
 pthread_mutex_t data_mutex;
 
 int string_to_enum_converter(char *task_name)
@@ -96,25 +93,41 @@ int main(int argc, char *argv[])
 {
 	/* For tests */
 	// 		// test code here
+	// std::string RUN_TIME_STR;
 	// return 0;
+
+	build_periodic_tasks_list(&scheduler);
+	Timer *one_ms_timer;
+	std::string RUN_TIME_STR;
+	unsigned long RUN_TIME;
+	const int signal_type = SIGUSR1;
+	signal(signal_type, timer_timeout_handler);
+	pthread_mutex_init(&data_mutex, NULL);
 
 	while (1)
 	{
+		printf("\n\nPlease enter the the duration you would like the real-time monitoring program to run (in seconds): ");
+		std::cin >> RUN_TIME_STR;
+		for (int i = 0; i < RUN_TIME_STR.size(); i++)
+		{
+			if (!isdigit(RUN_TIME_STR[i]))
+			{
+				printf("Not a digit %c\n", RUN_TIME_STR[i]);
+				continue;
+			}
+		}
+		RUN_TIME = atoi(RUN_TIME_STR.c_str()) * 1000;
+		// RUN_TIME = stoul(RUN_TIME_STR.c_str(), nullptr, 10) * 1000;
+		printf("\nThe program is going to run for %d seconds \n", RUN_TIME);
 
 		Logger::create_open_log_file(file_id);
 
-		pthread_mutex_init(&data_mutex, NULL);
-		build_periodic_tasks_list(&scheduler);
-
-		const int signal_type = SIGUSR1;
-		signal(signal_type, timer_timeout_handler);
-
-		Timer one_ms_timer = Timer(TIMER_1_MS_IN_NS,
-								   "Task Release Timer",
-								   signal_type);
-		if (one_ms_timer.start() < 0)
+		one_ms_timer = new Timer(TIMER_1_MS_IN_NS,
+								 "Task Release Timer",
+								 signal_type);
+		if (one_ms_timer->start() < 0)
 		{
-			printf("Failed to start perioidc timer - %s\n", one_ms_timer.timer_name);
+			printf("Failed to start perioidc timer - %s\n", one_ms_timer->timer_name);
 			return -1;
 		}
 
@@ -122,7 +135,11 @@ int main(int argc, char *argv[])
 		{
 			/* Run program */
 		}
-
+		timer_storage = 0;
+		one_ms_timer->destroy();
+		delete one_ms_timer;
+		scheduler.cleanup();
+		// pthread_mutex_destroy(&data_mutex);
 		Logger::close_file(file_id);
 	}
 	return EXIT_SUCCESS;
