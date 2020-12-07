@@ -13,7 +13,8 @@
 #include "Logger.h"
 
 #define DEBUG_PRINT 0
-#define LOG_THREAD_TERMINATION_CREATION 1
+// #define LOG_THREAD_TERMINATION_CREATION 1
+#define LOG_THREAD_TERMINATION_CREATION 0
 
 namespace realtime_vehicle_monitoring_diagnostics
 {

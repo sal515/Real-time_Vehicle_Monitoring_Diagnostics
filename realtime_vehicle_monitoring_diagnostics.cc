@@ -12,6 +12,7 @@
 #include "SporadicTask.h"
 #include <cmath>
 #include "Logger.h"
+#include "csv_data.h"
 // #include "DatasetManager.h"
 
 #include <atomic.h>
@@ -125,45 +126,88 @@ int producer_string_to_enum_converter(char *task_name)
 	}
 }
 
-/* Provides the value for the task identified by the parameter */
-std::string read_next_value(int task_name, std::string time_now_ms)
+// /* Provides the value for the task identified by the parameter */
+// std::string read_next_value(int task_name, std::string time_now_ms)
+// {
+// 	std::string next_value;
+// 	//producer_buffer.fuel_consumption = next_value;
+// 	std::string time = time_now_ms;
+// 	std::ifstream input_from_file("data.csv");
+// 	std::string line;
+// 	while (getline(input_from_file, line))
+// 	{
+// 		line += ",";
+// 		std::stringstream ss(line);
+// 		std::string word;
+// 		std::vector<std::string> words;
+// 		while (getline(ss, word, ','))
+// 		{
+// 			words.push_back(word);
+// 		}
+// 		while (1)
+// 		{
+// 			if (words[7] == time)
+// 			{
+// 				printf("In the fct: %s\n", words[task_name].c_str());
+// 				next_value = words[task_name];
+// 				break;
+// 			}
+// 			else
+// 			{
+// 				break;
+// 			}
+// 		}
+// 	}
+
+// 	if (input_from_file.is_open())
+// 	{
+// 		input_from_file.close();
+// 	}
+
+// 	return next_value;
+// }
+
+float read_next_value(char *task_name, unsigned timer_storage)
 {
-	std::string next_value;
-	//producer_buffer.fuel_consumption = next_value;
-	std::string time = time_now_ms;
-	std::ifstream input_from_file("data.csv");
-	std::string line;
-	while (getline(input_from_file, line))
+	int time_at = timer_storage / 1000;
+	time_at -= 1;
+	if (time_at < 0)
 	{
-		line += ",";
-		std::stringstream ss(line);
-		std::string word;
-		std::vector<std::string> words;
-		while (getline(ss, word, ','))
-		{
-			words.push_back(word);
-		}
-		while (1)
-		{
-			if (words[7] == time)
-			{
-				printf("In the fct: %s\n", words[task_name].c_str());
-				next_value = words[task_name];
-				break;
-			}
-			else
-			{
-				break;
-			}
-		}
+		time_at = 0;
 	}
 
-	if (input_from_file.is_open())
+	if (!std::strcmp("fuel_consumption", task_name))
 	{
-		input_from_file.close();
+		return fuel_consumption[time_at];
 	}
-
-	return next_value;
+	else if (!std::strcmp("engine_speed_rpm", task_name))
+	{
+		return engine_speed[time_at];
+	}
+	else if (!std::strcmp("engine_coolant_temp", task_name))
+	{
+		return engine_coolant_temperature[time_at];
+	}
+	else if (!std::strcmp("current_gear", task_name))
+	{
+		return current_gear[time_at];
+	}
+	// else if (!std::strcmp("transmission_oil_temp", task_name))
+	// {
+	// 	return TRANSMISSION_OIL_TEMP;
+	// }
+	else if (!std::strcmp("vehicle_speed", task_name))
+	{
+		return vehicle_speed[time_at];
+	}
+	else if (!std::strcmp("acceleration_speed_longitudinal", task_name))
+	{
+		return acceleration_speed_longitudinal[time_at];
+	}
+	else if (!std::strcmp("indication_break_switch", task_name))
+	{
+		return indication_of_brake_switch_on_off[time_at];
+	}
 }
 
 int main(int argc, char *argv[])
@@ -180,6 +224,13 @@ int main(int argc, char *argv[])
 	// 				time= ss.str();
 	// producer_buffer.engine_speed_rpm = read_next_value(ENGINE_SPEED_RPM, time);
 	// printf("in main: %s\n", producer_buffer.engine_speed_rpm.c_str());
+
+	// float output;
+	// for (int i = 0; i < 10000; i += 990)
+	// {
+	// 	output = read_next_value("current_gear", i);
+	// 	printf("Time: %d, Found value is: %f \n", i, output);
+	// }
 
 	// return 0;
 
@@ -248,24 +299,29 @@ void *producer(void *args)
 	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
 	// -- critical section --
 
-	int timer_s = 0;
-	std::string string_time; //time we pass to the function
-							 // write to producer_buffer from file
-							 /*take timer_s storage and take the floor */
+	// int timer_s = 0;
+	// std::string string_time; //time we pass to the function
+	// 						 // write to producer_buffer from file
+	// 						 /*take timer_s storage and take the floor */
 
-	//floor of timer_s storage
-	timer_s = timer_storage_ms / 1000;
-	if (timer_s < 1)
-	{
-		timer_s = 1;
-	}
-	std::stringstream ss;
-	ss << timer_s;
-	string_time = ss.str();
+	// //floor of timer_s storage
+	// timer_s = timer_storage_ms / 1000;
+	// if (timer_s < 1)
+	// {
+	// 	timer_s = 1;
+	// }
+	// std::stringstream ss;
+	// ss << timer_s;
+	// string_time = ss.str();
 
-	std::string value;
-	value = read_next_value(producer_string_to_enum_converter(task_name), string_time);
-	Output o = Output(task_name, value);
+	//	std::string value;
+
+	//	value = read_next_value(producer_string_to_enum_converter(task_name), string_time);
+
+	float new_value = read_next_value(task_name, timer_storage_ms);
+	std::stringstream string_builder;
+	string_builder << new_value;
+	Output o = Output(task_name, string_builder.str());
 	output_queue.push(o);
 
 	printf("New Output pushed to output queue is: \nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
