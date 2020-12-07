@@ -243,7 +243,7 @@ void *producer(void *args)
 	Logger::log_thread_details(thread, "Details of the thread - going to sleep:");
 
 	thread->block();
-	// pthread_mutex_lock(&data_mutex);
+	pthread_mutex_lock(&data_mutex);
 
 	Logger::log_thread_details(thread, "Details of the thread - waking up:\n");
 	// -- critical section --
@@ -271,7 +271,7 @@ void *producer(void *args)
 	printf("New Output pushed to output queue is: \nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
 
 	// -- critical section --
-	// pthread_mutex_unlock(&data_mutex);
+	pthread_mutex_unlock(&data_mutex);
 	thread->unblock();
 
 	printf("***%s task --> execution ended***\n", task_name);
