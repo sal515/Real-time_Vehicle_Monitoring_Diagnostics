@@ -377,11 +377,12 @@ void timer_timeout_handler(int sig_number)
 		/* Release Periodic Tasks */
 		scheduler.release_periodic_tasks(timer_storage_ms);
 
+		// /* Update Executed Time */
+		scheduler.update_periodic_executed_time(timer_storage_ms);
+		
 		// /* Update Priority */
 		scheduler.update_periodic_priority();
 
-		// /* Update Executed Time */
-		scheduler.update_periodic_executed_time(timer_storage_ms);
 
 		// /* Run Tasks */
 		scheduler.run_tasks();
