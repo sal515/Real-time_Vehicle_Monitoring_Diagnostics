@@ -259,6 +259,9 @@ void *consumer(void *args)
 		printf("Consumer consuming values:\nTask Name: %s, Value: %s\n", output_queue.front().task_name,
 			   output_queue.front().value.c_str());
 		output_queue.pop();
+		string_size = sprintf(buffer, "Consumer consuming values:\nTask Name: %s, Value: %s\n", output_queue.front().task_name,
+							  output_queue.front().value.c_str());
+		Logger::write_to_file(file_id, buffer, string_size);
 	}
 
 	// -- critical section --
@@ -299,6 +302,8 @@ void *producer(void *args)
 	output_queue.push(o);
 
 	printf("New Output pushed to output queue for consumer to consume are:\nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
+	string_size = sprintf(buffer, "New Output pushed to output queue for consumer to consume are:\nTask Name: %s, Value: %s\n", o.task_name, o.value.c_str());
+	Logger::write_to_file(file_id, buffer, string_size);
 
 	// -- critical section --
 
@@ -379,10 +384,9 @@ void timer_timeout_handler(int sig_number)
 
 		// /* Update Executed Time */
 		scheduler.update_periodic_executed_time(timer_storage_ms);
-		
+
 		// /* Update Priority */
 		scheduler.update_periodic_priority();
-
 
 		// /* Run Tasks */
 		scheduler.run_tasks();
